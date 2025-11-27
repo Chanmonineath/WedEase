@@ -26,17 +26,24 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
       <div class="header-container">
         <div class="header-left">
           <div class="logo">
-            <span class="logo-w">W</span><span class="logo-e">E</span>
+            <span class="logo-text">WedEASE</span>
           </div>
         </div>
         <nav class="header-nav" aria-label="Main navigation">
-          <a href="#hero-section" class="nav-link">Home</a>
-          <a href="#budget-section" class="nav-link">Budget</a>
-          <a href="#theme-section" class="nav-link">Theme</a>
-          <a href="#guests-section" class="nav-link">Guests</a>
-          <a href="#track-section" class="nav-link">Track</a>
+          <RouterLink to="/" class="nav-link">Home</RouterLink>
+          <RouterLink to="/about" class="nav-link">About</RouterLink>
+          <RouterLink to="/budget" class="nav-link">Budget</RouterLink>
+          <RouterLink to="/theme" class="nav-link">Theme</RouterLink>
+          <RouterLink to="/track" class="nav-link">Track</RouterLink>
         </nav>
         <div class="header-right">
+          <button class="login-btn" aria-label="Login">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+            Login
+          </button>
           <button class="user-icon" aria-label="User profile">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
               <circle cx="10" cy="6" r="4" fill="currentColor" opacity="0.8"/>
@@ -291,6 +298,8 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
 </template>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap');
+
 :root {
   --primary: #a2437c;
   --secondary: #6f3054;
@@ -369,14 +378,24 @@ html, body, #app {
   letter-spacing: -0.5px;
   display: flex;
   align-items: baseline;
+  font-family: 'Caveat', cursive;
+  font-weight: 700;
+  font-size: 2rem;
 }
 
 .logo-w {
   color: var(--primary);
+  font-family: 'Caveat', cursive;
 }
 
 .logo-e {
   color: var(--secondary);
+  font-family: 'Caveat', cursive;
+}
+
+.logo-text {
+  color: var(--primary);
+  font-family: 'Caveat', cursive;
 }
 
 .header-nav {
@@ -388,17 +407,20 @@ html, body, #app {
 }
 
 .nav-link {
-  color: var(--muted);
+  color: var(--primary);
   text-decoration: none;
-  font-weight: 500;
-  font-size: 0.95rem;
+  font-weight: 600;
+  font-size: 1rem;
   transition: color 0.2s ease;
   padding: 0.5rem 0;
   border-bottom: 2px solid transparent;
+  font-family: 'Caveat', cursive;
+  font-size: 1.3rem;
+  font-weight: 700;
 }
 
 .nav-link:hover {
-  color: var(--primary);
+  color: var(--secondary);
   border-bottom-color: var(--primary);
 }
 
@@ -427,9 +449,32 @@ html, body, #app {
   transform: scale(1.05);
 }
 
+.login-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  border: 2px solid var(--primary);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.login-btn:hover {
+  background: var(--primary);
+  color: white;
+  transform: translateY(-1px);
+}
+
 /* Hero Section */
 .hero-section {
   padding: 6rem 0 4rem;
+  background: linear-gradient(135deg, rgba(162, 67, 124, 0.05) 0%, rgba(252, 244, 251, 1) 100%);
 }
 
 .hero-content {
@@ -496,14 +541,19 @@ html, body, #app {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  background: #ffb6d9;
   color: white;
-  box-shadow: 0 4px 15px rgba(162, 67, 124, 0.3);
+  box-shadow: 0 4px 15px rgba(255, 182, 217, 0.3);
+  font-family: 'Caveat', cursive;
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 0.5rem 1.2rem;
+  border-radius: 50px;
 }
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(162, 67, 124, 0.4);
+  box-shadow: 0 6px 20px rgba(255, 182, 217, 0.4);
 }
 
 .btn-secondary {
@@ -924,138 +974,58 @@ section:first-of-type {
   padding-top: 1rem;
 }
 
-/* Responsive Design */
-@media (max-width: 1024px) {
-  .header-nav {
-    gap: 1.5rem;
-    font-size: 0.9rem;
-  }
-
+/* Responsive Styles */
+@media (min-width: 640px) { 
   .hero-title {
-    font-size: 2.5rem;
+    font-size: 4.5rem; 
   }
-
-  .hero-content {
-    gap: 2rem;
-  }
-
-  .theme-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .feature-cards-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .footer-top {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  .budget-container {
-    grid-template-columns: 1fr;
-  }
-
-  .category-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  .guests-content,
-  .track-content {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 768px) {
-  .container {
-    padding: 0 1.5rem;
-  }
-
-  .header-container {
-    padding: 0 1.5rem;
-  }
-
-  .hero-section {
-    padding: 3rem 0 2rem;
-  }
-
-  .hero-title {
-    font-size: 2rem;
-  }
-
-  .hero-content {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-  }
-
-  .section-title {
-    font-size: 1.8rem;
-  }
-
-  .header-nav {
-    display: none;
-  }
-
-  .theme-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-  }
-
-  .feature-cards-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .footer-top {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
-
-  .category-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .header {
-    padding: 1rem 0;
-  }
-
-  .hero-title {
-    font-size: 1.5rem;
-  }
-
   .hero-subtitle {
-    font-size: 1rem;
+    font-size: 1.25rem; 
+  }
+}
+
+@media (min-width: 768px) { 
+  .header-nav {
+    display: flex;
+    column-gap: 2rem; 
   }
 
-  .section-title {
-    font-size: 1.5rem;
+  .header {
+    padding: 0 4rem; 
+  }
+}
+
+@media (min-width: 1024px) { 
+  #hero-section {
+    padding: 4rem; 
   }
 
-  .btn {
-    padding: 0.625rem 1.25rem;
-    font-size: 0.9rem;
+  .hero-content {
+    grid-template-columns: repeat(2, minmax(0, 1fr)); 
+    gap: 5rem; 
+  }
+  
+  .hero-left {
+    text-align: left; 
+    order: 1; 
+  }
+  
+  .hero-subtitle {
+    margin: 0 0 2.5rem 0; 
+    font-size: 1.25rem; 
   }
 
-  .theme-grid {
-    grid-template-columns: 1fr;
+  .hero-title {
+    font-size: 5rem; 
   }
 
-  .budget-card-main {
-    padding: 1rem;
+  .hero-right {
+    justify-content: flex-end; 
+    order: 2; 
   }
 
-  .category-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .newsletter-input {
-    flex-direction: column;
-  }
-
-  .newsletter-input input,
-  .newsletter-input button {
-    width: 100%;
+  .hero-right img {
+    max-width: none; 
   }
 }
 </style>
