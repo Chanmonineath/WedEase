@@ -1,69 +1,20 @@
 // ===============================================
-// PAGE NAVIGATION & ROUTING
+// GLOBAL UTILITIES & SHARED FUNCTIONALITY
 // ===============================================
 
-class PageRouter {
-  constructor() {
-    this.currentPage = "home";
-    this.init();
+class WedEASEUtils {
+  static formatCurrency(amount) {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    }).format(amount);
   }
 
-  init() {
-    this.setupNavigation();
-    this.navigateTo("home");
-
-    window.addEventListener("hashchange", () => {
-      const hash = window.location.hash.slice(1) || "home";
-      this.navigateTo(hash);
-    });
-
-    this.setupHeaderScroll();
-  }
-
-  setupNavigation() {
-    const navLinks = document.querySelectorAll("[data-page]");
-    navLinks.forEach((link) => {
-      link.addEventListener("click", (e) => {
-        e.preventDefault();
-        const page = link.dataset.page;
-        this.navigateTo(page);
-        window.location.hash = page;
-      });
-    });
-  }
-
-  navigateTo(page) {
-    const pages = document.querySelectorAll(".page");
-    pages.forEach((p) => p.classList.remove("active"));
-
-    const selectedPage = document.getElementById(page);
-    if (selectedPage) {
-      selectedPage.classList.add("active");
-      this.currentPage = page;
-
-      window.scrollTo(0, 0);
-
-      this.updateActiveNavLink(page);
-    }
-  }
-
-  updateActiveNavLink(page) {
-    const navLinks = document.querySelectorAll("[data-page]");
-    navLinks.forEach((link) => {
-      if (link.dataset.page === page) {
-        link.style.borderBottomColor = "var(--wed-secondary)";
-        link.style.color = "var(--wed-secondary)";
-      } else {
-        link.style.borderBottomColor = "transparent";
-        link.style.color = "var(--wed-primary)";
-      }
-    });
-  }
-
-  setupHeaderScroll() {
+  static setupHeaderScroll() {
     const header = document.getElementById("header");
-    let ticking = false;
+    if (!header) return;
 
+    let ticking = false;
     window.addEventListener(
       "scroll",
       () => {
@@ -82,46 +33,8 @@ class PageRouter {
       { passive: true }
     );
   }
-}
 
-// ===============================================
-// INTERACTIVE ELEMENTS
-// ===============================================
-
-class InteractiveElements {
-  constructor() {
-    this.init();
-  }
-
-  init() {
-    this.setupButtons();
-    this.setupHoverEffects();
-  }
-
-  setupButtons() {
-    const ctaButtons = document.querySelectorAll(".cta-button");
-    ctaButtons.forEach((btn) => {
-      btn.addEventListener("click", () => {
-        window.location.hash = "about";
-      });
-    });
-
-    const loginBtn = document.querySelector(".login-btn");
-    if (loginBtn) {
-      loginBtn.addEventListener("click", () => {
-        window.location.hash = "login";
-      });
-    }
-
-    const addItemButtons = document.querySelectorAll(".add-item");
-    addItemButtons.forEach((btn) => {
-      btn.addEventListener("click", () => {
-        this.addBudgetItem();
-      });
-    });
-  }
-
-  setupHoverEffects() {
+  static setupHoverEffects() {
     const interactiveElements = document.querySelectorAll(
       ".feature-card, .category-card, .theme-card, .feature-box"
     );
@@ -133,93 +46,257 @@ class InteractiveElements {
     });
   }
 
-  addBudgetItem() {
-    const budgetItems = document.querySelector(".budget-items");
-    const newItem = document.createElement("div");
-    newItem.className = "budget-item";
-    newItem.innerHTML = `
-      <span class="item-name">New Item</span>
-      <span class="item-amount">$0</span>
-    `;
-
-    const addItemBtn = budgetItems.querySelector(".add-item");
-    addItemBtn.parentNode.insertBefore(newItem, addItemBtn);
-  }
-}
-
-// ===============================================
-// UTILITIES
-// ===============================================
-
-class Utilities {
-  static formatCurrency(amount) {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(amount);
-  }
-}
-
-// ===============================================
-// APP INITIALIZATION
-// ===============================================
-
-class WedEASEApp {
-  constructor() {
-    this.router = new PageRouter();
-    this.interactive = new InteractiveElements();
-    this.init();
-  }
-
-  init() {
-    console.log("WedEASE App initialized");
-
-    document.addEventListener("click", (e) => {
-      const target = e.target.closest("[data-page]");
-      if (target) {
-        e.preventDefault();
-        const page = target.dataset.page;
-        this.router.navigateTo(page);
-        window.location.hash = page;
+  static updateActiveNavLink() {
+    const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+    const navLinks = document.querySelectorAll(".nav-link");
+    
+    navLinks.forEach((link) => {
+      const linkHref = link.getAttribute('href');
+      if (linkHref === currentPage || 
+          (currentPage === 'index.html' && linkHref === '../index.html') ||
+          (linkHref && linkHref.includes(currentPage.replace('.html', '')))) {
+        link.classList.add("active");
+      } else {
+        link.classList.remove("active");
       }
     });
   }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  new WedEASEApp();
-});
-
-window.WedEASEUtils = Utilities;
-
 // ===============================================
-// BUDGET PAGE — CRUD LOGIC
+// HERO IMAGE ROTATOR & CTA MANAGER - FIXED VERSION
 // ===============================================
 
-document.addEventListener("DOMContentLoaded", () => {
-  const budgetList = document.getElementById("budget-list");
-  const addItemBtn = document.getElementById("addItemBtn");
-  const budgetForm = document.getElementById("budgetForm");
-  const saveItemBtn = document.getElementById("saveItemBtn");
-  const cancelItemBtn = document.getElementById("cancelItemBtn");
-  const totalAmountDisplay = document.getElementById("totalAmount");
+class HeroManager {
+  constructor() {
+    this.images = [
+      "assets/img/bride and groom.png",
+      "assets/img/wedding car.png", 
+      "assets/img/ring hand.png"
+    ];
+    
+    this.ctaIcons = [
+      // Heart icon
+      `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="white">
+        <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+      </svg>`,
+      
+      // Car icon
+      `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="white">
+        <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>
+      </svg>`,
+      
+      // Ring icon  
+      `<img src="assets/img/twin ring icon.png" alt="Wedding Rings" width="32" height="32" style="filter: brightness(0) invert(1);">`
+    ];
+    
+    this.ctaTexts = [
+      "Find Your Partner",
+      "Plan Your Journey", 
+      "Start Your Story"
+    ];
+    
+    this.currentIndex = 0;
+    this.init();
+  }
 
-  const nameInput = document.getElementById("itemName");
-  const amountInput = document.getElementById("itemAmount");
+  init() {
+    console.log("Hero Manager: Checking for elements...");
+    
+    // Only initialize if we're on the home page
+    const heroImage = document.getElementById('hero-image');
+    const ctaButton = document.getElementById('hero-cta-button');
+    
+    if (!heroImage) {
+      console.log("Hero Manager: hero-image element not found");
+      return;
+    }
+    
+    if (!ctaButton) {
+      console.log("Hero Manager: hero-cta-button element not found");
+      return;
+    }
+    
+    console.log("Hero Manager: Elements found, initializing...");
+    
+    // Set initial content first
+    this.updateHeroContent();
+    
+    // Set up auto rotation
+    this.startAutoRotation();
+    
+    // Set up click handler
+    heroImage.addEventListener('click', () => {
+      console.log("Hero image clicked, switching to next image");
+      this.nextImage();
+    });
+    
+    console.log("Hero Manager fully initialized");
+  }
 
-  let budgetItems = [
-    { name: "Makeup Artist", amount: 7000 },
-    { name: "Venue Rental", amount: 15000 },
-    { name: "Catering", amount: 12000 },
-  ];
+  startAutoRotation() {
+    // Clear any existing interval
+    if (this.rotationInterval) {
+      clearInterval(this.rotationInterval);
+    }
+    
+    // Start new interval - rotate every 2 seconds (was 5 seconds)
+    this.rotationInterval = setInterval(() => {
+      console.log("Auto-rotating to next image");
+      this.nextImage();
+    }, 3000); 
+    
+    console.log("Auto-rotation started (2 second intervals)");
+  }
 
-  let editIndex = null;
+  nextImage() {
+    this.currentIndex = (this.currentIndex + 1) % this.images.length;
+    console.log("Switching to image index:", this.currentIndex, " - ", this.images[this.currentIndex]);
+    this.updateHeroContent();
+  }
 
-  function renderBudget() {
+  updateHeroContent() {
+    const heroImage = document.getElementById('hero-image');
+    const ctaButton = document.getElementById('hero-cta-button');
+    
+    if (!heroImage || !ctaButton) {
+      console.log("Hero Manager: Elements missing in updateHeroContent");
+      return;
+    }
+
+    console.log("Updating hero content to:", this.images[this.currentIndex]);
+
+    // Update image with fade effect
+    heroImage.style.transition = 'opacity 0.5s ease-in-out';
+    heroImage.style.opacity = '0.3';
+    
+    setTimeout(() => {
+      heroImage.src = this.images[this.currentIndex];
+      heroImage.alt = this.getAltText();
+      heroImage.style.opacity = '1';
+      console.log("Image updated to:", this.images[this.currentIndex]);
+    }, 300);
+
+    // Update CTA button
+    ctaButton.innerHTML = `
+      ${this.ctaIcons[this.currentIndex]}
+      <span style="color: white;">${this.ctaTexts[this.currentIndex]}</span>
+    `;
+    console.log("CTA button updated");
+  }
+
+  getAltText() {
+    const altTexts = ["Bride and Groom", "Wedding Car", "Ring Hand"];
+    return altTexts[this.currentIndex];
+  }
+
+  // Method to manually set specific image
+  setHeroContent(index) {
+    if (index >= 0 && index < this.images.length) {
+      this.currentIndex = index;
+      this.updateHeroContent();
+    }
+  }
+}
+
+// ===============================================
+// BUDGET PAGE FUNCTIONALITY
+// ===============================================
+
+class BudgetManager {
+  constructor() {
+    this.budgetItems = JSON.parse(localStorage.getItem('wedease_budget')) || [
+      { name: "Makeup Artist", amount: 7000 },
+      { name: "Venue Rental", amount: 15000 },
+      { name: "Catering", amount: 12000 },
+    ];
+    this.editIndex = null;
+    this.init();
+  }
+
+  init() {
+    if (!document.getElementById('budget-list')) return;
+
+    this.bindEvents();
+    this.renderBudget();
+  }
+
+  bindEvents() {
+    const addItemBtn = document.getElementById('addItemBtn');
+    const saveItemBtn = document.getElementById('saveItemBtn');
+    const cancelItemBtn = document.getElementById('cancelItemBtn');
+
+    if (addItemBtn) {
+      addItemBtn.addEventListener('click', () => this.showBudgetForm());
+    }
+    if (saveItemBtn) {
+      saveItemBtn.addEventListener('click', () => this.saveBudgetItem());
+    }
+    if (cancelItemBtn) {
+      cancelItemBtn.addEventListener('click', () => this.hideBudgetForm());
+    }
+  }
+
+  showBudgetForm() {
+    this.editIndex = null;
+    document.getElementById('itemName').value = "";
+    document.getElementById('itemAmount').value = "";
+    document.getElementById('budgetForm').classList.remove('hidden');
+  }
+
+  hideBudgetForm() {
+    document.getElementById('budgetForm').classList.add('hidden');
+  }
+
+  saveBudgetItem() {
+    const name = document.getElementById('itemName').value.trim();
+    const amount = parseFloat(document.getElementById('itemAmount').value);
+
+    if (!name || isNaN(amount)) {
+      alert("Please enter valid name and amount");
+      return;
+    }
+
+    if (this.editIndex !== null) {
+      this.budgetItems[this.editIndex] = { name, amount };
+    } else {
+      this.budgetItems.push({ name, amount });
+    }
+
+    this.saveToStorage();
+    this.hideBudgetForm();
+    this.renderBudget();
+  }
+
+  editBudgetItem(index) {
+    this.editIndex = index;
+    document.getElementById('itemName').value = this.budgetItems[index].name;
+    document.getElementById('itemAmount').value = this.budgetItems[index].amount;
+    document.getElementById('budgetForm').classList.remove('hidden');
+  }
+
+  deleteBudgetItem(index) {
+    if (confirm('Are you sure you want to delete this item?')) {
+      this.budgetItems.splice(index, 1);
+      this.saveToStorage();
+      this.renderBudget();
+    }
+  }
+
+  saveToStorage() {
+    localStorage.setItem('wedease_budget', JSON.stringify(this.budgetItems));
+  }
+
+  renderBudget() {
+    const budgetList = document.getElementById('budget-list');
+    const totalAmountDisplay = document.getElementById('totalAmount');
+    
+    if (!budgetList) return;
+
     budgetList.innerHTML = "";
     let total = 0;
 
-    budgetItems.forEach((item, index) => {
+    this.budgetItems.forEach((item, index) => {
       total += item.amount;
 
       const div = document.createElement("div");
@@ -230,8 +307,8 @@ document.addEventListener("DOMContentLoaded", () => {
         <span class="item-amount">
           $${item.amount.toLocaleString()}
           <span class="actions">
-            <button onclick="editBudgetItem(${index})">Edit</button>
-            <button onclick="deleteBudgetItem(${index})">Delete</button>
+            <button onclick="budgetManager.editBudgetItem(${index})">Edit</button>
+            <button onclick="budgetManager.deleteBudgetItem(${index})">Delete</button>
           </span>
         </span>
       `;
@@ -239,90 +316,59 @@ document.addEventListener("DOMContentLoaded", () => {
       budgetList.appendChild(div);
     });
 
-    totalAmountDisplay.textContent = "$" + total.toLocaleString();
+    if (totalAmountDisplay) {
+      totalAmountDisplay.textContent = "$" + total.toLocaleString();
+    }
+  }
+}
+
+// ===============================================
+// AUTHENTICATION SYSTEM
+// ===============================================
+
+class AuthManager {
+  constructor() {
+    this.init();
   }
 
-  addItemBtn.addEventListener("click", () => {
-    editIndex = null;
-    nameInput.value = "";
-    amountInput.value = "";
-    budgetForm.classList.remove("hidden");
-  });
+  init() {
+    if (!document.getElementById('auth-status')) return;
+    this.bindAuthEvents();
+    this.checkCurrentUser();
+  }
 
-  cancelItemBtn.addEventListener("click", () => {
-    budgetForm.classList.add("hidden");
-  });
-
-  saveItemBtn.addEventListener("click", () => {
-    const name = nameInput.value.trim();
-    const amount = parseFloat(amountInput.value);
-
-    if (!name || isNaN(amount)) {
-      alert("Enter valid name & amount");
-      return;
-    }
-
-    if (editIndex !== null) {
-      budgetItems[editIndex] = { name, amount };
-    } else {
-      budgetItems.push({ name, amount });
-    }
-
-    budgetForm.classList.add("hidden");
-    renderBudget();
-  });
-
-  window.editBudgetItem = function (index) {
-    editIndex = index;
-    nameInput.value = budgetItems[index].name;
-    amountInput.value = budgetItems[index].amount;
-    budgetForm.classList.remove("hidden");
-  };
-
-  window.deleteBudgetItem = function (index) {
-    budgetItems.splice(index, 1);
-    renderBudget();
-  };
-
-  renderBudget();
-});
-
-// ===============================================
-// LOGIN / SIGNUP LOGIC
-// ===============================================
-
-(async function attachAuthHandlers() {
-  function encode(str) {
+  encode(str) {
     return new TextEncoder().encode(str);
   }
 
-  async function hashPassword(password) {
-    const buf = await crypto.subtle.digest("SHA-256", encode(password));
+  async hashPassword(password) {
+    const buf = await crypto.subtle.digest("SHA-256", this.encode(password));
     return [...new Uint8Array(buf)]
       .map((b) => b.toString(16).padStart(2, "0"))
       .join("");
   }
 
-  function getUsers() {
+  getUsers() {
     return JSON.parse(localStorage.getItem("wedease_users") || "{}");
   }
 
-  function setUsers(obj) {
+  setUsers(obj) {
     localStorage.setItem("wedease_users", JSON.stringify(obj));
   }
 
-  function setCurrentUser(email) {
+  setCurrentUser(email) {
     localStorage.setItem("wedease_current", email);
-    updateHeaderUser(email);
+    this.updateHeaderUser(email);
   }
 
-  function clearCurrentUser() {
+  clearCurrentUser() {
     localStorage.removeItem("wedease_current");
-    updateHeaderUser(null);
+    this.updateHeaderUser(null);
   }
 
-  function updateHeaderUser(email) {
+  updateHeaderUser(email) {
     const headerRight = document.querySelector(".header-right");
+    if (!headerRight) return;
 
     const existing = document.getElementById("user-label");
     if (existing) existing.remove();
@@ -331,104 +377,232 @@ document.addEventListener("DOMContentLoaded", () => {
       const btn = document.createElement("button");
       btn.id = "user-label";
       btn.className = "login-btn";
-      btn.textContent = email.split("@")[0];
+      btn.innerHTML = `
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+          <circle cx="12" cy="7" r="4" />
+        </svg>
+        ${email.split("@")[0]}
+      `;
       btn.addEventListener("click", () => {
         if (confirm("Sign out?")) {
-          clearCurrentUser();
+          this.clearCurrentUser();
+          window.location.reload();
         }
       });
       headerRight.appendChild(btn);
     }
   }
 
-  function showStatus(msg, color) {
+  showStatus(msg, isError = false) {
     const el = document.getElementById("auth-status");
     if (!el) return;
     el.textContent = msg;
-    el.style.color = color || "var(--wed-secondary)";
+    el.className = isError ? 'error' : 'success';
   }
 
-  document.addEventListener("DOMContentLoaded", () => {
+  bindAuthEvents() {
     const signinBtn = document.getElementById("signin-btn");
     const signupBtn = document.getElementById("signup-btn");
     const showSignup = document.getElementById("show-signup");
     const showSignin = document.getElementById("show-signin");
 
-    if (showSignup)
+    if (showSignup) {
       showSignup.addEventListener("click", () => {
         document.getElementById("signin-card").classList.add("hidden");
         document.getElementById("signup-card").classList.remove("hidden");
       });
+    }
 
-    if (showSignin)
+    if (showSignin) {
       showSignin.addEventListener("click", () => {
         document.getElementById("signup-card").classList.add("hidden");
         document.getElementById("signin-card").classList.remove("hidden");
       });
+    }
 
-    if (signupBtn)
+    if (signupBtn) {
       signupBtn.addEventListener("click", async () => {
-        const email = document
-          .getElementById("signup-email")
-          .value.trim()
-          .toLowerCase();
-        const pw = document.getElementById("signup-password").value;
-        const pw2 = document.getElementById("signup-password2").value;
-
-        if (!email.includes("@")) {
-          showStatus("Invalid email", "crimson");
-          return;
-        }
-        if (pw.length < 8) {
-          showStatus("Password too short", "crimson");
-          return;
-        }
-        if (pw !== pw2) {
-          showStatus("Passwords do not match", "crimson");
-          return;
-        }
-
-        const users = getUsers();
-        if (users[email]) {
-          showStatus("Account already exists", "crimson");
-          return;
-        }
-
-        users[email] = { hash: await hashPassword(pw), created: Date.now() };
-        setUsers(users);
-        setCurrentUser(email);
-        showStatus("Account created!", "green");
-
-        window.location.hash = "home";
+        await this.handleSignup();
       });
+    }
 
-    if (signinBtn)
+    if (signinBtn) {
       signinBtn.addEventListener("click", async () => {
-        const email = document
-          .getElementById("signin-email")
-          .value.trim()
-          .toLowerCase();
-        const pw = document.getElementById("signin-password").value;
-
-        const users = getUsers();
-        if (!users[email]) {
-          showStatus("Account not found", "crimson");
-          return;
-        }
-
-        const hashed = await hashPassword(pw);
-        if (hashed !== users[email].hash) {
-          showStatus("Incorrect password", "crimson");
-          return;
-        }
-
-        setCurrentUser(email);
-        showStatus("Login successful!", "green");
-
-        window.location.hash = "home";
+        await this.handleSignin();
       });
+    }
+  }
 
+  async handleSignup() {
+    const email = document.getElementById("signup-email").value.trim().toLowerCase();
+    const pw = document.getElementById("signup-password").value;
+    const pw2 = document.getElementById("signup-password2").value;
+
+    if (!email.includes("@")) {
+      this.showStatus("Invalid email", true);
+      return;
+    }
+    if (pw.length < 8) {
+      this.showStatus("Password must be at least 8 characters", true);
+      return;
+    }
+    if (pw !== pw2) {
+      this.showStatus("Passwords do not match", true);
+      return;
+    }
+
+    const users = this.getUsers();
+    if (users[email]) {
+      this.showStatus("Account already exists", true);
+      return;
+    }
+
+    users[email] = { hash: await this.hashPassword(pw), created: Date.now() };
+    this.setUsers(users);
+    this.setCurrentUser(email);
+    this.showStatus("Account created successfully!");
+
+    setTimeout(() => {
+      window.location.href = "../index.html";
+    }, 1500);
+  }
+
+  async handleSignin() {
+    const email = document.getElementById("signin-email").value.trim().toLowerCase();
+    const pw = document.getElementById("signin-password").value;
+
+    const users = this.getUsers();
+    if (!users[email]) {
+      this.showStatus("Account not found", true);
+      return;
+    }
+
+    const hashed = await this.hashPassword(pw);
+    if (hashed !== users[email].hash) {
+      this.showStatus("Incorrect password", true);
+      return;
+    }
+
+    this.setCurrentUser(email);
+    this.showStatus("Login successful!");
+
+    setTimeout(() => {
+      window.location.href = "../index.html";
+    }, 1500);
+  }
+
+  checkCurrentUser() {
     const current = localStorage.getItem("wedease_current");
-    if (current) updateHeaderUser(current);
-  });
-})();
+    if (current) this.updateHeaderUser(current);
+  }
+}
+
+// ===============================================
+// THEME PAGE FUNCTIONALITY
+// ===============================================
+
+class ThemeManager {
+  constructor() {
+    this.init();
+  }
+
+  init() {
+    if (!document.querySelector('.theme-grid')) return;
+    this.bindThemeEvents();
+  }
+
+  bindThemeEvents() {
+    const themeCards = document.querySelectorAll('.theme-card');
+    themeCards.forEach(card => {
+      card.addEventListener('click', () => {
+        // Remove selected class from all cards
+        themeCards.forEach(c => c.classList.remove('selected'));
+        // Add selected class to clicked card
+        card.classList.add('selected');
+        
+        const themeName = card.querySelector('h3').textContent;
+        localStorage.setItem('wedease_selected_theme', themeName);
+        
+        // Show confirmation
+        alert(`"${themeName}" theme selected!`);
+      });
+    });
+
+    // Check for previously selected theme
+    const savedTheme = localStorage.getItem('wedease_selected_theme');
+    if (savedTheme) {
+      themeCards.forEach(card => {
+        if (card.querySelector('h3').textContent === savedTheme) {
+          card.classList.add('selected');
+        }
+      });
+    }
+  }
+}
+
+// ===============================================
+// MAIN APP INITIALIZATION
+// ===============================================
+
+class WedEASEApp {
+  constructor() {
+    this.init();
+  }
+
+  init() {
+    console.log("WedEASE App initialized");
+    
+    // Initialize all managers
+    this.utils = WedEASEUtils;
+    this.budgetManager = new BudgetManager();
+    this.authManager = new AuthManager();
+    this.themeManager = new ThemeManager();
+
+    // Setup global functionality
+    this.utils.setupHeaderScroll();
+    this.utils.setupHoverEffects();
+    this.utils.updateActiveNavLink();
+
+    // Additional interactive elements
+    this.setupInteractiveElements();
+  }
+
+  setupInteractiveElements() {
+    // CTA buttons navigation
+    const ctaButtons = document.querySelectorAll(".cta-button");
+    ctaButtons.forEach((btn) => {
+      if (btn.getAttribute('href')) return; // Skip if already has href
+      btn.addEventListener("click", () => {
+        window.location.href = "src/pages/about.html";
+      });
+    });
+
+    // Category card interactions
+    const categoryCards = document.querySelectorAll('.category-card');
+    categoryCards.forEach(card => {
+      card.addEventListener('click', () => {
+        const categoryName = card.querySelector('span').textContent;
+        alert(`Opening ${categoryName} budget category`);
+      });
+    });
+  }
+}
+
+// ===============================================
+// GLOBAL INSTANCES (for inline event handlers)
+// ===============================================
+
+let budgetManager;
+let heroManager; // ← ADD THIS LINE
+
+// Initialize the app when DOM is loaded
+document.addEventListener("DOMContentLoaded", () => {
+  budgetManager = new BudgetManager();
+  heroManager = new HeroManager(); // ← ADD THIS LINE - THIS IS CRITICAL!
+  new WedEASEApp();
+});
+
+// Make utils available globally
+window.WedEASEUtils = WedEASEUtils;
+window.heroManager = heroManager; // ← ADD THIS LINE
