@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wedding Themes - WedEASE</title>
-    <link rel="stylesheet" href="../../css/style.css">
+    <title>WedEASE — Wedding Planning Made Easy</title>
+    <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Caveat:wght@400;700&family=Cedarville+Cursive&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -12,48 +12,47 @@
         <header class="header" id="header">
             <div class="header-container">
                 <div class="header-left">
-                    <a href="../../index.html" class="logo">
+                    <a href="index.html" class="logo">
                         Wed<span class="logo-accent">EASE</span>
                     </a>
                 </div>
                 <nav class="header-nav" aria-label="Main navigation">
-                    <a href="../../index.html" class="nav-link">Home</a>
-                    <a href="about.html" class="nav-link">About</a>
-                    <a href="budget.html" class="nav-link">Budget</a>
-                    <a href="theme.html" class="nav-link active">Theme</a>
-                    <a href="track.html" class="nav-link">Track</a>
+                    <a href="index.html" class="nav-link active">Home</a>
+                    <a href="src/pages/about.html" class="nav-link">About</a>
+                    <a href="src/pages/budget.html" class="nav-link">Budget</a>
+                    <a href="src/pages/theme.html" class="nav-link">Theme</a>
+                    <a href="src/pages/track.html" class="nav-link">Track</a>
                 </nav>
                 <div class="header-right">
-                    <a href="login.html" class="login-btn" aria-label="Login">Login</a>
+                    <a href="src/pages/login.html" class="login-btn" aria-label="Login">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                            <circle cx="12" cy="7" r="4" />
+                        </svg>
+                        Login
+                    </a>
                 </div>
             </div>
         </header>
 
         <main>
-            <div class="page-wrapper">
-                <h1 class="page-title">Choose Your Wedding Theme</h1>
-                <p class="page-subtitle">Select a style that matches your vision</p>
-
-                <div class="theme-grid">
-                    <div class="theme-card">
-                        <div class="theme-image" style="background: linear-gradient(135deg, #FFB6D9, #FFC0CB);">✨</div>
-                        <h3>Fairytale</h3>
-                        <p>Enchanting and magical with romantic touches</p>
+            <div class="hero-section">
+                <div class="hero-container">
+                    <div class="hero-content-left">
+                        <h2 class="hero-subheading">WedEASE</h2>
+                        <p class="hero-description">
+                            All the tools you need to design, plan, and celebrate your big day—
+                            smart, seamless, and stress-free.
+                        </p>
+                        <a href="src/pages/about.html" class="cta-button">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white">
+                                <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+                            </svg>
+                            <span style="color: white;">Start Now</span>
+                        </a>
                     </div>
-                    <div class="theme-card">
-                        <div class="theme-image" style="background: linear-gradient(135deg, #E8E8E8, #F5F5F5);">🏙️</div>
-                        <h3>Modern</h3>
-                        <p>Contemporary elegance with sleek designs</p>
-                    </div>
-                    <div class="theme-card">
-                        <div class="theme-image" style="background: linear-gradient(135deg, #D4AF37, #F0E68C);">👑</div>
-                        <h3>Classic</h3>
-                        <p>Timeless elegance with sophisticated styling</p>
-                    </div>
-                    <div class="theme-card">
-                        <div class="theme-image" style="background: linear-gradient(135deg, #8B4513, #A0522D);">🌿</div>
-                        <h3>Rustic</h3>
-                        <p>Natural beauty with countryside charm</p>
+                    <div class="hero-illustration-right">
+                        <img src="https://i.pinimg.com/1200x/ff/00/e2/ff00e293d374163a3b9646bb69ca4d02.jpg" alt="Wedding rings illustration">
                     </div>
                 </div>
             </div>
@@ -94,6 +93,6 @@
             </div>
         </footer>
     </div>
-    <script src="../../js/app.js"></script>
+    <script src="js/app.js"></script>
 </body>
 </html>
