@@ -67,7 +67,7 @@ body {
 }
 
 .logo {
-    font-size: 2.25rem; 
+    font-size: 1.75rem; 
     font-family: var(--font-script);
     color: var(--wed-primary);
 }
@@ -108,6 +108,88 @@ body {
   flex: 0;
 }
 
+/* ===== Login / Auth styles (append to style.css) ===== */
+
+.auth-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  max-width: 480px;
+  margin: 1.5rem auto 0;
+}
+
+.auth-card {
+  background: white;
+  border: 2px solid var(--wed-border);
+  padding: 1.25rem;
+  border-radius: 0.75rem;
+}
+
+.auth-card h3 {
+  margin-bottom: 0.75rem;
+  color: var(--wed-primary);
+  font-family: var(--font-script);
+}
+
+.auth-card label {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--wed-text);
+}
+
+.auth-card input {
+  width: 100%;
+  padding: 0.7rem;
+  margin-top: 0.35rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--wed-border);
+  font-size: 1rem;
+}
+
+.form-btn {
+  display: inline-block;
+  margin-top: 0.9rem;
+  padding: 0.7rem 1rem;
+  border-radius: 0.6rem;
+  background: var(--wed-primary);
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: var(--wed-secondary);
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+  margin-left: 6px;
+  font-weight: 600;
+}
+
+.auth-link {
+  margin-top: 0.9rem;
+  font-size: 0.95rem;
+  color: var(--wed-text);
+}
+
+#auth-status {
+  max-width: 480px;
+  margin: 1rem auto;
+  color: var(--wed-secondary);
+  font-weight: 600;
+}
+
+/* keep .hidden rule */
+.hidden {
+  display: none;
+}
+
+/* ===== Login Button + User Icon styles ===== */
+
 .login-btn,
 .user-icon {
   background: none;
@@ -137,6 +219,7 @@ body {
   color: white;
   justify-content: center;
 }
+
 
 /* ===============================================
    PAGES & SECTIONS
@@ -450,6 +533,54 @@ body {
   font-weight: 600;
   color: var(--wed-primary);
 }
+
+/* ===== Budget CRUD Additions ONLY ===== */
+
+.form-popup {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: var(--wed-bg);
+    border: 1px solid var(--wed-border);
+    border-radius: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.form-popup input {
+    padding: 0.8rem;
+    border: 1px solid var(--wed-border);
+    border-radius: 0.5rem;
+}
+
+.form-popup button {
+    padding: 0.7rem;
+    border: none;
+    background: var(--wed-primary);
+    color: white;
+    border-radius: 0.5rem;
+    cursor: pointer;
+}
+
+.form-popup button:hover {
+    background: var(--wed-secondary);
+}
+
+.actions button {
+    background: none;
+    border: none;
+    color: var(--wed-primary);
+    cursor: pointer;
+    margin-left: 10px;
+    font-weight: 600;
+}
+
+.actions button:hover {
+    color: var(--wed-secondary);
+}
+
+.hidden { display: none; }
+
 
 /* ===============================================
    THEME PAGE
