@@ -97,10 +97,12 @@ class HeroManager {
     ];
     
     this.currentIndex = 0;
-    this.init();
+    this.initialized = false;
   }
 
   init() {
+    if (this.initialized) return;
+    
     console.log("Hero Manager: Checking for elements...");
     
     // Only initialize if we're on the home page
@@ -131,6 +133,7 @@ class HeroManager {
       this.nextImage();
     });
     
+    this.initialized = true;
     console.log("Hero Manager fully initialized");
   }
 
@@ -140,13 +143,13 @@ class HeroManager {
       clearInterval(this.rotationInterval);
     }
     
-    // Start new interval - rotate every 2 seconds (was 5 seconds)
+    // Start new interval - rotate every 3 seconds
     this.rotationInterval = setInterval(() => {
       console.log("Auto-rotating to next image");
       this.nextImage();
     }, 3000); 
     
-    console.log("Auto-rotation started (2 second intervals)");
+    console.log("Auto-rotation started (3 second intervals)");
   }
 
   nextImage() {
@@ -197,6 +200,97 @@ class HeroManager {
       this.updateHeroContent();
     }
   }
+}
+
+// ===============================================
+// SIMPLE AUDIO GREETING - PLAYS FOR 5 SECONDS
+// ===============================================
+
+class MusicalEntrance {
+    constructor() {
+        this.audio = document.getElementById('welcomeAudio');
+        this.overlay = document.getElementById('interactionOverlay');
+        this.startButton = document.getElementById('startButton');
+        this.hasPlayed = false;
+        this.init();
+    }
+
+    init() {
+        console.log('Audio Greeting: Initializing...');
+        
+        if (!this.overlay) {
+            console.log('No overlay found, trying to play directly...');
+            this.playWelcomeSound();
+            return;
+        }
+
+        // Wait for user interaction
+        this.startButton.addEventListener('click', () => {
+            this.startExperience();
+        });
+
+        // Also allow clicking anywhere on the overlay
+        this.overlay.addEventListener('click', (e) => {
+            if (e.target === this.overlay) {
+                this.startExperience();
+            }
+        });
+    }
+
+    startExperience() {
+        console.log('User interaction detected, starting experience...');
+        
+        // Hide the overlay
+        if (this.overlay) {
+            this.overlay.style.display = 'none';
+        }
+        
+        // Play the welcome sound
+        this.playWelcomeSound();
+        
+        // Start hero rotation if it exists
+        if (window.heroManager && typeof window.heroManager.init === 'function') {
+            window.heroManager.init();
+        }
+    }
+
+    playWelcomeSound() {
+        if (!this.audio) {
+            console.log('Audio element not found');
+            return;
+        }
+
+        if (this.hasPlayed) {
+            console.log('Audio already played, skipping...');
+            return;
+        }
+
+        console.log('Playing welcome sound...');
+        
+        // Set audio to play for 5 seconds only
+        this.audio.volume = 0.5; // Increased volume to 50%
+        
+        const playPromise = this.audio.play();
+        
+        if (playPromise !== undefined) {
+            playPromise.then(() => {
+                console.log('Audio started successfully');
+                this.hasPlayed = true;
+                
+                // Stop audio after 5 seconds
+                setTimeout(() => {
+                    this.audio.pause();
+                    this.audio.currentTime = 0; // Reset to beginning
+                    console.log('Audio stopped after 5 seconds');
+                }, 5000);
+                
+            }).catch(error => {
+                console.log('Audio play failed:', error);
+                // Even if audio fails, continue with the experience
+                this.hasPlayed = true;
+            });
+        }
+    }
 }
 
 // ===============================================
@@ -419,51 +513,86 @@ class ThemeManager {
 }
 
 // ===============================================
-// MAIN APP INITIALIZATION
+// BUDGET MANAGER (Placeholder)
 // ===============================================
 
-class WedEASEApp {
+class BudgetManager {
   constructor() {
     this.init();
   }
 
   init() {
-    console.log("WedEASE App initialized");
-    
-    // Initialize all managers
-    this.utils = WedEASEUtils;
-    this.budgetManager = new BudgetManager();
-    this.authManager = new AuthManager();
-    this.themeManager = new ThemeManager();
-
-    // Setup global functionality
-    this.utils.setupHeaderScroll();
-    this.utils.setupHoverEffects();
-    this.utils.updateActiveNavLink();
-
-    // Additional interactive elements
-    this.setupInteractiveElements();
+    console.log("Budget Manager initialized");
+    // Add your budget management logic here
   }
+}
 
-  setupInteractiveElements() {
-    // CTA buttons navigation
-    const ctaButtons = document.querySelectorAll(".cta-button");
-    ctaButtons.forEach((btn) => {
-      if (btn.getAttribute('href')) return; // Skip if already has href
-      btn.addEventListener("click", () => {
-        window.location.href = "src/pages/about.html";
-      });
-    });
+// ===============================================
+// MAIN APP INITIALIZATION
+// ===============================================
 
-    // Category card interactions
-    const categoryCards = document.querySelectorAll('.category-card');
-    categoryCards.forEach(card => {
-      card.addEventListener('click', () => {
-        const categoryName = card.querySelector('span').textContent;
-        alert(`Opening ${categoryName} budget category`);
-      });
-    });
-  }
+class WedEASEApp {
+    constructor() {
+        this.heroManager = null;
+        this.musicalEntrance = null;
+        this.init();
+    }
+
+    init() {
+        console.log("WedEASE App initialized");
+        
+        // Initialize all managers
+        this.utils = WedEASEUtils;
+        this.budgetManager = new BudgetManager();
+        this.authManager = new AuthManager();
+        this.themeManager = new ThemeManager();
+
+        // Initialize Audio Greeting (only on home page)
+        if (window.location.pathname.includes('index.html') || 
+            window.location.pathname.endsWith('/') ||
+            document.getElementById('hero-image')) {
+            this.musicalEntrance = new MusicalEntrance();
+            
+            // Create HeroManager but DON'T initialize it yet
+            // Let MusicalEntrance handle initialization after user interaction
+            this.heroManager = new HeroManager();
+            // Remove the init() call here - let MusicalEntrance handle it
+        } else {
+            // For other pages, initialize HeroManager immediately
+            if (document.getElementById('hero-image')) {
+                this.heroManager = new HeroManager();
+                this.heroManager.init();
+            }
+        }
+
+        // Setup global functionality (this can run immediately)
+        this.utils.setupHeaderScroll();
+        this.utils.setupHoverEffects();
+        this.utils.updateActiveNavLink();
+
+        // Additional interactive elements
+        this.setupInteractiveElements();
+    }
+
+    setupInteractiveElements() {
+        // CTA buttons navigation
+        const ctaButtons = document.querySelectorAll(".cta-button");
+        ctaButtons.forEach((btn) => {
+            if (btn.getAttribute('href')) return; // Skip if already has href
+            btn.addEventListener("click", () => {
+                window.location.href = "src/pages/about.html";
+            });
+        });
+
+        // Category card interactions
+        const categoryCards = document.querySelectorAll('.category-card');
+        categoryCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const categoryName = card.querySelector('span').textContent;
+                alert(`Opening ${categoryName} budget category`);
+            });
+        });
+    }
 }
 
 // ===============================================
@@ -471,19 +600,16 @@ class WedEASEApp {
 // ===============================================
 
 let budgetManager;
-let heroManager; // ← ADD THIS LINE
+let heroManager;
 
 // Initialize the app when DOM is loaded
 document.addEventListener("DOMContentLoaded", () => {
-  budgetManager = new BudgetManager();
-  heroManager = new HeroManager(); // ← ADD THIS LINE - THIS IS CRITICAL!
-  new WedEASEApp();
+    console.log("DOM Content Loaded - Initializing WedEASE App");
+    budgetManager = new BudgetManager();
+    heroManager = new HeroManager(); // Create instance but don't initialize
+    new WedEASEApp();
 });
 
 // Make utils available globally
 window.WedEASEUtils = WedEASEUtils;
-window.heroManager = heroManager; // ← ADD THIS LINE
-
-
-
-
+window.heroManager = heroManager;
