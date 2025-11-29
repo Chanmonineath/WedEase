@@ -1035,6 +1035,132 @@ main {
     color: #e53e3e;
 }
 
+//* Simple Currency Selector */
+.simple-currency-selector {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 100;
+}
+
+.currency-select-simple {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--wed-border);
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    background: white;
+    color: var(--wed-text);
+    cursor: pointer;
+    min-width: 120px;
+}
+
+.currency-select-simple:focus {
+    outline: none;
+    border-color: var(--wed-primary);
+}
+
+/* Simple PDF Export */
+.simple-pdf-export {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+.pdf-simple-btn {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+}
+
+.pdf-status-simple {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+}
+
+.pdf-status-simple.generating {
+    color: #d69e2e;
+}
+
+.pdf-status-simple.success {
+    color: #38a169;
+}
+
+.pdf-status-simple.error {
+    color: #e53e3e;
+}
+.export-card p {
+    color: var(--wed-text);
+    margin-bottom: 1rem;
+}
+
+.export-options {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+}
+
+.export-input {
+    padding: 0.5rem;
+    border: 1px solid var(--wed-border);
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    min-width: 150px;
+}
+
+.export-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 auto;
+}
+
+.pdf-status {
+    margin-top: 1rem;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.pdf-status.generating {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+.pdf-status.success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.pdf-status.error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .converter-controls {
+        flex-direction: column;
+    }
+    
+    .exchange-rate-info {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .export-options {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .export-input {
+        width: 100%;
+        max-width: 250px;
+    }
+}
+
 /* Categories Section */
 .categories-section {
     margin: 3rem 0;

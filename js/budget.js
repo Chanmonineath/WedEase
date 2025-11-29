@@ -1,5 +1,5 @@
 // ===============================================
-// COMPLETE BUDGET MANAGER WITH POPUP FORMS
+// COMPLETE BUDGET MANAGER WITH CURRENCY & PDF EXPORT
 // ===============================================
 
 class BudgetManager {
@@ -17,6 +17,11 @@ class BudgetManager {
         this.currentCategory = null;
         this.editVendorId = null;
         this.editingCategoryIndex = null;
+        
+        // Currency settings
+        this.selectedCurrency = 'USD';
+        this.exchangeRate = 4100; // 1 USD = 4100 KHR
+        
         this.init();
     }
 
@@ -24,8 +29,9 @@ class BudgetManager {
         console.log("Budget Manager initialized");
         this.bindEvents();
         this.renderCategories();
-        this.updateBudgetProgress();
+        this.loadCurrencySettings();
         this.loadInitialBudget();
+        this.updateBudgetProgress();
     }
 
     bindEvents() {
@@ -49,6 +55,16 @@ class BudgetManager {
         const saveVendorBtn = document.getElementById('saveVendorBtn');
         const cancelVendorBtn = document.getElementById('cancelVendorBtn');
         const closeVendorForm = document.getElementById('closeVendorForm');
+
+        // Currency events
+        const currencySelect = document.getElementById('currencySelect');
+        if (currencySelect) {
+            currencySelect.addEventListener('change', (e) => this.changeCurrency(e.target.value));
+        }
+
+        // PDF export event
+        const generatePdfBtn = document.getElementById('generatePdfBtn');
+        if (generatePdfBtn) generatePdfBtn.addEventListener('click', () => this.generatePDF());
 
         if (initialBudgetInput) {
             initialBudgetInput.addEventListener('change', (e) => this.updateInitialBudget(e.target.value));
@@ -79,52 +95,178 @@ class BudgetManager {
         console.log("All events bound successfully");
     }
 
-    // Icon mapping using Material Icons
-    getCategoryIcon(categoryName) {
-        const iconMap = {
-            'venue': 'location_city',
-            'catering': 'restaurant',
-            'entertainment': 'music_note',
-            'photography': 'photo_camera',
-            'floral and decor': 'local_florist',
-            'gift favor': 'card_giftcard',
-            'transportation': 'directions_car',
-            'attire': 'checkroom',
-            'beauty': 'spa',
-            'invitations': 'mail',
-            'planner': 'event_available',
-            'officiant': 'person',
-            'rentals': 'weekend',
-            'lighting': 'wb_incandescent',
-            'audio': 'surround_sound',
-            'cake': 'cake',
-            'bartending': 'local_bar',
-            'security': 'security',
-            'valet': 'directions_car'
-        };
+    // ===============================================
+    // CURRENCY METHODS - FIXED
+    // ===============================================
 
-        const lowerName = categoryName.toLowerCase();
-        for (const [key, icon] of Object.entries(iconMap)) {
-            if (lowerName.includes(key)) {
-                return icon;
+    loadCurrencySettings() {
+        const savedCurrency = localStorage.getItem('wedease_currency');
+        if (savedCurrency) {
+            this.selectedCurrency = savedCurrency;
+            const currencySelect = document.getElementById('currencySelect');
+            if (currencySelect) {
+                currencySelect.value = savedCurrency;
             }
         }
-        return 'category'; // Default icon
+        this.updateBudgetInputDisplay();
+        this.updateAllCurrencyDisplays();
     }
+
+    changeCurrency(newCurrency) {
+        const oldCurrency = this.selectedCurrency;
+        this.selectedCurrency = newCurrency;
+        localStorage.setItem('wedease_currency', newCurrency);
+        
+        // Convert all existing data when switching currencies
+        this.convertAllData(oldCurrency, newCurrency);
+        
+        this.updateBudgetInputDisplay();
+        this.updateAllCurrencyDisplays();
+    }
+
+    convertAllData(oldCurrency, newCurrency) {
+        // Convert initial budget
+        if (this.initialBudget > 0) {
+            if (oldCurrency === 'USD' && newCurrency === 'KHR') {
+                // Convert USD to KHR
+                this.initialBudget = Math.round(this.initialBudget * this.exchangeRate);
+            } else if (oldCurrency === 'KHR' && newCurrency === 'USD') {
+                // Convert KHR to USD
+                this.initialBudget = Math.round(this.initialBudget / this.exchangeRate);
+            }
+            localStorage.setItem('wedease_initial_budget', this.initialBudget.toString());
+        }
+        
+        // Convert all vendor costs
+        Object.keys(this.vendors).forEach(category => {
+            this.vendors[category].forEach(vendor => {
+                if (oldCurrency === 'USD' && newCurrency === 'KHR') {
+                    vendor.cost = Math.round(vendor.cost * this.exchangeRate);
+                } else if (oldCurrency === 'KHR' && newCurrency === 'USD') {
+                    vendor.cost = Math.round(vendor.cost / this.exchangeRate);
+                }
+            });
+        });
+        this.saveVendors();
+    }
+
+    updateBudgetInputDisplay() {
+        const budgetInput = document.getElementById('initialBudget');
+        if (budgetInput) {
+            // Update placeholder based on currency
+            if (this.selectedCurrency === 'KHR') {
+                budgetInput.placeholder = 'Enter budget in KHR';
+            } else {
+                budgetInput.placeholder = 'Enter budget in USD';
+            }
+            
+            // Update existing value for display
+            if (this.initialBudget > 0) {
+                budgetInput.value = this.initialBudget;
+            }
+        }
+    }
+
+    updateAllCurrencyDisplays() {
+        this.updateBudgetProgress();
+        if (this.currentCategory) {
+            this.renderActiveVendorTable();
+        }
+        this.updateFinalSelection();
+    }
+
+    formatCurrency(amount) {
+        // Amount is already in the current currency, just format it
+        if (this.selectedCurrency === 'KHR') {
+            return `៛${amount.toLocaleString()}`;
+        } else {
+            return `$${amount.toLocaleString()}`;
+        }
+    }
+
+    getCurrencySymbol() {
+        return this.selectedCurrency === 'KHR' ? '៛' : '$';
+    }
+
+    // ===============================================
+    // BUDGET METHODS
+    // ===============================================
 
     loadInitialBudget() {
         const budgetInput = document.getElementById('initialBudget');
-        if (budgetInput) {
-            budgetInput.value = this.initialBudget || '';
+        if (budgetInput && this.initialBudget > 0) {
+            budgetInput.value = this.initialBudget;
         }
+        this.updateBudgetInputDisplay();
     }
 
     updateInitialBudget(newBudget) {
-        const budgetValue = parseInt(newBudget) || 0;
+        let budgetValue = parseInt(newBudget) || 0;
+        
+        // Store the value directly in the current currency
         this.initialBudget = budgetValue;
-        localStorage.setItem('wedease_initial_budget', budgetValue.toString());
+        localStorage.setItem('wedease_initial_budget', this.initialBudget.toString());
         this.updateBudgetProgress();
     }
+
+    updateBudgetProgress() {
+        const moneySpentElement = document.getElementById('moneySpent');
+        const progressFill = document.getElementById('budgetProgressFill');
+        const progressText = document.getElementById('progressText');
+        const progressPercentage = document.getElementById('progressPercentage');
+        
+        // Calculate total spent from selected vendors
+        const totalSpent = this.getTotalSpent();
+
+        if (moneySpentElement) {
+            moneySpentElement.textContent = this.formatCurrency(totalSpent);
+        }
+
+        // Update progress bar
+        if (progressFill && progressText && progressPercentage) {
+            if (this.initialBudget > 0) {
+                const percentage = (totalSpent / this.initialBudget) * 100;
+                const displayPercentage = Math.min(percentage, 100);
+                
+                progressFill.style.width = `${displayPercentage}%`;
+                progressText.textContent = `${this.formatCurrency(totalSpent)} of ${this.formatCurrency(this.initialBudget)} used`;
+                progressPercentage.textContent = `${Math.round(percentage)}%`;
+                
+                // Color coding
+                if (percentage > 100) {
+                    progressFill.classList.add('over-budget');
+                    progressPercentage.classList.add('over-budget');
+                    progressText.style.color = '#e53e3e';
+                } else if (percentage > 80) {
+                    progressFill.classList.remove('over-budget');
+                    progressPercentage.classList.remove('over-budget');
+                    progressText.style.color = '#d69e2e';
+                } else {
+                    progressFill.classList.remove('over-budget');
+                    progressPercentage.classList.remove('over-budget');
+                    progressText.style.color = 'var(--wed-text)';
+                }
+            } else {
+                progressFill.style.width = '0%';
+                progressText.textContent = 'Set initial budget to track progress';
+                progressPercentage.textContent = '0%';
+                progressFill.classList.remove('over-budget');
+                progressPercentage.classList.remove('over-budget');
+                progressText.style.color = 'var(--wed-text)';
+            }
+        }
+    }
+
+    getTotalSpent() {
+        return Object.keys(this.vendors).reduce((total, category) => {
+            const selectedVendors = this.vendors[category].filter(v => v.status === 'selected');
+            return total + selectedVendors.reduce((sum, vendor) => sum + vendor.cost, 0);
+        }, 0);
+    }
+
+    // ===============================================
+    // CATEGORY METHODS
+    // ===============================================
 
     showCategoryForm() {
         document.getElementById('newCategoryName').value = "";
@@ -259,6 +401,39 @@ class BudgetManager {
         }
     }
 
+    // Icon mapping using Material Icons
+    getCategoryIcon(categoryName) {
+        const iconMap = {
+            'venue': 'location_city',
+            'catering': 'restaurant',
+            'entertainment': 'music_note',
+            'photography': 'photo_camera',
+            'floral and decor': 'local_florist',
+            'gift favor': 'card_giftcard',
+            'transportation': 'directions_car',
+            'attire': 'checkroom',
+            'beauty': 'spa',
+            'invitations': 'mail',
+            'planner': 'event_available',
+            'officiant': 'person',
+            'rentals': 'weekend',
+            'lighting': 'wb_incandescent',
+            'audio': 'surround_sound',
+            'cake': 'cake',
+            'bartending': 'local_bar',
+            'security': 'security',
+            'valet': 'directions_car'
+        };
+
+        const lowerName = categoryName.toLowerCase();
+        for (const [key, icon] of Object.entries(iconMap)) {
+            if (lowerName.includes(key)) {
+                return icon;
+            }
+        }
+        return 'category'; // Default icon
+    }
+
     renderCategories() {
         const categoriesGrid = document.getElementById('categoriesGrid');
         if (!categoriesGrid) return;
@@ -293,6 +468,10 @@ class BudgetManager {
             categoriesGrid.appendChild(categoryCard);
         });
     }
+
+    // ===============================================
+    // VENDOR METHODS
+    // ===============================================
 
     showCategoryTable(categoryName) {
         this.currentCategory = categoryName;
@@ -343,7 +522,7 @@ class BudgetManager {
             row.innerHTML = `
                 <td>${vendor.name}</td>
                 <td>${vendor.contact || '-'}</td>
-                <td>$${vendor.cost.toLocaleString()}</td>
+                <td>${this.formatCurrency(vendor.cost)}</td>
                 <td>
                     <span class="status-badge status-${vendor.status}" 
                           onclick="budgetManager.changeVendorStatus('${vendor.id}')">
@@ -426,7 +605,7 @@ class BudgetManager {
             id: this.editVendorId || Date.now().toString(),
             name,
             contact,
-            cost,
+            cost, // Store in current currency
             status,
             notes,
             category: this.currentCategory
@@ -476,6 +655,10 @@ class BudgetManager {
         }
     }
 
+    // ===============================================
+    // FINAL SELECTION METHODS
+    // ===============================================
+
     showFinalSelection() {
         document.querySelector('.page-wrapper').classList.add('hidden');
         document.getElementById('finalSelectionView').classList.remove('hidden');
@@ -505,7 +688,7 @@ class BudgetManager {
                     <td>${category}</td>
                     <td>${vendor.name}</td>
                     <td>${vendor.contact || '-'}</td>
-                    <td>$${vendor.cost.toLocaleString()}</td>
+                    <td>${this.formatCurrency(vendor.cost)}</td>
                     <td>
                         <span class="status-badge status-selected">selected</span>
                     </td>
@@ -521,7 +704,7 @@ class BudgetManager {
         });
 
         if (totalCostElement) {
-            totalCostElement.textContent = `$${totalCost.toLocaleString()}`;
+            totalCostElement.textContent = this.formatCurrency(totalCost);
         }
 
         if (tableBody.children.length === 0) {
@@ -551,67 +734,202 @@ class BudgetManager {
         }
     }
 
-    updateBudgetProgress() {
-        const moneySpentElement = document.getElementById('moneySpent');
-        const progressFill = document.getElementById('budgetProgressFill');
-        const progressText = document.getElementById('progressText');
-        const progressPercentage = document.getElementById('progressPercentage');
-        
-        // Calculate total spent from selected vendors
-        const totalSpent = Object.keys(this.vendors).reduce((total, category) => {
-            const selectedVendors = this.vendors[category].filter(v => v.status === 'selected');
-            return total + selectedVendors.reduce((sum, vendor) => sum + vendor.cost, 0);
-        }, 0);
+    // ===============================================
+    // PDF EXPORT METHODS - CLEAN & SIMPLE
+    // ===============================================
 
-        if (moneySpentElement) {
-            moneySpentElement.textContent = `$${totalSpent.toLocaleString()}`;
-        }
-
-        // Update progress bar
-        if (progressFill && progressText && progressPercentage) {
-            if (this.initialBudget > 0) {
-                const percentage = (totalSpent / this.initialBudget) * 100;
-                const displayPercentage = Math.min(percentage, 100);
-                
-                progressFill.style.width = `${displayPercentage}%`;
-                progressText.textContent = `$${totalSpent.toLocaleString()} of $${this.initialBudget.toLocaleString()} used`;
-                progressPercentage.textContent = `${Math.round(percentage)}%`;
-                
-                // Color coding
-                if (percentage > 100) {
-                    progressFill.classList.add('over-budget');
-                    progressPercentage.classList.add('over-budget');
-                    progressText.style.color = '#e53e3e';
-                } else if (percentage > 80) {
-                    progressFill.classList.remove('over-budget');
-                    progressPercentage.classList.remove('over-budget');
-                    progressText.style.color = '#d69e2e';
-                } else {
-                    progressFill.classList.remove('over-budget');
-                    progressPercentage.classList.remove('over-budget');
-                    progressText.style.color = 'var(--wed-text)';
-                }
-            } else {
-                progressFill.style.width = '0%';
-                progressText.textContent = 'Set initial budget to track progress';
-                progressPercentage.textContent = '0%';
-                progressFill.classList.remove('over-budget');
-                progressPercentage.classList.remove('over-budget');
-                progressText.style.color = 'var(--wed-text)';
-            }
-        }
+    async generatePDF() {
+        const statusElement = document.getElementById('pdfStatus');
         
-        // Color coding for money spent
-        if (moneySpentElement) {
-            if (this.initialBudget > 0 && totalSpent > this.initialBudget) {
-                moneySpentElement.style.color = '#e53e3e';
-            } else if (this.initialBudget > 0 && totalSpent > this.initialBudget * 0.8) {
-                moneySpentElement.style.color = '#d69e2e';
+        try {
+            statusElement.textContent = 'Generating PDF...';
+            statusElement.className = 'pdf-status generating';
+
+            await this.loadJsPdfLibrary();
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            const primaryColor = [162, 67, 124]; // Wedding theme color
+            const darkColor = [74, 68, 83];      // Dark text
+            
+            // ===== HEADER =====
+            doc.setFillColor(...primaryColor);
+            doc.rect(0, 0, 210, 40, 'F');
+            
+            // Title
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(20);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Wedding Budget Summary', 20, 25);
+            
+            // ===== BUDGET INFO =====
+            doc.setTextColor(...darkColor);
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'normal');
+            doc.text(`Generated on ${new Date().toLocaleDateString()}`, 20, 55);
+            doc.text(`Currency: ${this.selectedCurrency}`, 20, 65);
+            
+            // Divider line
+            doc.setDrawColor(200, 200, 200);
+            doc.line(20, 75, 190, 75);
+            
+            // ===== TABLE TITLE =====
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Final Vendor Selections & Costs', 20, 90);
+            
+            // ===== TABLE HEADERS =====
+            let yPosition = 110;
+            doc.setFontSize(9);
+            doc.setFont('helvetica', 'bold');
+            
+            // Headers
+            doc.text('Vendor Category', 20, yPosition);
+            doc.text('Vendor Name', 60, yPosition);
+            doc.text('Contact', 110, yPosition);
+            doc.text(`Cost (${this.selectedCurrency})`, 140, yPosition);
+            doc.text('Status', 170, yPosition);
+            
+            // Header underline
+            doc.setDrawColor(200, 200, 200);
+            doc.line(20, yPosition + 2, 190, yPosition + 2);
+            
+            yPosition += 10;
+            
+            // ===== VENDOR ROWS =====
+            doc.setFont('helvetica', 'normal');
+            let totalCost = 0;
+            let hasVendors = false;
+            
+            Object.keys(this.vendors).forEach(category => {
+                const selectedVendors = this.vendors[category].filter(v => v.status === 'selected');
+                
+                selectedVendors.forEach(vendor => {
+                    if (yPosition > 250) {
+                        doc.addPage();
+                        yPosition = 30;
+                        
+                        // Table headers on new page
+                        doc.setFontSize(9);
+                        doc.setFont('helvetica', 'bold');
+                        doc.text('Vendor Category', 20, yPosition);
+                        doc.text('Vendor Name', 60, yPosition);
+                        doc.text('Contact', 110, yPosition);
+                        doc.text(`Cost (${this.selectedCurrency})`, 140, yPosition);
+                        doc.text('Status', 170, yPosition);
+                        doc.line(20, yPosition + 2, 190, yPosition + 2);
+                        yPosition += 10;
+                        doc.setFont('helvetica', 'normal');
+                    }
+                    
+                    hasVendors = true;
+                    totalCost += vendor.cost;
+                    
+                    // Category
+                    doc.text(category, 20, yPosition);
+                    
+                    // Vendor Name
+                    const vendorName = vendor.name.length > 25 ? vendor.name.substring(0, 25) + '...' : vendor.name;
+                    doc.text(vendorName, 60, yPosition);
+                    
+                    // Contact
+                    const contact = vendor.contact || '-';
+                    const contactDisplay = contact.length > 15 ? contact.substring(0, 15) + '...' : contact;
+                    doc.text(contactDisplay, 110, yPosition);
+                    
+                    // Cost - Format without currency symbol
+                    const costText = this.formatCurrencyForPDF(vendor.cost);
+                    doc.text(costText, 140, yPosition);
+                    
+                    // Status
+                    const status = vendor.status.charAt(0).toUpperCase() + vendor.status.slice(1);
+                    doc.text(status, 170, yPosition);
+                    
+                    yPosition += 8;
+                });
+            });
+            
+            // ===== TOTAL ROW =====
+            if (hasVendors) {
+                yPosition += 5;
+                
+                // Divider line before total
+                doc.setDrawColor(200, 200, 200);
+                doc.line(20, yPosition, 190, yPosition);
+                yPosition += 8;
+                
+                // Total row
+                doc.setFont('helvetica', 'bold');
+                doc.text('TOTAL COST', 20, yPosition);
+                const totalCostText = this.formatCurrencyForPDF(totalCost);
+                doc.text(totalCostText, 140, yPosition);
+                
+                // Budget summary
+                yPosition += 15;
+                doc.setFontSize(10);
+                doc.text('Budget Summary:', 20, yPosition);
+                yPosition += 8;
+                
+                doc.setFont('helvetica', 'normal');
+                const remaining = this.initialBudget - totalCost;
+                const budgetInfo = [
+                    `Initial Budget: ${this.formatCurrencyForPDF(this.initialBudget)}`,
+                    `Total Selected: ${this.formatCurrencyForPDF(totalCost)}`,
+                    `Remaining: ${this.formatCurrencyForPDF(remaining)}`
+                ];
+                
+                budgetInfo.forEach((info, index) => {
+                    doc.text(info, 25, yPosition + (index * 6));
+                });
             } else {
-                moneySpentElement.style.color = 'var(--wed-primary)';
+                doc.setFontSize(11);
+                doc.text('No vendors selected yet.', 20, yPosition);
             }
+            
+            // ===== FOOTER =====
+            const pageCount = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+                doc.setFontSize(8);
+                doc.setTextColor(150, 150, 150);
+                doc.text('WedEASE Budget Tracker', 105, 290, { align: 'center' });
+            }
+
+            // Save the PDF
+            const fileName = `Wedding-Budget-${new Date().getTime()}.pdf`;
+            doc.save(fileName);
+
+            statusElement.textContent = 'PDF generated successfully!';
+            statusElement.className = 'pdf-status success';
+
+        } catch (error) {
+            console.error('PDF generation error:', error);
+            statusElement.textContent = 'PDF generation failed. Please try again.';
+            statusElement.className = 'pdf-status error';
         }
     }
+
+    // Add this method for PDF currency formatting (without symbols)
+    formatCurrencyForPDF(amount) {
+        // Format without currency symbols, just numbers with commas
+        return amount.toLocaleString();
+    }
+
+    async loadJsPdfLibrary() {
+        if (window.jspdf) return;
+
+        return new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+            script.onload = resolve;
+            script.onerror = reject;
+            document.head.appendChild(script);
+        });
+    }
+    // ===============================================
+    // UTILITY METHODS
+    // ===============================================
 
     addFormOverlay() {
         const overlay = document.createElement('div');
