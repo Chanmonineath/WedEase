@@ -64,7 +64,7 @@ class WedEASEUtils {
 }
 
 // ===============================================
-// HERO IMAGE ROTATOR & CTA MANAGER - FIXED VERSION
+// HERO IMAGE ROTATOR & CTA MANAGER
 // ===============================================
 
 class HeroManager {
@@ -76,17 +76,14 @@ class HeroManager {
     ];
     
     this.ctaIcons = [
-      // Heart icon
       `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="white">
         <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
       </svg>`,
       
-      // Car icon
       `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="white">
         <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>
       </svg>`,
       
-      // Ring icon  
       `<img src="assets/img/twin ring icon.png" alt="Wedding Rings" width="32" height="32" style="filter: brightness(0) invert(1);">`
     ];
     
@@ -97,15 +94,18 @@ class HeroManager {
     ];
     
     this.currentIndex = 0;
+    this.rotationInterval = null;
     this.initialized = false;
   }
 
   init() {
-    if (this.initialized) return;
+    if (this.initialized) {
+      console.log("Hero Manager: Already initialized");
+      return;
+    }
     
-    console.log("Hero Manager: Checking for elements...");
+    console.log("Hero Manager: Initializing...");
     
-    // Only initialize if we're on the home page
     const heroImage = document.getElementById('hero-image');
     const ctaButton = document.getElementById('hero-cta-button');
     
@@ -119,42 +119,43 @@ class HeroManager {
       return;
     }
     
-    console.log("Hero Manager: Elements found, initializing...");
+    console.log("Hero Manager: Elements found, starting rotation...");
     
-    // Set initial content first
+    // Set initial content
     this.updateHeroContent();
     
-    // Set up auto rotation
+    // Start auto rotation
     this.startAutoRotation();
     
-    // Set up click handler
+    // Add click handler for manual rotation
     heroImage.addEventListener('click', () => {
-      console.log("Hero image clicked, switching to next image");
+      console.log("Hero image clicked, rotating...");
       this.nextImage();
     });
     
     this.initialized = true;
-    console.log("Hero Manager fully initialized");
+    console.log("Hero Manager: Successfully initialized and running");
   }
 
   startAutoRotation() {
-    // Clear any existing interval
+    // Clear any existing interval first
     if (this.rotationInterval) {
       clearInterval(this.rotationInterval);
+      console.log("Hero Manager: Cleared existing interval");
     }
     
     // Start new interval - rotate every 3 seconds
     this.rotationInterval = setInterval(() => {
-      console.log("Auto-rotating to next image");
+      console.log("Hero Manager: Auto-rotating to next image");
       this.nextImage();
-    }, 3000); 
+    }, 3000);
     
-    console.log("Auto-rotation started (3 second intervals)");
+    console.log("Hero Manager: Auto-rotation started (3 second intervals)");
   }
 
   nextImage() {
     this.currentIndex = (this.currentIndex + 1) % this.images.length;
-    console.log("Switching to image index:", this.currentIndex, " - ", this.images[this.currentIndex]);
+    console.log("Hero Manager: Switching to image index", this.currentIndex, "-", this.images[this.currentIndex]);
     this.updateHeroContent();
   }
 
@@ -163,11 +164,11 @@ class HeroManager {
     const ctaButton = document.getElementById('hero-cta-button');
     
     if (!heroImage || !ctaButton) {
-      console.log("Hero Manager: Elements missing in updateHeroContent");
+      console.log("Hero Manager: Elements missing during update");
       return;
     }
 
-    console.log("Updating hero content to:", this.images[this.currentIndex]);
+    console.log("Hero Manager: Updating content...");
 
     // Update image with fade effect
     heroImage.style.transition = 'opacity 0.5s ease-in-out';
@@ -177,7 +178,7 @@ class HeroManager {
       heroImage.src = this.images[this.currentIndex];
       heroImage.alt = this.getAltText();
       heroImage.style.opacity = '1';
-      console.log("Image updated to:", this.images[this.currentIndex]);
+      console.log("Hero Manager: Image updated to", this.images[this.currentIndex]);
     }, 300);
 
     // Update CTA button
@@ -185,112 +186,216 @@ class HeroManager {
       ${this.ctaIcons[this.currentIndex]}
       <span style="color: white;">${this.ctaTexts[this.currentIndex]}</span>
     `;
-    console.log("CTA button updated");
+    console.log("Hero Manager: CTA button updated");
   }
 
   getAltText() {
     const altTexts = ["Bride and Groom", "Wedding Car", "Ring Hand"];
     return altTexts[this.currentIndex];
   }
-
-  // Method to manually set specific image
-  setHeroContent(index) {
-    if (index >= 0 && index < this.images.length) {
-      this.currentIndex = index;
-      this.updateHeroContent();
-    }
-  }
 }
 
 // ===============================================
-// SIMPLE AUDIO GREETING - PLAYS FOR 5 SECONDS
+// EPIC FIRST-TIME WELCOME EXPERIENCE - FIXED
 // ===============================================
 
 class MusicalEntrance {
-    constructor() {
-        this.audio = document.getElementById('welcomeAudio');
-        this.overlay = document.getElementById('interactionOverlay');
-        this.startButton = document.getElementById('startButton');
-        this.hasPlayed = false;
-        this.init();
+  constructor() {
+    this.audio = document.getElementById('welcomeAudio');
+    this.welcomeContainer = document.getElementById('firstTimeWelcome');
+    this.startButton = document.getElementById('startExperience');
+    this.mainApp = document.getElementById('app');
+    this.hasShownWelcome = sessionStorage.getItem('wedease_welcome_shown');
+    this.audioPlayed = false;
+    
+    this.init();
+  }
+
+  init() {
+    const isPageRefresh = performance.navigation.type === performance.navigation.TYPE_RELOAD;
+    const cameFromOtherSite = !document.referrer.includes(window.location.hostname);
+    
+    if (this.hasShownWelcome && !cameFromOtherSite && !isPageRefresh) {
+      this.showMainContentImmediately();
+      this.hideWelcomeContainer();
+      return;
     }
 
-    init() {
-        console.log('Audio Greeting: Initializing...');
-        
-        if (!this.overlay) {
-            console.log('No overlay found, trying to play directly...');
-            this.playWelcomeSound();
-            return;
-        }
-
-        // Wait for user interaction
-        this.startButton.addEventListener('click', () => {
-            this.startExperience();
-        });
-
-        // Also allow clicking anywhere on the overlay
-        this.overlay.addEventListener('click', (e) => {
-            if (e.target === this.overlay) {
-                this.startExperience();
-            }
-        });
+    if (!this.welcomeContainer) {
+      this.showMainContentImmediately();
+      return;
     }
 
-    startExperience() {
-        console.log('User interaction detected, starting experience...');
+    if (this.mainApp) {
+      this.mainApp.style.opacity = '0';
+      this.mainApp.style.visibility = 'hidden';
+    }
+
+    this.startWelcomeSequence();
+
+    this.startButton.addEventListener('click', () => {
+      this.startWithSound();
+    });
+  }
+
+  startWelcomeSequence() {
+    this.welcomeContainer.classList.add('open');
+    
+    setTimeout(() => {
+      this.createQuantumParticles();
+      this.createLightBeams();
+      this.createFloatingElements();
+    }, 500);
+    
+    setTimeout(() => {
+      this.startButton.style.transform = 'translate(-50%, -50%) scale(1)';
+      this.startButton.style.opacity = '1';
+    }, 2000);
+  }
+
+  startWithSound() {
+    this.playWelcomeSound();
+    this.completeWelcomeExperience();
+  }
+
+  playWelcomeSound() {
+    if (!this.audio || this.audioPlayed) return;
+
+    this.audio.volume = 0.3;
+    this.audio.currentTime = 0;
+    
+    const playPromise = this.audio.play();
+    
+    if (playPromise !== undefined) {
+      playPromise.then(() => {
+        this.audioPlayed = true;
         
-        // Hide the overlay
-        if (this.overlay) {
-            this.overlay.style.display = 'none';
-        }
+        setTimeout(() => {
+          if (this.audio && this.audioPlayed) {
+            this.audio.pause();
+            this.audio.currentTime = 0;
+          }
+        }, 5000);
+      }).catch(error => {
+        console.log('Audio play failed:', error);
+      });
+    }
+  }
+
+  completeWelcomeExperience() {
+    sessionStorage.setItem('wedease_welcome_shown', 'true');
+    
+    this.startButton.style.transform = 'translate(-50%, -50%) scale(0.9)';
+    this.startButton.style.background = 'linear-gradient(45deg, #764ba2, #667eea)';
+    
+    setTimeout(() => {
+      this.welcomeContainer.style.opacity = '0';
+      this.welcomeContainer.style.transform = 'scale(1.1)';
+      
+      this.showMainContent();
+      
+      setTimeout(() => {
+        this.hideWelcomeContainer();
         
-        // Play the welcome sound
-        this.playWelcomeSound();
-        
-        // Start hero rotation if it exists
+        // FIX: Initialize hero manager here
         if (window.heroManager && typeof window.heroManager.init === 'function') {
-            window.heroManager.init();
+          console.log("Starting hero image rotation...");
+          window.heroManager.init();
         }
+      }, 1000);
+    }, 300);
+  }
+
+  showMainContent() {
+    if (this.mainApp) {
+      this.mainApp.style.opacity = '1';
+      this.mainApp.style.visibility = 'visible';
     }
+  }
 
-    playWelcomeSound() {
-        if (!this.audio) {
-            console.log('Audio element not found');
-            return;
-        }
-
-        if (this.hasPlayed) {
-            console.log('Audio already played, skipping...');
-            return;
-        }
-
-        console.log('Playing welcome sound...');
-        
-        // Set audio to play for 5 seconds only
-        this.audio.volume = 0.5; // Increased volume to 50%
-        
-        const playPromise = this.audio.play();
-        
-        if (playPromise !== undefined) {
-            playPromise.then(() => {
-                console.log('Audio started successfully');
-                this.hasPlayed = true;
-                
-                // Stop audio after 5 seconds
-                setTimeout(() => {
-                    this.audio.pause();
-                    this.audio.currentTime = 0; // Reset to beginning
-                    console.log('Audio stopped after 5 seconds');
-                }, 5000);
-                
-            }).catch(error => {
-                console.log('Audio play failed:', error);
-                // Even if audio fails, continue with the experience
-                this.hasPlayed = true;
-            });
-        }
+  showMainContentImmediately() {
+    if (this.mainApp) {
+      this.mainApp.style.opacity = '1';
+      this.mainApp.style.visibility = 'visible';
     }
+    this.hideWelcomeContainer();
+    
+    // FIX: Initialize hero manager for returning visitors
+    if (window.heroManager && typeof window.heroManager.init === 'function') {
+      console.log("Starting hero image rotation immediately...");
+      window.heroManager.init();
+    }
+  }
+
+  hideWelcomeContainer() {
+    if (this.welcomeContainer) {
+      this.welcomeContainer.style.display = 'none';
+    }
+  }
+
+  createQuantumParticles() {
+    for (let i = 0; i < 50; i++) {
+      setTimeout(() => {
+        this.createQuantumParticle();
+      }, i * 40);
+    }
+  }
+
+  createQuantumParticle() {
+    const particle = document.createElement('div');
+    particle.className = 'quantum-particle';
+    
+    const angle = Math.random() * Math.PI * 2;
+    const distance = 50 + Math.random() * 200;
+    const tx = Math.cos(angle) * distance;
+    const ty = Math.sin(angle) * distance;
+    
+    particle.style.setProperty('--tx', `${tx}px`);
+    particle.style.setProperty('--ty', `${ty}px`);
+    particle.style.left = '50%';
+    particle.style.top = '50%';
+    
+    const colors = ['#ff6b9d', '#ffd700', '#667eea', '#ffffff', '#764ba2'];
+    particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+    
+    const size = 2 + Math.random() * 4;
+    const duration = 2 + Math.random() * 2;
+    
+    particle.style.width = `${size}px`;
+    particle.style.height = `${size}px`;
+    particle.style.animation = `quantumFloat ${duration}s ease-out forwards`;
+    
+    this.welcomeContainer.appendChild(particle);
+    
+    setTimeout(() => {
+      if (particle.parentNode) {
+        particle.parentNode.removeChild(particle);
+      }
+    }, duration * 1000);
+  }
+
+  createLightBeams() {
+    for (let i = 0; i < 12; i++) {
+      const beam = document.createElement('div');
+      beam.className = 'light-beam';
+      
+      const angle = (i * 30) * (Math.PI / 180);
+      const distance = 150;
+      
+      beam.style.left = `calc(50% + ${Math.cos(angle) * distance}px)`;
+      beam.style.top = `calc(50% + ${Math.sin(angle) * distance}px)`;
+      beam.style.transform = `rotate(${angle}rad)`;
+      beam.style.animation = `beamRise 2s ease-in-out ${i * 0.2}s forwards`;
+      
+      this.welcomeContainer.appendChild(beam);
+      
+      setTimeout(() => {
+        if (beam.parentNode) {
+          beam.parentNode.removeChild(beam);
+        }
+      }, 3000);
+    }
+  }
 }
 
 // ===============================================
@@ -487,20 +592,16 @@ class ThemeManager {
     const themeCards = document.querySelectorAll('.theme-card');
     themeCards.forEach(card => {
       card.addEventListener('click', () => {
-        // Remove selected class from all cards
         themeCards.forEach(c => c.classList.remove('selected'));
-        // Add selected class to clicked card
         card.classList.add('selected');
         
         const themeName = card.querySelector('h3').textContent;
         localStorage.setItem('wedease_selected_theme', themeName);
         
-        // Show confirmation
         alert(`"${themeName}" theme selected!`);
       });
     });
 
-    // Check for previously selected theme
     const savedTheme = localStorage.getItem('wedease_selected_theme');
     if (savedTheme) {
       themeCards.forEach(card => {
@@ -513,7 +614,7 @@ class ThemeManager {
 }
 
 // ===============================================
-// BUDGET MANAGER (Placeholder)
+// BUDGET MANAGER
 // ===============================================
 
 class BudgetManager {
@@ -523,7 +624,6 @@ class BudgetManager {
 
   init() {
     console.log("Budget Manager initialized");
-    // Add your budget management logic here
   }
 }
 
@@ -532,84 +632,65 @@ class BudgetManager {
 // ===============================================
 
 class WedEASEApp {
-    constructor() {
-        this.heroManager = null;
-        this.musicalEntrance = null;
-        this.init();
+  constructor() {
+    this.heroManager = null;
+    this.musicalEntrance = null;
+    this.init();
+  }
+
+  init() {
+    console.log("WedEASE App initialized");
+    
+    this.utils = WedEASEUtils;
+    this.budgetManager = new BudgetManager();
+    this.authManager = new AuthManager();
+    this.themeManager = new ThemeManager();
+
+    this.musicalEntrance = new MusicalEntrance();
+    
+    if (document.getElementById('hero-image')) {
+      this.heroManager = new HeroManager();
     }
 
-    init() {
-        console.log("WedEASE App initialized");
-        
-        // Initialize all managers
-        this.utils = WedEASEUtils;
-        this.budgetManager = new BudgetManager();
-        this.authManager = new AuthManager();
-        this.themeManager = new ThemeManager();
+    this.utils.setupHeaderScroll();
+    this.utils.setupHoverEffects();
+    this.utils.updateActiveNavLink();
 
-        // Initialize Audio Greeting (only on home page)
-        if (window.location.pathname.includes('index.html') || 
-            window.location.pathname.endsWith('/') ||
-            document.getElementById('hero-image')) {
-            this.musicalEntrance = new MusicalEntrance();
-            
-            // Create HeroManager but DON'T initialize it yet
-            // Let MusicalEntrance handle initialization after user interaction
-            this.heroManager = new HeroManager();
-            // Remove the init() call here - let MusicalEntrance handle it
-        } else {
-            // For other pages, initialize HeroManager immediately
-            if (document.getElementById('hero-image')) {
-                this.heroManager = new HeroManager();
-                this.heroManager.init();
-            }
-        }
+    this.setupInteractiveElements();
+  }
 
-        // Setup global functionality (this can run immediately)
-        this.utils.setupHeaderScroll();
-        this.utils.setupHoverEffects();
-        this.utils.updateActiveNavLink();
+  setupInteractiveElements() {
+    const ctaButtons = document.querySelectorAll(".cta-button");
+    ctaButtons.forEach((btn) => {
+      if (btn.getAttribute('href')) return;
+      btn.addEventListener("click", () => {
+        window.location.href = "src/pages/about.html";
+      });
+    });
 
-        // Additional interactive elements
-        this.setupInteractiveElements();
-    }
-
-    setupInteractiveElements() {
-        // CTA buttons navigation
-        const ctaButtons = document.querySelectorAll(".cta-button");
-        ctaButtons.forEach((btn) => {
-            if (btn.getAttribute('href')) return; // Skip if already has href
-            btn.addEventListener("click", () => {
-                window.location.href = "src/pages/about.html";
-            });
-        });
-
-        // Category card interactions
-        const categoryCards = document.querySelectorAll('.category-card');
-        categoryCards.forEach(card => {
-            card.addEventListener('click', () => {
-                const categoryName = card.querySelector('span').textContent;
-                alert(`Opening ${categoryName} budget category`);
-            });
-        });
-    }
+    const categoryCards = document.querySelectorAll('.category-card');
+    categoryCards.forEach(card => {
+      card.addEventListener('click', () => {
+        const categoryName = card.querySelector('span').textContent;
+        alert(`Opening ${categoryName} budget category`);
+      });
+    });
+  }
 }
 
 // ===============================================
-// GLOBAL INSTANCES (for inline event handlers)
+// GLOBAL INITIALIZATION
 // ===============================================
 
 let budgetManager;
 let heroManager;
 
-// Initialize the app when DOM is loaded
 document.addEventListener("DOMContentLoaded", () => {
-    console.log("DOM Content Loaded - Initializing WedEASE App");
-    budgetManager = new BudgetManager();
-    heroManager = new HeroManager(); // Create instance but don't initialize
-    new WedEASEApp();
+  console.log("WedEASE Starting...");
+  budgetManager = new BudgetManager();
+  heroManager = new HeroManager();
+  new WedEASEApp();
 });
 
-// Make utils available globally
 window.WedEASEUtils = WedEASEUtils;
 window.heroManager = heroManager;

@@ -9,19 +9,57 @@
 </head>
 <body>
 
-    <!-- Simple Interaction Required Overlay -->
-    <div id="interactionOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(162, 67, 124, 0.95); display: flex; justify-content: center; align-items: center; z-index: 9999;">
-        <div style="background: white; padding: 2rem; border-radius: 1rem; text-align: center;">
-            <h3 style="color: #a2437c; font-family: 'Caveat', cursive; font-size: 2rem; margin-bottom: 1rem;">Welcome to WedEASE</h3>
-            <p style="margin-bottom: 1.5rem;">Click anywhere to begin your wedding planning journey</p>
-            <button id="startButton" style="background: #a2437c; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 2rem; cursor: pointer; font-weight: 600;">Start Experience</button>
+    <!-- EPIC First-Time Welcome -->
+    <div id="firstTimeWelcome" class="window-open-container">
+        <div class="window-panel top"></div>
+        <div class="window-panel bottom"></div>
+        <div class="window-panel left"></div>
+        <div class="window-panel right"></div>
+        
+        <div class="portal"></div>
+        
+        <div class="hologram-text">
+            Welcome to WedEASE
+            <div style="font-size: 1.5rem; margin-top: 1rem;">Your Dream Wedding Awaits</div>
         </div>
+        
+        <button id="startExperience" style="
+            position: absolute;
+            top: 70%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            background: linear-gradient(45deg, #ff6b9d, #667eea);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            box-shadow: 0 10px 30px rgba(255, 107, 157, 0.4);
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            opacity: 0;
+            z-index: 10004;
+        ">Begin Your Journey</button>
     </div>
 
-    <!-- Background Audio -->
-    <audio id="welcomeAudio">
-        <source src="assets/audio/Cute Piano Intro Sound.mp3" type="audio/mp3">
-    </audio>
+<!-- Background Audio -->
+<audio id="welcomeAudio">
+    <source src="assets/audio/Cute Piano Intro Sound.mp3" type="audio/mp3">
+</audio>
+
+<!-- Hide main content initially -->
+<style>
+    #app {
+        opacity: 0;
+        transition: opacity 1s ease-in-out;
+    }
+    
+    #app.reveal {
+        opacity: 1;
+    }
+</style>
 
     <div id="app">
         <header class="header" id="header">
