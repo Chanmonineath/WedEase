@@ -397,70 +397,273 @@ main {
 }
 
 /* ===============================================
-   ABOUT PAGE
+   CONSISTENT ABOUT PAGE SECTION STYLES
    =============================================== */
 
-.about-page {
-  max-width: 900px;
-  margin: 0 auto;
+/* Unified Section Styling for About Page */
+.about-section,
+.mission-section,
+.features-section {
+    text-align: center;
+    margin-bottom: 4rem;
+    padding: 4rem 2rem;
+    background: linear-gradient(135deg, #fcf4fb 0%, #ffffff 100%);
+    border-radius: 1rem;
+    position: relative;
+    overflow: hidden;
 }
 
-.about-section {
-  text-align: center;
-  margin-bottom: 3rem;
+/* Background pattern for all sections */
+.about-section::before,
+.mission-section::before,
+.features-section::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(162, 67, 124, 0.05) 0%, transparent 70%);
+    z-index: 0;
 }
 
-.mission-section {
-  margin: 3rem 0;
-  padding: 2rem;
-  background-color: var(--wed-bg);
-  border-radius: 0.75rem;
+/* Ensure content stays above background */
+.about-section > *,
+.mission-section > *,
+.features-section > * {
+    position: relative;
+    z-index: 1;
 }
 
-.section-title {
-  font-family: var(--font-script);
-  font-size: 2.5rem;
-  color: var(--wed-primary);
-  margin-bottom: 1.5rem;
-  text-align: center;
+/* Section Titles - All Same Style */
+.page-title,
+.mission-section .section-title,
+.features-section .section-title {
+    font-family: var(--font-script);
+    font-size: 3.5rem;
+    color: var(--wed-primary);
+    margin-bottom: 1.5rem;
+    text-align: center;
+    line-height: 1.1;
 }
 
-.section-text {
-  font-size: 1.125rem;
-  color: var(--wed-secondary);
-  line-height: 1.8;
+/* Section Text/Descriptions - All Same Style */
+.page-description,
+.mission-section .section-text {
+    font-size: 1.25rem;
+    color: var(--wed-secondary);
+    text-align: center;
+    margin-bottom: 2rem;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.7;
 }
+
+/* Features Section Specific */
+.features-section .section-subtitle {
+    font-size: 1.25rem;
+    color: var(--wed-secondary);
+    text-align: center;
+    margin-bottom: 3rem;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.7;
+}
+/* ENHANCED FEATURES GRID - EQUAL HEIGHT CARDS */
 
 .features-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 2rem;
-  margin-top: 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2.5rem;
+    margin-top: 1rem;
+    align-items: stretch;
 }
 
-.feature-card {
-  padding: 2rem;
-  border: 2px solid var(--wed-border);
-  border-radius: 0.75rem;
-  text-align: center;
-  transition: all 0.3s ease;
+/* Clickable Feature Cards - Equal Height */
+.clickable-feature {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    padding: 2.5rem 2rem;
+    border: 2px solid var(--wed-border);
+    border-radius: 1rem;
+    text-align: center;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    background: white;
+    position: relative;
+    overflow: hidden;
+    height: 100%;
+    min-height: 380px;
 }
 
-.feature-card:hover {
-  border-color: var(--wed-primary);
-  box-shadow: 0 8px 16px rgba(162, 67, 124, 0.1);
-  transform: translateY(-4px);
+.clickable-feature::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(162, 67, 124, 0.1), transparent);
+    transition: left 0.6s ease;
 }
 
-.feature-card h3 {
-  font-size: 1.25rem;
-  color: var(--wed-primary);
-  margin-bottom: 0.75rem;
+.clickable-feature:hover::before {
+    left: 100%;
 }
 
-.feature-card p {
-  color: var(--wed-text);
-  font-size: 0.95rem;
+.clickable-feature:hover {
+    border-color: var(--wed-primary);
+    box-shadow: 0 12px 32px rgba(162, 67, 124, 0.15);
+    transform: translateY(-8px);
+}
+
+/* Feature Icon */
+.clickable-feature .feature-icon {
+    margin-bottom: 1.5rem;
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
+}
+
+.clickable-feature:hover .feature-icon {
+    transform: scale(1.1);
+}
+
+.feature-icon-image {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+}
+
+/* Feature Title */
+.clickable-feature h3 {
+    font-size: 1.5rem;
+    color: var(--wed-primary);
+    margin-bottom: 1rem;
+    font-weight: 600;
+    line-height: 1.3;
+    flex-shrink: 0;
+}
+
+/* Feature Description - Balanced Text */
+.clickable-feature p {
+    color: var(--wed-text);
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Make all descriptions have similar line count */
+.features-grid .clickable-feature p {
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Feature CTA Button */
+.feature-cta {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background: var(--wed-primary);
+    color: white;
+    border-radius: 2rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    border: 2px solid var(--wed-primary);
+    flex-shrink: 0;
+}
+
+.clickable-feature:hover .feature-cta {
+    background: var(--wed-secondary);
+    border-color: var(--wed-secondary);
+    transform: translateX(4px);
+}
+
+/* Responsive Design for About Page */
+@media (max-width: 768px) {
+    .about-section,
+    .mission-section,
+    .features-section {
+        padding: 3rem 1.5rem;
+        margin-bottom: 3rem;
+    }
+    
+    .page-title,
+    .mission-section .section-title,
+    .features-section .section-title {
+        font-size: 2.5rem;
+    }
+    
+    .page-description,
+    .mission-section .section-text,
+    .features-section .section-subtitle {
+        font-size: 1.1rem;
+    }
+    
+    .features-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    .clickable-feature {
+        padding: 2rem 1.5rem;
+        min-height: 350px;
+    }
+    
+    .features-grid .clickable-feature p {
+        min-height: 60px;
+    }
+    
+    .feature-icon-image {
+        width: 70px;
+        height: 70px;
+    }
+}
+
+@media (max-width: 480px) {
+    .about-section,
+    .mission-section,
+    .features-section {
+        padding: 2rem 1rem;
+    }
+    
+    .page-title,
+    .mission-section .section-title,
+    .features-section .section-title {
+        font-size: 2rem;
+    }
+    
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .clickable-feature {
+        padding: 1.5rem 1rem;
+        min-height: 320px;
+    }
+    
+    .feature-cta {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.85rem;
+    }
+    
+    .features-grid .clickable-feature p {
+        min-height: 50px;
+        font-size: 0.95rem;
+    }
+    
+    .feature-icon-image {
+        width: 60px;
+        height: 60px;
+    }
 }
 
 /* ===============================================
