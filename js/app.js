@@ -200,129 +200,6 @@ class HeroManager {
 }
 
 // ===============================================
-// BUDGET PAGE FUNCTIONALITY
-// ===============================================
-
-class BudgetManager {
-  constructor() {
-    this.budgetItems = JSON.parse(localStorage.getItem('wedease_budget')) || [
-      { name: "Makeup Artist", amount: 7000 },
-      { name: "Venue Rental", amount: 15000 },
-      { name: "Catering", amount: 12000 },
-    ];
-    this.editIndex = null;
-    this.init();
-  }
-
-  init() {
-    if (!document.getElementById('budget-list')) return;
-
-    this.bindEvents();
-    this.renderBudget();
-  }
-
-  bindEvents() {
-    const addItemBtn = document.getElementById('addItemBtn');
-    const saveItemBtn = document.getElementById('saveItemBtn');
-    const cancelItemBtn = document.getElementById('cancelItemBtn');
-
-    if (addItemBtn) {
-      addItemBtn.addEventListener('click', () => this.showBudgetForm());
-    }
-    if (saveItemBtn) {
-      saveItemBtn.addEventListener('click', () => this.saveBudgetItem());
-    }
-    if (cancelItemBtn) {
-      cancelItemBtn.addEventListener('click', () => this.hideBudgetForm());
-    }
-  }
-
-  showBudgetForm() {
-    this.editIndex = null;
-    document.getElementById('itemName').value = "";
-    document.getElementById('itemAmount').value = "";
-    document.getElementById('budgetForm').classList.remove('hidden');
-  }
-
-  hideBudgetForm() {
-    document.getElementById('budgetForm').classList.add('hidden');
-  }
-
-  saveBudgetItem() {
-    const name = document.getElementById('itemName').value.trim();
-    const amount = parseFloat(document.getElementById('itemAmount').value);
-
-    if (!name || isNaN(amount)) {
-      alert("Please enter valid name and amount");
-      return;
-    }
-
-    if (this.editIndex !== null) {
-      this.budgetItems[this.editIndex] = { name, amount };
-    } else {
-      this.budgetItems.push({ name, amount });
-    }
-
-    this.saveToStorage();
-    this.hideBudgetForm();
-    this.renderBudget();
-  }
-
-  editBudgetItem(index) {
-    this.editIndex = index;
-    document.getElementById('itemName').value = this.budgetItems[index].name;
-    document.getElementById('itemAmount').value = this.budgetItems[index].amount;
-    document.getElementById('budgetForm').classList.remove('hidden');
-  }
-
-  deleteBudgetItem(index) {
-    if (confirm('Are you sure you want to delete this item?')) {
-      this.budgetItems.splice(index, 1);
-      this.saveToStorage();
-      this.renderBudget();
-    }
-  }
-
-  saveToStorage() {
-    localStorage.setItem('wedease_budget', JSON.stringify(this.budgetItems));
-  }
-
-  renderBudget() {
-    const budgetList = document.getElementById('budget-list');
-    const totalAmountDisplay = document.getElementById('totalAmount');
-    
-    if (!budgetList) return;
-
-    budgetList.innerHTML = "";
-    let total = 0;
-
-    this.budgetItems.forEach((item, index) => {
-      total += item.amount;
-
-      const div = document.createElement("div");
-      div.classList.add("budget-item");
-
-      div.innerHTML = `
-        <span class="item-name">${item.name}</span>
-        <span class="item-amount">
-          $${item.amount.toLocaleString()}
-          <span class="actions">
-            <button onclick="budgetManager.editBudgetItem(${index})">Edit</button>
-            <button onclick="budgetManager.deleteBudgetItem(${index})">Delete</button>
-          </span>
-        </span>
-      `;
-
-      budgetList.appendChild(div);
-    });
-
-    if (totalAmountDisplay) {
-      totalAmountDisplay.textContent = "$" + total.toLocaleString();
-    }
-  }
-}
-
-// ===============================================
 // AUTHENTICATION SYSTEM
 // ===============================================
 
@@ -606,3 +483,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // Make utils available globally
 window.WedEASEUtils = WedEASEUtils;
 window.heroManager = heroManager; // ← ADD THIS LINE
+
+
+
+
