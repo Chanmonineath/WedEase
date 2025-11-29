@@ -1755,3 +1755,241 @@ main {
         text-align: center;
     }
 }
+
+/* ===============================================
+   EPIC WINDOW OPENING EFFECT
+   =============================================== */
+
+.window-open-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    overflow: hidden;
+}
+
+.window-panel {
+    position: absolute;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    transition: all 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.window-panel.top {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    transform: translateY(-100%);
+}
+
+.window-panel.bottom {
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    transform: translateY(100%);
+}
+
+.window-panel.left {
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 100%;
+    transform: translateX(-100%);
+}
+
+.window-panel.right {
+    top: 0;
+    right: 0;
+    width: 50%;
+    height: 100%;
+    transform: translateX(100%);
+}
+
+.window-open-container.open .window-panel.top {
+    transform: translateY(0);
+}
+
+.window-open-container.open .window-panel.bottom {
+    transform: translateY(0);
+}
+
+.window-open-container.open .window-panel.left {
+    transform: translateX(0);
+}
+
+.window-open-container.open .window-panel.right {
+    transform: translateX(0);
+}
+
+/* Glowing center portal */
+.portal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #ffffff 0%, #ff6b9d 50%, #667eea 100%);
+    filter: blur(20px);
+    opacity: 0;
+    transition: all 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    z-index: 10001;
+}
+
+.window-open-container.open .portal {
+    transform: translate(-50%, -50%) scale(8);
+    opacity: 0.8;
+}
+
+/* Holographic text effect */
+.hologram-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    font-family: 'Caveat', cursive;
+    font-size: 4rem;
+    color: transparent;
+    background: linear-gradient(45deg, #ff6b9d, rgba(255, 255, 255, 1), #667eea, #ff6b9d);
+    background-size: 400% 400%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    text-align: center;
+    opacity: 0;
+    z-index: 10002;
+    animation: hologramShift 3s ease-in-out infinite;
+    transition: all 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.window-open-container.open .hologram-text {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+}
+
+@keyframes hologramShift {
+    0%, 100% {
+        background-position: 0% 50%;
+        filter: drop-shadow(0 0 20px rgba(255, 107, 157, 0.7));
+    }
+    50% {
+        background-position: 100% 50%;
+        filter: drop-shadow(0 0 30px rgba(102, 126, 234, 0.7));
+    }
+}
+
+/* Quantum particles */
+.quantum-particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 10003;
+}
+
+@keyframes quantumFloat {
+    0% {
+        transform: translate(0, 0) scale(0);
+        opacity: 0;
+    }
+    20% {
+        transform: translate(var(--tx), var(--ty)) scale(1);
+        opacity: 1;
+    }
+    80% {
+        transform: translate(calc(var(--tx) * 1.5), calc(var(--ty) * 1.5)) scale(0.5);
+        opacity: 0.7;
+    }
+    100% {
+        transform: translate(calc(var(--tx) * 2), calc(var(--ty) * 2)) scale(0);
+        opacity: 0;
+    }
+}
+
+/* Light beams */
+.light-beam {
+    position: absolute;
+    width: 2px;
+    height: 0;
+    background: linear-gradient(to top, transparent, #ffffff, transparent);
+    transform-origin: bottom center;
+    opacity: 0;
+}
+
+@keyframes beamRise {
+    0% {
+        height: 0;
+        opacity: 0;
+    }
+    50% {
+        height: 200px;
+        opacity: 0.8;
+    }
+    100% {
+        height: 0;
+        opacity: 0;
+    }
+}
+
+/* Floating elements */
+.floating-element {
+    position: absolute;
+    font-size: 2rem;
+    opacity: 0;
+    animation: floatElement 4s ease-in-out forwards;
+}
+
+@keyframes floatElement {
+    0% {
+        transform: translateY(100px) rotate(0deg) scale(0);
+        opacity: 0;
+    }
+    20% {
+        transform: translateY(0) rotate(180deg) scale(1);
+        opacity: 1;
+    }
+    80% {
+        transform: translateY(-80px) rotate(360deg) scale(1);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translateY(-120px) rotate(540deg) scale(0);
+        opacity: 0;
+    }
+}
+
+/* Final website reveal */
+.website-content {
+    position: relative;
+    z-index: 1;
+    opacity: 0;
+    transform: scale(0.9);
+    transition: all 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) 1.5s;
+}
+
+.website-content.reveal {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.window-open-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    overflow: hidden;
+    /* Change this background color: */
+    background: white; /* This is what gets revealed */
+}
+
+.window-panel {
+    position: absolute;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* The colored panels */
+    transition: all 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
