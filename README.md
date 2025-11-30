@@ -134,19 +134,6 @@ WedEASE includes a lightweight login system:
 
 ---
 
-# 📂 **Project Structure**
-
-```
-/project
-  ├── index.html
-  ├── style.css
-  ├── app.js
-  ├── /assets (optional)
-  └── README.md
-```
-
----
-
 # 🛠️ **Installation & Setup**
 
 1. Clone the repository:
