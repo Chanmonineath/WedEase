@@ -6,9 +6,6 @@
     <title>Budget Tracker - WedEASE</title>
     <link rel="stylesheet" href="../../css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Caveat:wght@400;700&family=Cedarville+Cursive&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <!-- Material Icons -->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
     <div id="app">
@@ -25,6 +22,7 @@
                     <a href="theme.html" class="nav-link">Theme</a>
                     <a href="track.html" class="nav-link">Track</a>
                     <a href="budget.html" class="nav-link active">Budget</a>
+                    
                 </nav>
                 <div class="header-right">
                     <a href="login.html" class="login-btn" aria-label="Login">Login</a>
@@ -37,137 +35,54 @@
                 <h1 class="page-title">Budget Tracker</h1>
                 <p class="page-subtitle">Every Dollar, Perfectly Placed</p>
 
-                <!-- Budget Progress Section -->
-                <div class="budget-progress-section">
-                    <div class="budget-progress-card">
-                        <h3>Budget Progress</h3>
-                        
-                        <!-- Progress Bar at Top -->
-                        <div class="budget-progress-bar">
-                            <div class="budget-progress-fill" id="budgetProgressFill" style="width: 0%"></div>
-                        </div>
-                        <div class="budget-progress-text">
-                            <span id="progressText">0% of budget used</span>
-                            <span class="budget-progress-percentage" id="progressPercentage">0%</span>
-                        </div>
-                        
-                        <div class="progress-stats">
-                            <div class="progress-stat">
-                                <span class="stat-label">Money Spent:</span>
-                                <span class="stat-value" id="moneySpent">$0</span>
+                <div class="budget-container">
+                    <div class="budget-left">
+                        <div class="budget-card-main">
+                            <h3>Budget Items</h3>
+                            <div class="budget-items" id="budget-list"></div>
+                            <div class="budget-item add-item" id="addItemBtn">
+                                <span>+ Add Budget Item</span>
                             </div>
-                            <div class="progress-stat">
-                                <span class="stat-label">Initial Budget:</span>
-                                <input type="number" id="initialBudget" placeholder="Enter budget" class="budget-input">
+                            <div id="budgetForm" class="form-popup hidden">
+                                <input type="text" id="itemName" placeholder="Item name">
+                                <input type="number" id="itemAmount" placeholder="Amount">
+                                <button id="saveItemBtn">Save</button>
+                                <button id="cancelItemBtn">Cancel</button>
                             </div>
-                            <button class="view-final-btn" id="viewFinalSelection">
-                                View Final Selection
-                            </button>
+                            <div class="budget-total">
+                                <span>Total Budget</span>
+                                <span class="total-amount" id="totalAmount">$0</span>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Categories Grid -->
-                <div class="categories-section">
-                    <h3>Categories</h3>
-                    <div class="categories-grid" id="categoriesGrid">
-                        <!-- Categories will be populated here -->
-                    </div>
-                    <button class="add-category-btn" id="addCategoryBtn">
-                        <i class="material-icons">add</i>
-                        Add Category
-                    </button>
-                </div>
-
-                <!-- Single Active Category Table (Shows only when category is selected) -->
-                <div class="active-category-table hidden" id="activeCategoryTable">
-                    <div class="table-header">
-                        <h3 id="activeCategoryTitle">Category Table</h3>
-                        <button class="add-vendor-btn" id="addVendorBtn">
-                            <i class="material-icons">add</i>
-                            Add Vendor
-                        </button>
-                    </div>
-                    
-                    <table class="vendor-table">
-                        <thead>
-                            <tr>
-                                <th>Vendor</th>
-                                <th>Contact</th>
-                                <th>Estimated Cost</th>
-                                <th>Status</th>
-                                <th>Notes</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="activeVendorTableBody">
-                            <!-- Active category vendors will be populated here -->
-                        </tbody>
-                    </table>
-
-                    <!-- Inline Vendor Form (Hidden by default) -->
-                    <div class="inline-vendor-form hidden" id="inlineVendorForm">
-                        <div class="form-header">
-                            <h4 id="vendorFormTitle">Add Vendor</h4>
-                            <button class="close-btn" id="closeVendorForm">
-                                <i class="material-icons">close</i>
-                            </button>
+                    <div class="budget-right">
+                        <div class="category-grid">
+                            <div class="category-card">
+                                <div class="icon">🏛️</div>
+                                <span>Venue & Rental</span>
+                            </div>
+                            <div class="category-card">
+                                <div class="icon">🍽️</div>
+                                <span>Food & Drink</span>
+                            </div>
+                            <div class="category-card">
+                                <div class="icon">🎵</div>
+                                <span>Entertainment</span>
+                            </div>
+                            <div class="category-card">
+                                <div class="icon">📷</div>
+                                <span>Photography</span>
+                            </div>
+                            <div class="category-card">
+                                <div class="icon">🌸</div>
+                                <span>Floral & Decor</span>
+                            </div>
+                            <div class="category-card">
+                                <div class="icon">🎁</div>
+                                <span>Gifts & Favors</span>
+                            </div>
                         </div>
-                        <div class="form-fields">
-                            <input type="text" id="vendorName" placeholder="Vendor name" required>
-                            <input type="text" id="vendorContact" placeholder="Contact info">
-                            <input type="number" id="vendorCost" placeholder="Estimated cost" required>
-                            <select id="vendorStatus">
-                                <option value="considering">Considering</option>
-                                <option value="inprogress">In Progress</option>
-                                <option value="selected">Selected</option>
-                                <option value="notselected">Not Selected</option>
-                            </select>
-                            <textarea id="vendorNotes" placeholder="Notes" rows="2"></textarea>
-                        </div>
-                        <div class="form-actions">
-                            <button id="saveVendorBtn" class="btn-primary">Save Vendor</button>
-                            <button id="cancelVendorBtn" class="btn-secondary">Cancel</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Final Selection View (Hidden by default) -->
-            <div class="final-selection-view hidden" id="finalSelectionView">
-                <div class="page-wrapper">
-                    <div class="final-header">
-                        <button class="back-btn" id="backFromFinal">
-                            <i class="material-icons">arrow_back</i>
-                            Back to Budget
-                        </button>
-                        <h2>Final Selection</h2>
-                    </div>
-                    
-                    <div class="final-table-container">
-                        <table class="final-table" id="finalSelectionTable">
-                            <thead>
-                                <tr>
-                                    <th>Category</th>
-                                    <th>Vendor</th>
-                                    <th>Contact</th>
-                                    <th>Estimated Cost</th>
-                                    <th>Status</th>
-                                    <th>Notes</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="finalSelectionBody">
-                                <!-- Final selection rows will be populated here -->
-                            </tbody>
-                            <tfoot>
-                                <tr class="total-row">
-                                    <td colspan="3"><strong>Total Final Cost:</strong></td>
-                                    <td><strong id="totalFinalCost">$0</strong></td>
-                                    <td colspan="3"></td>
-                                </tr>
-                            </tfoot>
-                        </table>
                     </div>
                 </div>
             </div>
@@ -208,37 +123,6 @@
             </div>
         </footer>
     </div>
-
-    <!-- Add Category Form Popup (Hidden by default) -->
-    <div id="categoryForm" class="form-popup hidden">
-        <div class="form-header">
-            <h4>Add New Category</h4>
-            <button class="close-btn" id="closeCategoryForm">
-                <i class="material-icons">close</i>
-            </button>
-        </div>
-        <input type="text" id="newCategoryName" placeholder="Category name" required>
-        <div class="form-actions">
-            <button id="saveCategoryBtn" class="btn-primary">Create Category</button>
-            <button id="cancelCategoryBtn" class="btn-secondary">Cancel</button>
-        </div>
-    </div>
-
-    <!-- Edit Category Form Popup (Hidden by default) -->
-    <div id="editCategoryForm" class="form-popup hidden">
-        <div class="form-header">
-            <h4>Edit Category</h4>
-            <button class="close-btn" id="closeEditCategoryForm">
-                <i class="material-icons">close</i>
-            </button>
-        </div>
-        <input type="text" id="editCategoryName" placeholder="Category name" required>
-        <div class="form-actions">
-            <button id="saveEditCategoryBtn" class="btn-primary">Save Changes</button>
-            <button id="cancelEditCategoryBtn" class="btn-secondary">Cancel</button>
-        </div>
-    </div>
-
-    <script src="../../js/budget.js"></script>
+    <script src="../../js/app.js"></script>
 </body>
 </html>
