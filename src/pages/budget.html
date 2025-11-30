@@ -22,20 +22,35 @@
                 <nav class="header-nav" aria-label="Main navigation">
                     <a href="../../index.html" class="nav-link">Home</a>
                     <a href="about.html" class="nav-link">About</a>
+                    <a href="budget.html" class="nav-link">Budget</a>
                     <a href="theme.html" class="nav-link">Theme</a>
                     <a href="track.html" class="nav-link">Track</a>
-                    <a href="budget.html" class="nav-link active">Budget</a>
                 </nav>
                 <div class="header-right">
-                    <a href="login.html" class="login-btn" aria-label="Login">Login</a>
+                    <a href="login.html" class="login-btn" aria-label="Login">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                            <circle cx="12" cy="7" r="4" />
+                        </svg>
+                        Login
+                    </a>
                 </div>
             </div>
         </header>
 
         <main>
             <div class="page-wrapper">
+                <!-- Simple Currency Selection - Top Right -->
+                <div class="simple-currency-selector">
+                    <select id="currencySelect" class="currency-select-simple">
+                        <option value="USD">USD ($)</option>
+                        <option value="KHR">KHR (៛)</option>
+                    </select>
+                </div>
+                
                 <h1 class="page-title">Budget Tracker</h1>
                 <p class="page-subtitle">Every Dollar, Perfectly Placed</p>
+
 
                 <!-- Budget Progress Section -->
                 <div class="budget-progress-section">
@@ -61,7 +76,7 @@
                                 <input type="number" id="initialBudget" placeholder="Enter budget" class="budget-input">
                             </div>
                             <button class="view-final-btn" id="viewFinalSelection">
-                                View Final Selection
+                                View Final Report
                             </button>
                         </div>
                     </div>
@@ -141,7 +156,7 @@
                             <i class="material-icons">arrow_back</i>
                             Back to Budget
                         </button>
-                        <h2>Final Selection</h2>
+                        <h2>Final Report</h2>
                     </div>
                     
                     <div class="final-table-container">
@@ -168,6 +183,16 @@
                                 </tr>
                             </tfoot>
                         </table>
+                    </div>
+
+                    <!-- Simple PDF Export Button -->
+                    <!-- In Final Selection View - Simple PDF Button -->
+                    <div class="simple-pdf-export">
+                        <button id="generatePdfBtn" class="btn-primary pdf-simple-btn">
+                            <i class="material-icons">picture_as_pdf</i>
+                            Save as PDF
+                        </button>
+                        <div id="pdfStatus" class="pdf-status-simple"></div>
                     </div>
                 </div>
             </div>
