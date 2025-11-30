@@ -745,6 +745,7 @@ class AuthManager {
       .join("");
   }
 
+  // --- USER ACCOUNT STORAGE (localStorage) ---
   getUsers() {
     return JSON.parse(localStorage.getItem("wedease_users") || "{}");
   }
@@ -753,13 +754,14 @@ class AuthManager {
     localStorage.setItem("wedease_users", JSON.stringify(obj));
   }
 
+  // --- CURRENT LOGIN SESSION (sessionStorage) ---
   setCurrentUser(email) {
-    localStorage.setItem("wedease_current", email);
+    sessionStorage.setItem("wedease_current", email);
     this.updateHeaderUser(email);
   }
 
   clearCurrentUser() {
-    localStorage.removeItem("wedease_current");
+    sessionStorage.removeItem("wedease_current");
     this.updateHeaderUser(null);
   }
 
@@ -784,7 +786,7 @@ class AuthManager {
       btn.addEventListener("click", () => {
         if (confirm("Sign out?")) {
           this.clearCurrentUser();
-          window.location.reload();
+          window.location.href = "../../src/pages/login.html";
         }
       });
       headerRight.appendChild(btn);
@@ -858,10 +860,11 @@ class AuthManager {
     users[email] = { hash: await this.hashPassword(pw), created: Date.now() };
     this.setUsers(users);
     this.setCurrentUser(email);
+
     this.showStatus("Account created successfully!");
 
     setTimeout(() => {
-      window.location.href = "../index.html";
+      window.location.href = "../../index.html";  // ✔ Correct redirect
     }, 1500);
   }
 
@@ -885,15 +888,16 @@ class AuthManager {
     this.showStatus("Login successful!");
 
     setTimeout(() => {
-      window.location.href = "../index.html";
+      window.location.href = "../../index.html"; // ✔ Correct redirect
     }, 1500);
   }
 
   checkCurrentUser() {
-    const current = localStorage.getItem("wedease_current");
+    const current = sessionStorage.getItem("wedease_current");
     if (current) this.updateHeaderUser(current);
   }
 }
+
 
 // ===============================================
 // THEME PAGE FUNCTIONALITY
