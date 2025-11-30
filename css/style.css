@@ -285,7 +285,6 @@ body {
    =============================================== */
 
 .hero-section {
-  background-color: var(--wed-bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -397,12 +396,13 @@ main {
 }
 
 /* ===============================================
-   ABOUT PAGE
+   ABOUT PAGE - RESPONSIVE
    =============================================== */
 
 .about-page {
   max-width: 900px;
   margin: 0 auto;
+  padding: 0 1rem; /* Added padding for mobile */
 }
 
 .about-section {
@@ -431,9 +431,13 @@ main {
   line-height: 1.8;
 }
 
+/* ===============================================
+   FEATURES GRID - RESPONSIVE IMPROVEMENTS
+   =============================================== */
+
 .features-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 2rem;
   margin-top: 2rem;
 }
@@ -444,6 +448,10 @@ main {
   border-radius: 0.75rem;
   text-align: center;
   transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%; /* Ensure equal height */
 }
 
 .feature-card:hover {
@@ -461,17 +469,131 @@ main {
 .feature-card p {
   color: var(--wed-text);
   font-size: 0.95rem;
+  flex-grow: 1; /* Make paragraphs equal height */
 }
 
 /* ===============================================
-   FEATURE ICON STYLING
+   FEATURE ICON STYLING - RESPONSIVE
    =============================================== */
 
 .feature-icon-image {
-    width: 100px;  
-    height: 100px; 
-    object-fit: contain;
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  margin-bottom: 1rem;
+}
+
+/* ===============================================
+   RESPONSIVE BREAKPOINTS FOR ABOUT PAGE
+   =============================================== */
+
+@media (max-width: 1024px) {
+  .about-page {
+    max-width: 95%;
+  }
+  
+  .section-title {
+    font-size: 2.25rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .about-page {
+    padding: 0 1.5rem;
+  }
+  
+  .section-title {
+    font-size: 2rem;
     margin-bottom: 1rem;
+  }
+  
+  .section-text {
+    font-size: 1rem;
+  }
+  
+  .features-grid {
+    grid-template-columns: 1fr; /* Stack on mobile */
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+  }
+  
+  .feature-card {
+    padding: 1.5rem;
+  }
+  
+  .mission-section {
+    margin: 2rem 0;
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .about-page {
+    padding: 0 1rem;
+  }
+  
+  .section-title {
+    font-size: 1.75rem;
+  }
+  
+  .features-grid {
+    gap: 1rem;
+  }
+  
+  .feature-card {
+    padding: 1.25rem;
+  }
+  
+  .feature-icon-image {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 0.75rem;
+  }
+  
+  .feature-card h3 {
+    font-size: 1.125rem;
+  }
+  
+  .feature-card p {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .section-title {
+    font-size: 1.5rem;
+  }
+  
+  .feature-card {
+    padding: 1rem;
+  }
+  
+  .feature-icon-image {
+    width: 70px;
+    height: 70px;
+  }
+  
+  .mission-section {
+    padding: 1rem;
+    margin: 1.5rem 0;
+  }
+}
+
+/* For very small screens */
+@media (max-width: 360px) {
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .feature-card {
+    padding: 0.75rem;
+  }
+  
+  .feature-icon-image {
+    width: 60px;
+    height: 60px;
+  }
 }
 
 /* ===============================================
