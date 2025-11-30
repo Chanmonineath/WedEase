@@ -19,10 +19,9 @@
                 <nav class="header-nav" aria-label="Main navigation">
                     <a href="../../index.html" class="nav-link">Home</a>
                     <a href="about.html" class="nav-link">About</a>
-                    <a href="budget.html" class="nav-link">Budget</a>
                     <a href="theme.html" class="nav-link active">Theme</a>
                     <a href="track.html" class="nav-link">Track</a>
-                    
+                    <a href="budget.html" class="nav-link">Budget</a>
                     
                 </nav>
                 <div class="header-right">
@@ -42,27 +41,9 @@
                 <h1 class="page-title">Choose Your Wedding Theme</h1>
                 <p class="page-subtitle">Select a style that matches your vision</p>
 
+                <input type="text" id="theme-search" placeholder="Search wedding themes...">
                 <div class="theme-grid">
-                    <div class="theme-card">
-                        <div class="theme-image" style="background: linear-gradient(135deg, #FFB6D9, #FFC0CB);">✨</div>
-                        <h3>Fairytale</h3>
-                        <p>Enchanting and magical with romantic touches</p>
-                    </div>
-                    <div class="theme-card">
-                        <div class="theme-image" style="background: linear-gradient(135deg, #E8E8E8, #F5F5F5);">🏙️</div>
-                        <h3>Modern</h3>
-                        <p>Contemporary elegance with sleek designs</p>
-                    </div>
-                    <div class="theme-card">
-                        <div class="theme-image" style="background: linear-gradient(135deg, #D4AF37, #F0E68C);">👑</div>
-                        <h3>Classic</h3>
-                        <p>Timeless elegance with sophisticated styling</p>
-                    </div>
-                    <div class="theme-card">
-                        <div class="theme-image" style="background: linear-gradient(135deg, #8B4513, #A0522D);">🌿</div>
-                        <h3>Rustic</h3>
-                        <p>Natural beauty with countryside charm</p>
-                    </div>
+                    <!-- Themes will populate dynamically from Unsplash API -->
                 </div>
             </div>
         </main>
@@ -103,5 +84,6 @@
         </footer>
     </div>
     <script src="../../js/app.js"></script>
+    <script src="../../js/theme.js"></script>
 </body>
 </html>
