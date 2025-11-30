@@ -64,7 +64,7 @@ class WedEASEUtils {
 }
 
 // ===============================================
-// HERO IMAGE ROTATOR & CTA MANAGER
+// HERO IMAGE ROTATOR & CTA MANAGER - FIXED
 // ===============================================
 
 class HeroManager {
@@ -121,8 +121,12 @@ class HeroManager {
     
     console.log("Hero Manager: Elements found, starting rotation...");
     
-    // Set initial content
-    this.updateHeroContent();
+    // Ensure initial image is set
+    heroImage.src = this.images[this.currentIndex];
+    heroImage.alt = this.getAltText();
+    
+    // Set initial CTA content
+    this.updateCtaContent();
     
     // Start auto rotation
     this.startAutoRotation();
@@ -171,8 +175,8 @@ class HeroManager {
     console.log("Hero Manager: Updating content...");
 
     // Update image with fade effect
-    heroImage.style.transition = 'opacity 0.5s ease-in-out';
-    heroImage.style.opacity = '0.3';
+    heroImage.style.transition = 'opacity 0.3s ease-in-out';
+    heroImage.style.opacity = '0.1';
     
     setTimeout(() => {
       heroImage.src = this.images[this.currentIndex];
@@ -182,11 +186,18 @@ class HeroManager {
     }, 300);
 
     // Update CTA button
+    this.updateCtaContent();
+    console.log("Hero Manager: CTA button updated");
+  }
+
+  updateCtaContent() {
+    const ctaButton = document.getElementById('hero-cta-button');
+    if (!ctaButton) return;
+    
     ctaButton.innerHTML = `
       ${this.ctaIcons[this.currentIndex]}
       <span style="color: white;">${this.ctaTexts[this.currentIndex]}</span>
     `;
-    console.log("Hero Manager: CTA button updated");
   }
 
   getAltText() {
@@ -196,7 +207,301 @@ class HeroManager {
 }
 
 // ===============================================
-// EPIC FIRST-TIME WELCOME EXPERIENCE - FIXED
+// WEDDING COUNTDOWN MANAGER - COMPLETELY FIXED
+// ===============================================
+
+class CountdownManager {
+    constructor() {
+        this.weddingDate = null;
+        this.countdownInterval = null;
+        this.init();
+    }
+
+    init() {
+        console.log("Countdown Manager: Initializing");
+        
+        // Set min date to today
+        const today = new Date().toISOString().split('T')[0];
+        const dateInput = document.getElementById('weddingDateInput');
+        if (dateInput) {
+            dateInput.min = today;
+        }
+        
+        // Setup event listeners
+        const setDateBtn = document.getElementById('setDateBtn');
+        const clearDateBtn = document.getElementById('clearDateBtn');
+        const exploreBtn = document.getElementById('exploreMoreBtn');
+        
+        if (setDateBtn) {
+            setDateBtn.addEventListener('click', () => {
+                this.setWeddingDate();
+            });
+        }
+        
+        if (clearDateBtn) {
+            clearDateBtn.addEventListener('click', () => {
+                this.clearWeddingDate();
+            });
+        }
+        
+        if (exploreBtn) {
+            exploreBtn.addEventListener('click', () => {
+                window.location.href = 'src/pages/about.html';
+            });
+        }
+        
+        // Enter key support
+        const dateInputElement = document.getElementById('weddingDateInput');
+        if (dateInputElement) {
+            dateInputElement.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') this.setWeddingDate();
+            });
+        }
+        
+        // Load saved data from localStorage
+        this.loadSavedData();
+    }
+
+    loadSavedData() {
+        const savedDate = localStorage.getItem('wedease_wedding_date');
+        
+        if (savedDate) {
+            this.weddingDate = new Date(savedDate);
+            const dateInput = document.getElementById('weddingDateInput');
+            if (dateInput) {
+                dateInput.value = savedDate.split('T')[0];
+            }
+            this.startCountdown();
+        }
+    }
+
+    setWeddingDate() {
+        const dateInput = document.getElementById('weddingDateInput');
+        if (!dateInput) return;
+
+        const dateValue = dateInput.value;
+        
+        if (!dateValue) {
+            this.showError('Please select your wedding date');
+            return;
+        }
+
+        const btn = document.getElementById('setDateBtn');
+        if (btn) {
+            btn.disabled = true;
+            btn.textContent = 'Starting...';
+        }
+
+        try {
+            this.weddingDate = new Date(dateValue + 'T00:00:00');
+            
+            // Validate date is in the future
+            const now = new Date();
+            now.setHours(0, 0, 0, 0); // Set to beginning of day for comparison
+            
+            if (this.weddingDate <= now) {
+                throw new Error('Please select a future date');
+            }
+            
+            localStorage.setItem('wedease_wedding_date', this.weddingDate.toISOString());
+            this.startCountdown();
+            
+        } catch (error) {
+            this.showError('Failed to set wedding date: ' + error.message);
+        } finally {
+            if (btn) {
+                btn.disabled = false;
+                btn.textContent = 'Start Countdown';
+            }
+        }
+    }
+
+    clearWeddingDate() {
+        // Clear from localStorage
+        localStorage.removeItem('wedease_wedding_date');
+        
+        // Clear current date
+        this.weddingDate = null;
+        
+        // Clear interval
+        if (this.countdownInterval) {
+            clearInterval(this.countdownInterval);
+            this.countdownInterval = null;
+        }
+        
+        // Reset UI
+        const dateInput = document.getElementById('weddingDateInput');
+        const countdownDisplay = document.getElementById('countdownDisplay');
+        const weddingDateDisplay = document.getElementById('weddingDateDisplay');
+        const setDateBtn = document.getElementById('setDateBtn');
+        const clearDateBtn = document.getElementById('clearDateBtn');
+        const exploreBtn = document.getElementById('exploreMoreBtn');
+        
+        if (dateInput) dateInput.value = '';
+        if (countdownDisplay) countdownDisplay.style.display = 'none';
+        if (weddingDateDisplay) weddingDateDisplay.style.display = 'none';
+        if (setDateBtn) setDateBtn.style.display = 'block';
+        if (clearDateBtn) clearDateBtn.style.display = 'none';
+        if (exploreBtn) exploreBtn.style.display = 'none';
+        
+        console.log("Wedding date cleared");
+    }
+
+    startCountdown() {
+        if (!this.weddingDate) return;
+
+        // Show displays
+        const countdownDisplay = document.getElementById('countdownDisplay');
+        const weddingDateDisplay = document.getElementById('weddingDateDisplay');
+        const setDateBtn = document.getElementById('setDateBtn');
+        const clearDateBtn = document.getElementById('clearDateBtn');
+        const exploreBtn = document.getElementById('exploreMoreBtn');
+        
+        if (countdownDisplay) countdownDisplay.style.display = 'block';
+        if (weddingDateDisplay) weddingDateDisplay.style.display = 'block';
+        if (setDateBtn) setDateBtn.style.display = 'none';
+        if (clearDateBtn) clearDateBtn.style.display = 'inline-block';
+        if (exploreBtn) exploreBtn.style.display = 'block';
+
+        // Update wedding date display
+        this.updateWeddingDateDisplay();
+        
+        // Clear existing interval
+        if (this.countdownInterval) {
+            clearInterval(this.countdownInterval);
+        }
+        
+        // Update immediately
+        this.updateCountdown();
+        
+        // Update every second
+        this.countdownInterval = setInterval(() => {
+            this.updateCountdown();
+        }, 1000);
+        
+        console.log("Countdown started for:", this.weddingDate.toDateString());
+    }
+
+    updateWeddingDateDisplay() {
+        const weddingDateText = document.getElementById('weddingDateText');
+        if (!weddingDateText || !this.weddingDate) return;
+
+        const options = { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        };
+        const formattedDate = this.weddingDate.toLocaleDateString('en-US', options);
+        weddingDateText.textContent = formattedDate;
+    }
+
+    updateCountdown() {
+        if (!this.weddingDate) return;
+
+        const now = new Date().getTime();
+        const distance = this.weddingDate.getTime() - now;
+
+        if (distance < 0) {
+            // Wedding day has passed
+            this.handleWeddingPassed();
+            return;
+        }
+
+        // Calculate time units
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        // Update display
+        this.updateDisplay(days, hours, minutes, seconds);
+        this.updateMessage(days);
+    }
+
+    updateDisplay(days, hours, minutes, seconds) {
+        // Update numbers
+        const daysEl = document.getElementById('days');
+        const hoursEl = document.getElementById('hours');
+        const minutesEl = document.getElementById('minutes');
+        const secondsEl = document.getElementById('seconds');
+        
+        if (daysEl) daysEl.textContent = days;
+        if (hoursEl) hoursEl.textContent = hours.toString().padStart(2, '0');
+        if (minutesEl) minutesEl.textContent = minutes.toString().padStart(2, '0');
+        if (secondsEl) secondsEl.textContent = seconds.toString().padStart(2, '0');
+    }
+
+    updateMessage(days) {
+        const messageElement = document.getElementById('countdownMessage');
+        if (!messageElement) return;
+        
+        let message = '';
+        
+        if (days === 0) {
+            message = " It's your wedding day! Congratulations!";
+        } else if (days === 1) {
+            message = " Just one more day until your special day! ";
+        } else if (days < 7) {
+            message = " Less than a week to go! So exciting! ";
+        } else if (days < 30) {
+            message = " The big day is getting closer! ";
+        } else if (days < 90) {
+            message = " Your wedding is just around the corner! ";
+        } else {
+            message = " Counting down to your beautiful wedding day! ";
+        }
+        
+        messageElement.textContent = message;
+    }
+
+    handleWeddingPassed() {
+        clearInterval(this.countdownInterval);
+        
+        const display = document.getElementById('countdownDisplay');
+        if (display) {
+            display.innerHTML = `
+                <div class="countdown-completed">
+                    <div class="countdown-message">
+                         Congratulations on your wedding! <br>
+                        Wishing you a lifetime of happiness and love! 
+                    </div>
+                    <button class="explore-more-btn" onclick="window.location.href='src/pages/about.html'">
+                        Explore More
+                    </button>
+                </div>
+            `;
+        }
+    }
+
+    showError(message) {
+        // Remove any existing errors
+        const existingError = document.querySelector('.countdown-error');
+        if (existingError) {
+            existingError.remove();
+        }
+        
+        // Create and show error message
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'countdown-error';
+        errorDiv.textContent = message;
+        
+        const inputSection = document.querySelector('.countdown-input-section');
+        if (inputSection) {
+            inputSection.appendChild(errorDiv);
+        }
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            if (errorDiv.parentNode) {
+                errorDiv.parentNode.removeChild(errorDiv);
+            }
+        }, 5000);
+    }
+}
+
+// ===============================================
+// EPIC FIRST-TIME WELCOME EXPERIENCE - FIXED AUDIO
 // ===============================================
 
 class MusicalEntrance {
@@ -213,7 +518,7 @@ class MusicalEntrance {
 
   init() {
     const isPageRefresh = performance.navigation.type === performance.navigation.TYPE_RELOAD;
-    const cameFromOtherSite = !document.referrer.includes(window.location.hostname);
+    const cameFromOtherSite = document.referrer && !document.referrer.includes(window.location.hostname);
     
     if (this.hasShownWelcome && !cameFromOtherSite && !isPageRefresh) {
       this.showMainContentImmediately();
@@ -233,9 +538,11 @@ class MusicalEntrance {
 
     this.startWelcomeSequence();
 
-    this.startButton.addEventListener('click', () => {
-      this.startWithSound();
-    });
+    if (this.startButton) {
+      this.startButton.addEventListener('click', () => {
+        this.startWithSound();
+      });
+    }
   }
 
   startWelcomeSequence() {
@@ -248,58 +555,66 @@ class MusicalEntrance {
     }, 500);
     
     setTimeout(() => {
-      this.startButton.style.transform = 'translate(-50%, -50%) scale(1)';
-      this.startButton.style.opacity = '1';
+      if (this.startButton) {
+        this.startButton.style.transform = 'translate(-50%, -50%) scale(1)';
+        this.startButton.style.opacity = '1';
+      }
     }, 2000);
   }
 
-  startWithSound() {
-    this.playWelcomeSound();
+  async startWithSound() {
+    await this.playWelcomeSound();
     this.completeWelcomeExperience();
   }
 
-  playWelcomeSound() {
+  async playWelcomeSound() {
     if (!this.audio || this.audioPlayed) return;
 
-    this.audio.volume = 0.3;
-    this.audio.currentTime = 0;
-    
-    const playPromise = this.audio.play();
-    
-    if (playPromise !== undefined) {
-      playPromise.then(() => {
-        this.audioPlayed = true;
-        
-        setTimeout(() => {
-          if (this.audio && this.audioPlayed) {
-            this.audio.pause();
-            this.audio.currentTime = 0;
-          }
-        }, 5000);
-      }).catch(error => {
-        console.log('Audio play failed:', error);
-      });
+    try {
+      this.audio.volume = 0.3;
+      this.audio.currentTime = 0;
+      
+      await this.audio.play();
+      this.audioPlayed = true;
+      
+      console.log("Welcome audio playing successfully");
+      
+      // Auto-stop after 5 seconds
+      setTimeout(() => {
+        if (this.audio && this.audioPlayed) {
+          this.audio.pause();
+          this.audio.currentTime = 0;
+        }
+      }, 5000);
+      
+    } catch (error) {
+      console.log('Audio play failed:', error);
+      // Continue with welcome experience even if audio fails
     }
   }
 
   completeWelcomeExperience() {
     sessionStorage.setItem('wedease_welcome_shown', 'true');
     
-    this.startButton.style.transform = 'translate(-50%, -50%) scale(0.9)';
-    this.startButton.style.background = 'linear-gradient(45deg, #764ba2, #667eea)';
+    if (this.startButton) {
+      this.startButton.style.transform = 'translate(-50%, -50%) scale(0.9)';
+      this.startButton.style.background = 'linear-gradient(45deg, #764ba2, #667eea)';
+    }
     
     setTimeout(() => {
-      this.welcomeContainer.style.opacity = '0';
-      this.welcomeContainer.style.transform = 'scale(1.1)';
+      if (this.welcomeContainer) {
+        this.welcomeContainer.style.opacity = '0';
+        this.welcomeContainer.style.transform = 'scale(1.1)';
+      }
       
       this.showMainContent();
       
       setTimeout(() => {
         this.hideWelcomeContainer();
         
-        // FIX: Initialize hero manager here
+        // Initialize hero manager after welcome sequence
         if (window.heroManager && typeof window.heroManager.init === 'function') {
-          console.log("Starting hero image rotation...");
+          console.log("Starting hero image rotation after welcome...");
           window.heroManager.init();
         }
       }, 1000);
@@ -320,7 +635,7 @@ class MusicalEntrance {
     }
     this.hideWelcomeContainer();
     
-    // FIX: Initialize hero manager for returning visitors
+    // Initialize hero manager immediately for returning visitors
     if (window.heroManager && typeof window.heroManager.init === 'function') {
       console.log("Starting hero image rotation immediately...");
       window.heroManager.init();
@@ -334,6 +649,8 @@ class MusicalEntrance {
   }
 
   createQuantumParticles() {
+    if (!this.welcomeContainer) return;
+    
     for (let i = 0; i < 50; i++) {
       setTimeout(() => {
         this.createQuantumParticle();
@@ -342,6 +659,8 @@ class MusicalEntrance {
   }
 
   createQuantumParticle() {
+    if (!this.welcomeContainer) return;
+    
     const particle = document.createElement('div');
     particle.className = 'quantum-particle';
     
@@ -375,6 +694,8 @@ class MusicalEntrance {
   }
 
   createLightBeams() {
+    if (!this.welcomeContainer) return;
+    
     for (let i = 0; i < 12; i++) {
       const beam = document.createElement('div');
       beam.className = 'light-beam';
@@ -635,6 +956,7 @@ class WedEASEApp {
   constructor() {
     this.heroManager = null;
     this.musicalEntrance = null;
+    this.countdownManager = null;
     this.init();
   }
 
@@ -646,10 +968,18 @@ class WedEASEApp {
     this.authManager = new AuthManager();
     this.themeManager = new ThemeManager();
 
-    this.musicalEntrance = new MusicalEntrance();
+    // Initialize managers based on page content
+    if (document.getElementById('firstTimeWelcome')) {
+      this.musicalEntrance = new MusicalEntrance();
+    }
     
     if (document.getElementById('hero-image')) {
       this.heroManager = new HeroManager();
+      window.heroManager = this.heroManager; // Make globally available
+    }
+
+    if (document.getElementById('weddingDateInput')) {
+      this.countdownManager = new CountdownManager();
     }
 
     this.utils.setupHeaderScroll();
@@ -679,18 +1009,15 @@ class WedEASEApp {
 }
 
 // ===============================================
-// GLOBAL INITIALIZATION
+// GLOBAL INITIALIZATION - FIXED
 // ===============================================
-
-let budgetManager;
-let heroManager;
 
 document.addEventListener("DOMContentLoaded", () => {
   console.log("WedEASE Starting...");
-  budgetManager = new BudgetManager();
-  heroManager = new HeroManager();
+  
+  // Initialize the main app
   new WedEASEApp();
 });
 
+// Make utilities globally available
 window.WedEASEUtils = WedEASEUtils;
-window.heroManager = heroManager;
