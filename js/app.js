@@ -64,7 +64,7 @@ class WedEASEUtils {
 }
 
 // ===============================================
-// HERO IMAGE ROTATOR & CTA MANAGER - FIXED VERSION
+// HERO IMAGE ROTATOR & CTA MANAGER
 // ===============================================
 
 class HeroManager {
@@ -76,17 +76,14 @@ class HeroManager {
     ];
     
     this.ctaIcons = [
-      // Heart icon
       `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="white">
         <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
       </svg>`,
       
-      // Car icon
       `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="white">
         <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>
       </svg>`,
       
-      // Ring icon  
       `<img src="assets/img/twin ring icon.png" alt="Wedding Rings" width="32" height="32" style="filter: brightness(0) invert(1);">`
     ];
     
@@ -97,13 +94,18 @@ class HeroManager {
     ];
     
     this.currentIndex = 0;
-    this.init();
+    this.rotationInterval = null;
+    this.initialized = false;
   }
 
   init() {
-    console.log("Hero Manager: Checking for elements...");
+    if (this.initialized) {
+      console.log("Hero Manager: Already initialized");
+      return;
+    }
     
-    // Only initialize if we're on the home page
+    console.log("Hero Manager: Initializing...");
+    
     const heroImage = document.getElementById('hero-image');
     const ctaButton = document.getElementById('hero-cta-button');
     
@@ -117,41 +119,43 @@ class HeroManager {
       return;
     }
     
-    console.log("Hero Manager: Elements found, initializing...");
+    console.log("Hero Manager: Elements found, starting rotation...");
     
-    // Set initial content first
+    // Set initial content
     this.updateHeroContent();
     
-    // Set up auto rotation
+    // Start auto rotation
     this.startAutoRotation();
     
-    // Set up click handler
+    // Add click handler for manual rotation
     heroImage.addEventListener('click', () => {
-      console.log("Hero image clicked, switching to next image");
+      console.log("Hero image clicked, rotating...");
       this.nextImage();
     });
     
-    console.log("Hero Manager fully initialized");
+    this.initialized = true;
+    console.log("Hero Manager: Successfully initialized and running");
   }
 
   startAutoRotation() {
-    // Clear any existing interval
+    // Clear any existing interval first
     if (this.rotationInterval) {
       clearInterval(this.rotationInterval);
+      console.log("Hero Manager: Cleared existing interval");
     }
     
-    // Start new interval - rotate every 2 seconds (was 5 seconds)
+    // Start new interval - rotate every 3 seconds
     this.rotationInterval = setInterval(() => {
-      console.log("Auto-rotating to next image");
+      console.log("Hero Manager: Auto-rotating to next image");
       this.nextImage();
-    }, 3000); 
+    }, 3000);
     
-    console.log("Auto-rotation started (2 second intervals)");
+    console.log("Hero Manager: Auto-rotation started (3 second intervals)");
   }
 
   nextImage() {
     this.currentIndex = (this.currentIndex + 1) % this.images.length;
-    console.log("Switching to image index:", this.currentIndex, " - ", this.images[this.currentIndex]);
+    console.log("Hero Manager: Switching to image index", this.currentIndex, "-", this.images[this.currentIndex]);
     this.updateHeroContent();
   }
 
@@ -160,11 +164,11 @@ class HeroManager {
     const ctaButton = document.getElementById('hero-cta-button');
     
     if (!heroImage || !ctaButton) {
-      console.log("Hero Manager: Elements missing in updateHeroContent");
+      console.log("Hero Manager: Elements missing during update");
       return;
     }
 
-    console.log("Updating hero content to:", this.images[this.currentIndex]);
+    console.log("Hero Manager: Updating content...");
 
     // Update image with fade effect
     heroImage.style.transition = 'opacity 0.5s ease-in-out';
@@ -174,7 +178,7 @@ class HeroManager {
       heroImage.src = this.images[this.currentIndex];
       heroImage.alt = this.getAltText();
       heroImage.style.opacity = '1';
-      console.log("Image updated to:", this.images[this.currentIndex]);
+      console.log("Hero Manager: Image updated to", this.images[this.currentIndex]);
     }, 300);
 
     // Update CTA button
@@ -182,142 +186,214 @@ class HeroManager {
       ${this.ctaIcons[this.currentIndex]}
       <span style="color: white;">${this.ctaTexts[this.currentIndex]}</span>
     `;
-    console.log("CTA button updated");
+    console.log("Hero Manager: CTA button updated");
   }
 
   getAltText() {
     const altTexts = ["Bride and Groom", "Wedding Car", "Ring Hand"];
     return altTexts[this.currentIndex];
   }
-
-  // Method to manually set specific image
-  setHeroContent(index) {
-    if (index >= 0 && index < this.images.length) {
-      this.currentIndex = index;
-      this.updateHeroContent();
-    }
-  }
 }
 
 // ===============================================
-// BUDGET PAGE FUNCTIONALITY
+// EPIC FIRST-TIME WELCOME EXPERIENCE - FIXED
 // ===============================================
 
-class BudgetManager {
+class MusicalEntrance {
   constructor() {
-    this.budgetItems = JSON.parse(localStorage.getItem('wedease_budget')) || [
-      { name: "Makeup Artist", amount: 7000 },
-      { name: "Venue Rental", amount: 15000 },
-      { name: "Catering", amount: 12000 },
-    ];
-    this.editIndex = null;
+    this.audio = document.getElementById('welcomeAudio');
+    this.welcomeContainer = document.getElementById('firstTimeWelcome');
+    this.startButton = document.getElementById('startExperience');
+    this.mainApp = document.getElementById('app');
+    this.hasShownWelcome = sessionStorage.getItem('wedease_welcome_shown');
+    this.audioPlayed = false;
+    
     this.init();
   }
 
   init() {
-    if (!document.getElementById('budget-list')) return;
-
-    this.bindEvents();
-    this.renderBudget();
-  }
-
-  bindEvents() {
-    const addItemBtn = document.getElementById('addItemBtn');
-    const saveItemBtn = document.getElementById('saveItemBtn');
-    const cancelItemBtn = document.getElementById('cancelItemBtn');
-
-    if (addItemBtn) {
-      addItemBtn.addEventListener('click', () => this.showBudgetForm());
-    }
-    if (saveItemBtn) {
-      saveItemBtn.addEventListener('click', () => this.saveBudgetItem());
-    }
-    if (cancelItemBtn) {
-      cancelItemBtn.addEventListener('click', () => this.hideBudgetForm());
-    }
-  }
-
-  showBudgetForm() {
-    this.editIndex = null;
-    document.getElementById('itemName').value = "";
-    document.getElementById('itemAmount').value = "";
-    document.getElementById('budgetForm').classList.remove('hidden');
-  }
-
-  hideBudgetForm() {
-    document.getElementById('budgetForm').classList.add('hidden');
-  }
-
-  saveBudgetItem() {
-    const name = document.getElementById('itemName').value.trim();
-    const amount = parseFloat(document.getElementById('itemAmount').value);
-
-    if (!name || isNaN(amount)) {
-      alert("Please enter valid name and amount");
+    const isPageRefresh = performance.navigation.type === performance.navigation.TYPE_RELOAD;
+    const cameFromOtherSite = !document.referrer.includes(window.location.hostname);
+    
+    if (this.hasShownWelcome && !cameFromOtherSite && !isPageRefresh) {
+      this.showMainContentImmediately();
+      this.hideWelcomeContainer();
       return;
     }
 
-    if (this.editIndex !== null) {
-      this.budgetItems[this.editIndex] = { name, amount };
-    } else {
-      this.budgetItems.push({ name, amount });
+    if (!this.welcomeContainer) {
+      this.showMainContentImmediately();
+      return;
     }
 
-    this.saveToStorage();
-    this.hideBudgetForm();
-    this.renderBudget();
-  }
-
-  editBudgetItem(index) {
-    this.editIndex = index;
-    document.getElementById('itemName').value = this.budgetItems[index].name;
-    document.getElementById('itemAmount').value = this.budgetItems[index].amount;
-    document.getElementById('budgetForm').classList.remove('hidden');
-  }
-
-  deleteBudgetItem(index) {
-    if (confirm('Are you sure you want to delete this item?')) {
-      this.budgetItems.splice(index, 1);
-      this.saveToStorage();
-      this.renderBudget();
+    if (this.mainApp) {
+      this.mainApp.style.opacity = '0';
+      this.mainApp.style.visibility = 'hidden';
     }
-  }
 
-  saveToStorage() {
-    localStorage.setItem('wedease_budget', JSON.stringify(this.budgetItems));
-  }
+    this.startWelcomeSequence();
 
-  renderBudget() {
-    const budgetList = document.getElementById('budget-list');
-    const totalAmountDisplay = document.getElementById('totalAmount');
-    
-    if (!budgetList) return;
-
-    budgetList.innerHTML = "";
-    let total = 0;
-
-    this.budgetItems.forEach((item, index) => {
-      total += item.amount;
-
-      const div = document.createElement("div");
-      div.classList.add("budget-item");
-
-      div.innerHTML = `
-        <span class="item-name">${item.name}</span>
-        <span class="item-amount">
-          $${item.amount.toLocaleString()}
-          <span class="actions">
-            <button onclick="budgetManager.editBudgetItem(${index})">Edit</button>
-            <button onclick="budgetManager.deleteBudgetItem(${index})">Delete</button>
-          </span>
-        </span>
-      `;
-
-      budgetList.appendChild(div);
+    this.startButton.addEventListener('click', () => {
+      this.startWithSound();
     });
+  }
 
-    if (totalAmountDisplay) {
-      totalAmountDisplay.textContent = "$" + total.toLocaleString();
+  startWelcomeSequence() {
+    this.welcomeContainer.classList.add('open');
+    
+    setTimeout(() => {
+      this.createQuantumParticles();
+      this.createLightBeams();
+      this.createFloatingElements();
+    }, 500);
+    
+    setTimeout(() => {
+      this.startButton.style.transform = 'translate(-50%, -50%) scale(1)';
+      this.startButton.style.opacity = '1';
+    }, 2000);
+  }
+
+  startWithSound() {
+    this.playWelcomeSound();
+    this.completeWelcomeExperience();
+  }
+
+  playWelcomeSound() {
+    if (!this.audio || this.audioPlayed) return;
+
+    this.audio.volume = 0.3;
+    this.audio.currentTime = 0;
+    
+    const playPromise = this.audio.play();
+    
+    if (playPromise !== undefined) {
+      playPromise.then(() => {
+        this.audioPlayed = true;
+        
+        setTimeout(() => {
+          if (this.audio && this.audioPlayed) {
+            this.audio.pause();
+            this.audio.currentTime = 0;
+          }
+        }, 5000);
+      }).catch(error => {
+        console.log('Audio play failed:', error);
+      });
+    }
+  }
+
+  completeWelcomeExperience() {
+    sessionStorage.setItem('wedease_welcome_shown', 'true');
+    
+    this.startButton.style.transform = 'translate(-50%, -50%) scale(0.9)';
+    this.startButton.style.background = 'linear-gradient(45deg, #764ba2, #667eea)';
+    
+    setTimeout(() => {
+      this.welcomeContainer.style.opacity = '0';
+      this.welcomeContainer.style.transform = 'scale(1.1)';
+      
+      this.showMainContent();
+      
+      setTimeout(() => {
+        this.hideWelcomeContainer();
+        
+        // FIX: Initialize hero manager here
+        if (window.heroManager && typeof window.heroManager.init === 'function') {
+          console.log("Starting hero image rotation...");
+          window.heroManager.init();
+        }
+      }, 1000);
+    }, 300);
+  }
+
+  showMainContent() {
+    if (this.mainApp) {
+      this.mainApp.style.opacity = '1';
+      this.mainApp.style.visibility = 'visible';
+    }
+  }
+
+  showMainContentImmediately() {
+    if (this.mainApp) {
+      this.mainApp.style.opacity = '1';
+      this.mainApp.style.visibility = 'visible';
+    }
+    this.hideWelcomeContainer();
+    
+    // FIX: Initialize hero manager for returning visitors
+    if (window.heroManager && typeof window.heroManager.init === 'function') {
+      console.log("Starting hero image rotation immediately...");
+      window.heroManager.init();
+    }
+  }
+
+  hideWelcomeContainer() {
+    if (this.welcomeContainer) {
+      this.welcomeContainer.style.display = 'none';
+    }
+  }
+
+  createQuantumParticles() {
+    for (let i = 0; i < 50; i++) {
+      setTimeout(() => {
+        this.createQuantumParticle();
+      }, i * 40);
+    }
+  }
+
+  createQuantumParticle() {
+    const particle = document.createElement('div');
+    particle.className = 'quantum-particle';
+    
+    const angle = Math.random() * Math.PI * 2;
+    const distance = 50 + Math.random() * 200;
+    const tx = Math.cos(angle) * distance;
+    const ty = Math.sin(angle) * distance;
+    
+    particle.style.setProperty('--tx', `${tx}px`);
+    particle.style.setProperty('--ty', `${ty}px`);
+    particle.style.left = '50%';
+    particle.style.top = '50%';
+    
+    const colors = ['#ff6b9d', '#ffd700', '#667eea', '#ffffff', '#764ba2'];
+    particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+    
+    const size = 2 + Math.random() * 4;
+    const duration = 2 + Math.random() * 2;
+    
+    particle.style.width = `${size}px`;
+    particle.style.height = `${size}px`;
+    particle.style.animation = `quantumFloat ${duration}s ease-out forwards`;
+    
+    this.welcomeContainer.appendChild(particle);
+    
+    setTimeout(() => {
+      if (particle.parentNode) {
+        particle.parentNode.removeChild(particle);
+      }
+    }, duration * 1000);
+  }
+
+  createLightBeams() {
+    for (let i = 0; i < 12; i++) {
+      const beam = document.createElement('div');
+      beam.className = 'light-beam';
+      
+      const angle = (i * 30) * (Math.PI / 180);
+      const distance = 150;
+      
+      beam.style.left = `calc(50% + ${Math.cos(angle) * distance}px)`;
+      beam.style.top = `calc(50% + ${Math.sin(angle) * distance}px)`;
+      beam.style.transform = `rotate(${angle}rad)`;
+      beam.style.animation = `beamRise 2s ease-in-out ${i * 0.2}s forwards`;
+      
+      this.welcomeContainer.appendChild(beam);
+      
+      setTimeout(() => {
+        if (beam.parentNode) {
+          beam.parentNode.removeChild(beam);
+        }
+      }, 3000);
     }
   }
 }
@@ -516,20 +592,16 @@ class ThemeManager {
     const themeCards = document.querySelectorAll('.theme-card');
     themeCards.forEach(card => {
       card.addEventListener('click', () => {
-        // Remove selected class from all cards
         themeCards.forEach(c => c.classList.remove('selected'));
-        // Add selected class to clicked card
         card.classList.add('selected');
         
         const themeName = card.querySelector('h3').textContent;
         localStorage.setItem('wedease_selected_theme', themeName);
         
-        // Show confirmation
         alert(`"${themeName}" theme selected!`);
       });
     });
 
-    // Check for previously selected theme
     const savedTheme = localStorage.getItem('wedease_selected_theme');
     if (savedTheme) {
       themeCards.forEach(card => {
@@ -542,43 +614,60 @@ class ThemeManager {
 }
 
 // ===============================================
+// BUDGET MANAGER
+// ===============================================
+
+class BudgetManager {
+  constructor() {
+    this.init();
+  }
+
+  init() {
+    console.log("Budget Manager initialized");
+  }
+}
+
+// ===============================================
 // MAIN APP INITIALIZATION
 // ===============================================
 
 class WedEASEApp {
   constructor() {
+    this.heroManager = null;
+    this.musicalEntrance = null;
     this.init();
   }
 
   init() {
     console.log("WedEASE App initialized");
     
-    // Initialize all managers
     this.utils = WedEASEUtils;
     this.budgetManager = new BudgetManager();
     this.authManager = new AuthManager();
     this.themeManager = new ThemeManager();
 
-    // Setup global functionality
+    this.musicalEntrance = new MusicalEntrance();
+    
+    if (document.getElementById('hero-image')) {
+      this.heroManager = new HeroManager();
+    }
+
     this.utils.setupHeaderScroll();
     this.utils.setupHoverEffects();
     this.utils.updateActiveNavLink();
 
-    // Additional interactive elements
     this.setupInteractiveElements();
   }
 
   setupInteractiveElements() {
-    // CTA buttons navigation
     const ctaButtons = document.querySelectorAll(".cta-button");
     ctaButtons.forEach((btn) => {
-      if (btn.getAttribute('href')) return; // Skip if already has href
+      if (btn.getAttribute('href')) return;
       btn.addEventListener("click", () => {
         window.location.href = "src/pages/about.html";
       });
     });
 
-    // Category card interactions
     const categoryCards = document.querySelectorAll('.category-card');
     categoryCards.forEach(card => {
       card.addEventListener('click', () => {
@@ -590,19 +679,18 @@ class WedEASEApp {
 }
 
 // ===============================================
-// GLOBAL INSTANCES (for inline event handlers)
+// GLOBAL INITIALIZATION
 // ===============================================
 
 let budgetManager;
-let heroManager; // ← ADD THIS LINE
+let heroManager;
 
-// Initialize the app when DOM is loaded
 document.addEventListener("DOMContentLoaded", () => {
+  console.log("WedEASE Starting...");
   budgetManager = new BudgetManager();
-  heroManager = new HeroManager(); // ← ADD THIS LINE - THIS IS CRITICAL!
+  heroManager = new HeroManager();
   new WedEASEApp();
 });
 
-// Make utils available globally
 window.WedEASEUtils = WedEASEUtils;
-window.heroManager = heroManager; // ← ADD THIS LINE
+window.heroManager = heroManager;

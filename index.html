@@ -8,6 +8,59 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Caveat:wght@400;700&family=Cedarville+Cursive&display=swap" rel="stylesheet">
 </head>
 <body>
+
+    <!-- EPIC First-Time Welcome -->
+    <div id="firstTimeWelcome" class="window-open-container">
+        <div class="window-panel top"></div>
+        <div class="window-panel bottom"></div>
+        <div class="window-panel left"></div>
+        <div class="window-panel right"></div>
+        
+        <div class="portal"></div>
+        
+        <div class="hologram-text">
+            Welcome to WedEASE
+            <div style="font-size: 1.5rem; margin-top: 1rem;">Your Dream Wedding Awaits</div>
+        </div>
+        
+        <button id="startExperience" style="
+            position: absolute;
+            top: 70%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            background: linear-gradient(45deg, #ff6b9d, #667eea);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            box-shadow: 0 10px 30px rgba(255, 107, 157, 0.4);
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            opacity: 0;
+            z-index: 10004;
+        ">Begin Your Journey</button>
+    </div>
+
+<!-- Background Audio -->
+<audio id="welcomeAudio">
+    <source src="assets/audio/Cute Piano Intro Sound.mp3" type="audio/mp3">
+</audio>
+
+<!-- Hide main content initially -->
+<style>
+    #app {
+        opacity: 0;
+        transition: opacity 1s ease-in-out;
+    }
+    
+    #app.reveal {
+        opacity: 1;
+    }
+</style>
+
     <div id="app">
         <header class="header" id="header">
             <div class="header-container">
@@ -19,9 +72,10 @@
                 <nav class="header-nav" aria-label="Main navigation">
                     <a href="index.html" class="nav-link active">Home</a>
                     <a href="src/pages/about.html" class="nav-link">About</a>
+                    <a href="src/pages/budget.html" class="nav-link">Budget</a>
                     <a href="src/pages/theme.html" class="nav-link">Theme</a>
                     <a href="src/pages/track.html" class="nav-link">Track</a>
-                    <a href="src/pages/budget.html" class="nav-link">Budget</a>
+                    
                 </nav>
                 <div class="header-right">
                     <a href="src/pages/login.html" class="login-btn" aria-label="Login">
@@ -44,7 +98,7 @@
                             All the tools you need to design, plan, and celebrate your big day—
                             smart, seamless, and stress-free.
                         </p>
-                        <a href="src/pages/theme.html" class="cta-button" id="hero-cta-button">
+                        <a href="src/pages/about.html" class="cta-button" id="hero-cta-button">
                             <!-- JavaScript will populate this content -->
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="white">
                                 <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
