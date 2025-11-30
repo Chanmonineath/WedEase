@@ -63,6 +63,7 @@ class WedEASEUtils {
   }
 }
 
+
 // ===============================================
 // HERO IMAGE ROTATOR & CTA MANAGER - FIXED
 // ===============================================
@@ -977,9 +978,10 @@ document.addEventListener("DOMContentLoaded", () => {
   budgetManager = new BudgetManager();
   heroManager = new HeroManager();
   
-  // Initialize ThemeManager only if on theme page
-  if (document.querySelector('.theme-grid')) {
-    themeManager = new ThemeManager();
+  const themeGrid = document.querySelector('.theme-grid');
+  const themeSearch = document.getElementById('theme-search');
+  if (themeGrid && themeSearch) {
+      themeManager = new ThemeManager();
   }
   
   new WedEASEApp();
