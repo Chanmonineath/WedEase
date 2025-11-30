@@ -728,8 +728,8 @@ class AuthManager {
     this.init();
   }
 
+  // FIXED: runs on ALL pages (homepage, about, theme, budget...)
   init() {
-    if (!document.getElementById('auth-status')) return;
     this.bindAuthEvents();
     this.checkCurrentUser();
   }
@@ -745,6 +745,7 @@ class AuthManager {
       .join("");
   }
 
+  // --- USER ACCOUNT STORAGE ---
   getUsers() {
     return JSON.parse(localStorage.getItem("wedease_users") || "{}");
   }
@@ -753,23 +754,41 @@ class AuthManager {
     localStorage.setItem("wedease_users", JSON.stringify(obj));
   }
 
+  // --- LOGIN SESSION ---
   setCurrentUser(email) {
-    localStorage.setItem("wedease_current", email);
+    sessionStorage.setItem("wedease_current", email);
     this.updateHeaderUser(email);
   }
 
   clearCurrentUser() {
-    localStorage.removeItem("wedease_current");
+    sessionStorage.removeItem("wedease_current");
     this.updateHeaderUser(null);
   }
 
+  // --- SHOW USERNAME IN HEADER ---
   updateHeaderUser(email) {
     const headerRight = document.querySelector(".header-right");
     if (!headerRight) return;
 
+    // Remove existing username
     const existing = document.getElementById("user-label");
     if (existing) existing.remove();
 
+    // Find login button
+    const loginBtn = headerRight.querySelector(".login-btn");
+
+    // If logged in → hide login button
+    if (email && loginBtn) {
+      loginBtn.style.display = "none";
+    }
+
+    // If logged out → show login button
+    if (!email && loginBtn) {
+      loginBtn.style.display = "flex";
+      return;
+    }
+
+    // SHOW USERNAME BUTTON
     if (email) {
       const btn = document.createElement("button");
       btn.id = "user-label";
@@ -781,12 +800,14 @@ class AuthManager {
         </svg>
         ${email.split("@")[0]}
       `;
+
       btn.addEventListener("click", () => {
         if (confirm("Sign out?")) {
           this.clearCurrentUser();
-          window.location.reload();
+          window.location.href = "../../src/pages/login.html";
         }
       });
+
       headerRight.appendChild(btn);
     }
   }
@@ -795,9 +816,10 @@ class AuthManager {
     const el = document.getElementById("auth-status");
     if (!el) return;
     el.textContent = msg;
-    el.className = isError ? 'error' : 'success';
+    el.className = isError ? "error" : "success";
   }
 
+  // --- EVENTS ---
   bindAuthEvents() {
     const signinBtn = document.getElementById("signin-btn");
     const signupBtn = document.getElementById("signup-btn");
@@ -831,69 +853,56 @@ class AuthManager {
     }
   }
 
+  // --- CREATE ACCOUNT ---
   async handleSignup() {
     const email = document.getElementById("signup-email").value.trim().toLowerCase();
     const pw = document.getElementById("signup-password").value;
     const pw2 = document.getElementById("signup-password2").value;
 
-    if (!email.includes("@")) {
-      this.showStatus("Invalid email", true);
-      return;
-    }
-    if (pw.length < 8) {
-      this.showStatus("Password must be at least 8 characters", true);
-      return;
-    }
-    if (pw !== pw2) {
-      this.showStatus("Passwords do not match", true);
-      return;
-    }
+    if (!email.includes("@")) return this.showStatus("Invalid email", true);
+    if (pw.length < 8) return this.showStatus("Password must be at least 8 characters", true);
+    if (pw !== pw2) return this.showStatus("Passwords do not match", true);
 
     const users = this.getUsers();
-    if (users[email]) {
-      this.showStatus("Account already exists", true);
-      return;
-    }
+    if (users[email]) return this.showStatus("Account already exists", true);
 
     users[email] = { hash: await this.hashPassword(pw), created: Date.now() };
     this.setUsers(users);
     this.setCurrentUser(email);
+
     this.showStatus("Account created successfully!");
 
     setTimeout(() => {
-      window.location.href = "../index.html";
+      window.location.href = "../../index.html";
     }, 1500);
   }
 
+  // --- SIGN IN ---
   async handleSignin() {
     const email = document.getElementById("signin-email").value.trim().toLowerCase();
     const pw = document.getElementById("signin-password").value;
 
     const users = this.getUsers();
-    if (!users[email]) {
-      this.showStatus("Account not found", true);
-      return;
-    }
+    if (!users[email]) return this.showStatus("Account not found", true);
 
     const hashed = await this.hashPassword(pw);
-    if (hashed !== users[email].hash) {
-      this.showStatus("Incorrect password", true);
-      return;
-    }
+    if (hashed !== users[email].hash) return this.showStatus("Incorrect password", true);
 
     this.setCurrentUser(email);
     this.showStatus("Login successful!");
 
     setTimeout(() => {
-      window.location.href = "../index.html";
+      window.location.href = "../../index.html";
     }, 1500);
   }
 
+  // --- LOAD USER ON PAGE LOAD ---
   checkCurrentUser() {
-    const current = localStorage.getItem("wedease_current");
-    if (current) this.updateHeaderUser(current);
+    const current = sessionStorage.getItem("wedease_current");
+    this.updateHeaderUser(current);
   }
 }
+
 
 // ===============================================
 // THEME PAGE FUNCTIONALITY
