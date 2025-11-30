@@ -6,6 +6,9 @@
     <title>WedEASE — Wedding Planning Made Easy</title>
     <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Caveat:wght@400;700&family=Cedarville+Cursive&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant:wght@300;400&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -44,22 +47,22 @@
         ">Begin Your Journey</button>
     </div>
 
-<!-- Background Audio -->
-<audio id="welcomeAudio">
-    <source src="assets/audio/Cute Piano Intro Sound.mp3" type="audio/mp3">
-</audio>
+    <!-- Background Audio -->
+    <audio id="welcomeAudio">
+        <source src="assets/audio/Cute Piano Intro Sound.mp3" type="audio/mp3">
+    </audio>
 
-<!-- Hide main content initially -->
-<style>
-    #app {
-        opacity: 0;
-        transition: opacity 1s ease-in-out;
-    }
-    
-    #app.reveal {
-        opacity: 1;
-    }
-</style>
+    <!-- Hide main content initially -->
+    <style>
+        #app {
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+        
+        #app.reveal {
+            opacity: 1;
+        }
+    </style>
 
     <div id="app">
         <header class="header" id="header">
@@ -75,7 +78,6 @@
                     <a href="src/pages/budget.html" class="nav-link">Budget</a>
                     <a href="src/pages/theme.html" class="nav-link">Theme</a>
                     <a href="src/pages/track.html" class="nav-link">Track</a>
-                    
                 </nav>
                 <div class="header-right">
                     <a href="src/pages/login.html" class="login-btn" aria-label="Login">
@@ -90,6 +92,7 @@
         </header>
 
         <main>
+            <!-- Hero Section -->
             <div class="hero-section">
                 <div class="hero-container">
                     <div class="hero-content-left">
@@ -98,8 +101,7 @@
                             All the tools you need to design, plan, and celebrate your big day—
                             smart, seamless, and stress-free.
                         </p>
-                        <a href="src/pages/about.html" class="cta-button" id="hero-cta-button">
-                            <!-- JavaScript will populate this content -->
+                        <a href="#weddingCountdown" class="cta-button" id="hero-cta-button">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="white">
                                 <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
                             </svg>
@@ -107,11 +109,63 @@
                         </a>
                     </div>
                     <div class="hero-illustration-right">
-                        <!-- JavaScript will handle the image source -->
                         <img src="assets/img/bride and groom.png" alt="bride and Groom" id="hero-image">
                     </div>
                 </div>
             </div>
+
+            <!-- Wedding Countdown Section -->
+            <section id="weddingCountdown" class="countdown-section">
+                <div class="countdown-container">
+                    <h2 class="countdown-title">Your Wedding Countdown</h2>
+                    <p class="countdown-subtitle">Enter your wedding date to start the countdown to your special day</p>
+                    
+                    <div class="countdown-input-section">
+                        <input type="date" 
+                            class="wedding-date-input" 
+                            id="weddingDateInput" 
+                            min=""
+                            required>
+                        <button class="set-date-btn" id="setDateBtn">Start Countdown</button>
+                        <button class="clear-date-btn" id="clearDateBtn" style="display: none;">Change Date</button>
+                    </div>
+                    
+                    <!-- Wedding Date Display -->
+                    <div class="wedding-date-display" id="weddingDateDisplay" style="display: none;">
+                        <h3>Your Wedding Date</h3>
+                        <div class="wedding-date" id="weddingDateText"></div>
+                    </div>
+                    
+                    <div class="countdown-display" id="countdownDisplay" style="display: none;">
+                        <div class="countdown-grid">
+                            <div class="countdown-item">
+                                <span class="countdown-number" id="days">0</span>
+                                <span class="countdown-label">Days</span>
+                            </div>
+                            <div class="countdown-item">
+                                <span class="countdown-number" id="hours">0</span>
+                                <span class="countdown-label">Hours</span>
+                            </div>
+                            <div class="countdown-item">
+                                <span class="countdown-number" id="minutes">0</span>
+                                <span class="countdown-label">Minutes</span>
+                            </div>
+                            <div class="countdown-item">
+                                <span class="countdown-number" id="seconds">0</span>
+                                <span class="countdown-label">Seconds</span>
+                            </div>
+                        </div>
+                        
+                        <div class="countdown-message" id="countdownMessage"></div>
+                        
+                        <!-- Explore More Button -->
+                        <button class="explore-more-btn" id="exploreMoreBtn" style="display: none;">
+                            Explore More
+                        </button>
+                    </div>
+                </div>
+            </section>
+
         </main>
 
         <footer class="footer">
@@ -126,21 +180,24 @@
                         <li><a href="index.html">Home</a></li>
                         <li><a href="src/pages/about.html">About</a></li>
                         <li><a href="src/pages/budget.html">Budget</a></li>
+                        <li><a href="src/pages/theme.html">Theme</a></li>
+                        <li><a href="src/pages/track.html">Track</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
                     <h4>Resources</h4>
                     <ul>
                         <li><a href="#">Blog</a></li>
-                        <li><a href="#">Help</a></li>
-                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Contact Us</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
                     <h4>Legal</h4>
                     <ul>
-                        <li><a href="#">Privacy</a></li>
-                        <li><a href="#">Terms</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Cookie Policy</a></li>
                     </ul>
                 </div>
             </div>
