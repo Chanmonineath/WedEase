@@ -1,9 +1,3 @@
-Fri, here is a **clean, professional, copy-ready README.md** for your GitHub project.
-It follows industry standards and matches your **updated workflow** (no pie chart, includes new features, new navigation logic, updated budget estimator, theme API, seating generator, and login system).
-You can copy-paste this directly into GitHub.
-
----
-
 # **WedEASE — Wedding Planning Made Easy**
 
 A modern, elegant, single-page wedding planning platform designed to simplify the entire planning experience.
