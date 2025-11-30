@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budget Tracker - WedEASE</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Caveat:wght@400;700&family=Cedarville+Cursive&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <header class="header" id="header">
+            <div class="header-container">
+                <div class="header-left">
+                    <a href="../../index.html" class="logo">
+                        <img src="../../assets/img/pink-purpleish logo.png" alt="WedEASE" class="logo-image">
+                    </a>
+                </div>
+                <nav class="header-nav" aria-label="Main navigation">
+                    <a href="../../index.html" class="nav-link">Home</a>
+                    <a href="about.html" class="nav-link">About</a>
+                    <a href="budget.html" class="nav-link">Budget</a>
+                    <a href="theme.html" class="nav-link">Theme</a>
+                    <a href="track.html" class="nav-link">Track</a>
+                </nav>
+                <div class="header-right">
+                    <a href="login.html" class="login-btn" aria-label="Login">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                            <circle cx="12" cy="7" r="4" />
+                        </svg>
+                        Login
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <div class="page-wrapper">
+                <!-- Simple Currency Selection - Top Right -->
+                <div class="simple-currency-selector">
+                    <select id="currencySelect" class="currency-select-simple">
+                        <option value="USD">USD ($)</option>
+                        <option value="KHR">KHR (៛)</option>
+                    </select>
+                </div>
+                
+                <h1 class="page-title">Budget Tracker</h1>
+                <p class="page-subtitle">Every Dollar, Perfectly Placed</p>
+
+
+                <!-- Budget Progress Section -->
+                <div class="budget-progress-section">
+                    <div class="budget-progress-card">
+                        <h3>Budget Progress</h3>
+                        
+                        <!-- Progress Bar at Top -->
+                        <div class="budget-progress-bar">
+                            <div class="budget-progress-fill" id="budgetProgressFill" style="width: 0%"></div>
+                        </div>
+                        <div class="budget-progress-text">
+                            <span id="progressText">0% of budget used</span>
+                            <span class="budget-progress-percentage" id="progressPercentage">0%</span>
+                        </div>
+                        
+                        <div class="progress-stats">
+                            <div class="progress-stat">
+                                <span class="stat-label">Money Spent:</span>
+                                <span class="stat-value" id="moneySpent">$0</span>
+                            </div>
+                            <div class="progress-stat">
+                                <span class="stat-label">Initial Budget:</span>
+                                <input type="number" id="initialBudget" placeholder="Enter budget" class="budget-input">
+                            </div>
+                            <button class="view-final-btn" id="viewFinalSelection">
+                                View Final Report
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Categories Grid -->
+                <div class="categories-section">
+                    <h3>Categories</h3>
+                    <div class="categories-grid" id="categoriesGrid">
+                        <!-- Categories will be populated here -->
+                    </div>
+                    <button class="add-category-btn" id="addCategoryBtn">
+                        <i class="material-icons">add</i>
+                        Add Category
+                    </button>
+                </div>
+
+                <!-- Single Active Category Table (Shows only when category is selected) -->
+                <div class="active-category-table hidden" id="activeCategoryTable">
+                    <div class="table-header">
+                        <h3 id="activeCategoryTitle">Category Table</h3>
+                        <button class="add-vendor-btn" id="addVendorBtn">
+                            <i class="material-icons">add</i>
+                            Add Vendor
+                        </button>
+                    </div>
+                    
+                    <table class="vendor-table">
+                        <thead>
+                            <tr>
+                                <th>Vendor</th>
+                                <th>Contact</th>
+                                <th>Estimated Cost</th>
+                                <th>Status</th>
+                                <th>Notes</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="activeVendorTableBody">
+                            <!-- Active category vendors will be populated here -->
+                        </tbody>
+                    </table>
+
+                    <!-- Inline Vendor Form (Hidden by default) -->
+                    <div class="inline-vendor-form hidden" id="inlineVendorForm">
+                        <div class="form-header">
+                            <h4 id="vendorFormTitle">Add Vendor</h4>
+                            <button class="close-btn" id="closeVendorForm">
+                                <i class="material-icons">close</i>
+                            </button>
+                        </div>
+                        <div class="form-fields">
+                            <input type="text" id="vendorName" placeholder="Vendor name" required>
+                            <input type="text" id="vendorContact" placeholder="Contact info">
+                            <input type="number" id="vendorCost" placeholder="Estimated cost" required>
+                            <select id="vendorStatus">
+                                <option value="considering">Considering</option>
+                                <option value="inprogress">In Progress</option>
+                                <option value="selected">Selected</option>
+                                <option value="notselected">Not Selected</option>
+                            </select>
+                            <textarea id="vendorNotes" placeholder="Notes" rows="2"></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button id="saveVendorBtn" class="btn-primary">Save Vendor</button>
+                            <button id="cancelVendorBtn" class="btn-secondary">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Final Selection View (Hidden by default) -->
+            <div class="final-selection-view hidden" id="finalSelectionView">
+                <div class="page-wrapper">
+                    <div class="final-header">
+                        <button class="back-btn" id="backFromFinal">
+                            <i class="material-icons">arrow_back</i>
+                            Back to Budget
+                        </button>
+                        <h2>Final Report</h2>
+                    </div>
+                    
+                    <div class="final-table-container">
+                        <table class="final-table" id="finalSelectionTable">
+                            <thead>
+                                <tr>
+                                    <th>Category</th>
+                                    <th>Vendor</th>
+                                    <th>Contact</th>
+                                    <th>Estimated Cost</th>
+                                    <th>Status</th>
+                                    <th>Notes</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="finalSelectionBody">
+                                <!-- Final selection rows will be populated here -->
+                            </tbody>
+                            <tfoot>
+                                <tr class="total-row">
+                                    <td colspan="3"><strong>Total Final Cost:</strong></td>
+                                    <td><strong id="totalFinalCost">$0</strong></td>
+                                    <td colspan="3"></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <!-- Simple PDF Export Button -->
+                    <!-- In Final Selection View - Simple PDF Button -->
+                    <div class="simple-pdf-export">
+                        <button id="generatePdfBtn" class="btn-primary pdf-simple-btn">
+                            <i class="material-icons">picture_as_pdf</i>
+                            Save as PDF
+                        </button>
+                        <div id="pdfStatus" class="pdf-status-simple"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <div class="footer-container">
+                <div class="footer-section">
+                    <h4>WedEASE</h4>
+                    <p>Making wedding planning beautiful and stress-free.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="src/pages/about.html">About</a></li>
+                        <li><a href="src/pages/budget.html">Budget</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Help</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="#">Privacy</a></li>
+                        <li><a href="#">Terms</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 WedEASE. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Add Category Form Popup (Hidden by default) -->
+    <div id="categoryForm" class="form-popup hidden">
+        <div class="form-header">
+            <h4>Add New Category</h4>
+            <button class="close-btn" id="closeCategoryForm">
+                <i class="material-icons">close</i>
+            </button>
+        </div>
+        <input type="text" id="newCategoryName" placeholder="Category name" required>
+        <div class="form-actions">
+            <button id="saveCategoryBtn" class="btn-primary">Create Category</button>
+            <button id="cancelCategoryBtn" class="btn-secondary">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Edit Category Form Popup (Hidden by default) -->
+    <div id="editCategoryForm" class="form-popup hidden">
+        <div class="form-header">
+            <h4>Edit Category</h4>
+            <button class="close-btn" id="closeEditCategoryForm">
+                <i class="material-icons">close</i>
+            </button>
+        </div>
+        <input type="text" id="editCategoryName" placeholder="Category name" required>
+        <div class="form-actions">
+            <button id="saveEditCategoryBtn" class="btn-primary">Save Changes</button>
+            <button id="cancelEditCategoryBtn" class="btn-secondary">Cancel</button>
+        </div>
+    </div>
+
+    <script src="../../js/budget.js"></script>
+</body>
+</html>
