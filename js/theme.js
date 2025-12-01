@@ -221,14 +221,9 @@
 
     bindEvents() {
       if (!this.searchInput) return;
-      this.searchInput.addEventListener('input', async (e) => {
+      this.searchInput.addEventListener('input', (e) => {
         const q = e.target.value.trim();
-        if (q === '') {
-          this.renderThemes();
-        } else {
-          await this.fetchThemes(q);
-          this.renderThemes();
-        }
+        this.renderThemes(q);
       });
     }
 }
