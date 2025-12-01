@@ -1,14 +1,460 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Track & Manage - WedEASE</title>
+
     <link rel="stylesheet" href="../../css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Caveat:wght@400;700&family=Cedarville+Cursive&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Caveat:wght@400;700&family=Cedarville+Cursive&display=swap"
+        rel="stylesheet">
 </head>
+
+<style>
+    .modal {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        background: rgba(0, 0, 0, 0.5) !important;
+        display: none !important;
+        align-items: center !important;
+        justify-content: center !important;
+        z-index: 999999 !important;
+    }
+
+    .modal.active {
+        display: flex !important;
+    }
+
+    .hidden {
+        display: none !important;
+    }
+
+    /* Toast messages */
+    .success-message,
+    .error-message {
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        display: none;
+        font-size: 0.95rem;
+    }
+
+    .success-message {
+        background: #4caf50;
+        color: #fff;
+    }
+
+    .error-message {
+        background: #f44336;
+        color: #fff;
+    }
+
+    .success-message.show,
+    .error-message.show {
+        display: block;
+        animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Layout: each feature full width */
+    .track-features {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        margin-top: 1.5rem;
+    }
+
+    .feature-box {
+        width: 100%;
+    }
+
+    /* Badges */
+    .badge {
+        display: inline-block;
+        padding: 0.25rem 0.6rem;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .badge-success {
+        background: #e8f5e9;
+        color: #2e7d32;
+    }
+
+    .badge-warning {
+        background: #fff3e0;
+        color: #f57c00;
+    }
+
+    .badge-danger {
+        background: #ffebee;
+        color: #c62828;
+    }
+
+    .badge-info {
+        background: #e3f2fd;
+        color: #1976d2;
+    }
+
+    /* Icon buttons */
+    .icon-btn {
+        border: none;
+        /* background: #f5f5f5; */
+        border-radius: 999px;
+        padding: 0.3rem 0.5rem;
+        font-size: 0.95rem;
+        cursor: pointer;
+        margin-left: 0.25rem;
+        /* transition: background 0.15s ease, transform 0.08s ease; */
+    }
+
+    .icon-btn:hover {
+        background: #e7e7e7;
+        transform: translateY(-1px);
+    }
+
+    /* .icon-btn.danger {
+        /* background: #ffebee; */
+
+
+    .icon-btn.danger:hover {
+        background: #ffcdd2;
+    }
+
+    /* Search + filters */
+    .search-filter-bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-top: 0.75rem;
+        align-items: center;
+    }
+
+    .search-box {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .search-box input {
+        width: 100%;
+        padding: 0.55rem 0.7rem;
+        border-radius: 0.6rem;
+        border: 1px solid var(--wed-border);
+        font-size: 0.9rem;
+    }
+
+    .filter-select {
+        padding: 0.55rem 0.7rem;
+        border-radius: 0.6rem;
+        border: 1px solid var(--wed-border);
+        font-size: 0.9rem;
+        min-width: 140px;
+    }
+
+    /* Guest list table */
+    .track-features table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.95rem;
+    }
+
+    .track-features th,
+    .track-features td {
+        padding: 0.55rem 0.4rem;
+        border-bottom: 1px solid var(--wed-border);
+    }
+
+    .track-features th {
+        text-align: left;
+        font-weight: 600;
+        color: #555;
+    }
+
+    .track-features td:last-child {
+        text-align: right;
+    }
+
+    /* Guest list scroll: show ~5 rows then scroll */
+    .guest-table-wrapper {
+        margin-top: 1rem;
+        max-height: 230px;
+        overflow-y: auto;
+        border-radius: 12px;
+        border: 1px solid var(--wed-border);
+        background: #fff;
+    }
+
+    .guest-table-wrapper table {
+        margin-top: 0;
+    }
+
+    .guest-group-row td {
+        background: #f7f2fb;
+        font-weight: 600;
+        color: #6b4a9c;
+        padding-top: 0.8rem;
+    }
+
+    .guest-row td {
+        padding-right: 30px;
+    }
+
+    /* Empty state */
+    .empty-state {
+        text-align: center;
+        padding: 2.5rem 1rem;
+        color: #999;
+        font-size: 0.95rem;
+    }
+
+    .empty-state-icon {
+        font-size: 30px;
+        margin-bottom: 0.5rem;
+        margin-left: 48%;
+    }
+
+    /* =============== BALLROOM LAYOUT =============== */
+    .ballroom-layout {
+        margin-top: 1rem;
+        padding: 1rem;
+        border-radius: 20px;
+        border: 2px solid #e0d2f7;
+        background: radial-gradient(circle at top, #f7f4ff, #fdfbfd);
+        box-shadow: 0 15px 40px rgba(31, 38, 135, 0.12);
+        font-size: 0.9rem;
+    }
+
+    .ballroom-top,
+    .ballroom-bottom {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.75rem;
+    }
+
+    .ballroom-top-label,
+    .ballroom-bottom-label {
+        padding: 0.35rem 0.75rem;
+        border-radius: 10px;
+        /* border: 1px solid #d1c4e9; */
+        font-size: 0.8rem;
+    }
+
+    .ballroom-middle {
+        display: grid;
+        grid-template-columns: 1fr 1.2fr 1fr;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+
+    .zone-column {
+        border-radius: 16px;
+        border: 1px dashed #d1c4e9;
+        padding: 0.5rem;
+        background: rgba(255, 255, 255, 0.7);
+    }
+
+    .zone-title {
+        text-align: center;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #5b4f88;
+    }
+
+    .zone-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        justify-content: center;
+    }
+
+    .center-column-inner {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        align-items: stretch;
+    }
+
+    .center-box {
+        padding: 0.4rem 0.6rem;
+        text-align: center;
+        border-radius: 12px;
+        border: 1px solid #d1c4e9;
+        background: #faf5ff;
+        font-size: 0.8rem;
+    }
+
+    .center-box.dance {
+        padding: 1.4rem 0.6rem;
+        font-weight: 600;
+    }
+
+    /* Round tables with 10 chairs + names */
+    .round-table {
+        position: relative;
+        width: 200px;
+        height: 200px;
+        margin: 0.25rem;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 6px 14px rgba(31, 38, 135, 0.09);
+    }
+
+    .table-label {
+        position: absolute;
+        top: 72px;
+        /* move table name ABOVE circle */
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: #000000;
+        pointer-events: none;
+        z-index: 99;
+    }
+
+
+    .table-circle {
+        position: absolute;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        border: 1px solid #000000;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .table-img {
+        position: absolute;
+        width: 60px;
+        /* adjust based on your image */
+        height: 60px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+    }
+
+    /* remove old circle if unused */
+    .table-circle {
+        display: none;
+    }
+
+    .chair {
+        position: absolute;
+        width: 50px;
+        text-align: center;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+    }
+
+    .chair-name {
+        font-size: 0.6rem;
+        display: block;
+        margin-bottom: 2px;
+        max-width: 40px;
+        margin-left: 5px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: #444;
+    }
+
+    .chair-name.empty {
+        color: #b5b5b5;
+        font-style: italic;
+    }
+
+    /* your new chair PNG */
+    .chair-img {
+        width: 28px;
+        /* adjust if needed */
+        height: 23px;
+        object-fit: contain;
+        transform-origin: center;
+    }
+
+    .curve-font {
+        font-family: var(--font-script);
+        color: #000000;
+        font-size: 30px;
+    }
+
+
+
+    /* Gift section */
+    .gift-type-custom {
+        margin-top: 0.5rem;
+    }
+
+    .entrance-label {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        /* spacing between image & text */
+    }
+
+    .entrance-icon {
+        width: 50px;
+        height: auto;
+        display: block;
+    }
+
+    .head-title {
+        display: flex;
+        font-family: var(--font-script);
+        align-items: center;
+        font-size: 40px;
+        /* vertically center icon + text */
+        gap: 8px;
+        /* space between icon & text */
+    }
+
+    .head-icon {
+        width: 40px;
+        height: 40px;
+        object-fit: contain;
+        display: block;
+    }
+
+
+    .stat-card {
+        background: linear-gradient(135deg, var(--cta-pink), var(--wed-primary));
+        border: #000000 solid 2px;
+        padding: 2rem;
+        border-radius: 0.75rem;
+        text-align: center;
+        color: black;
+    }
+
+    .edit-icon {
+        width: 17px;
+        height: 17px;
+    }
+</style>
+
 <body>
+
     <div id="app">
+        <!-- HEADER -->
         <header class="header" id="header">
             <div class="header-container">
                 <div class="header-left">
@@ -16,7 +462,7 @@
                         <img src="../../assets/img/pink-purpleish logo.png" alt="WedEASE" class="logo-image">
                     </a>
                 </div>
-                <nav class="header-nav" aria-label="Main navigation">
+                <nav class="header-nav">
                     <a href="../../index.html" class="nav-link">Home</a>
                     <a href="about.html" class="nav-link">About</a>
                     <a href="budget.html" class="nav-link">Budget</a>
@@ -37,53 +483,228 @@
             </div>
         </header>
 
+        <!-- MAIN CONTENT -->
         <main>
             <div class="page-wrapper">
                 <h1 class="page-title">Track & Manage</h1>
-                <p class="page-subtitle">Keep everything organized and on track</p>
+                <p class="page-subtitle" style="font-size: 16px; color: black;">Behind every table, every seat, every
+                    name lies a story, a connection, a
+                    cherished memory. We bring those stories together smoothly and beautifully, ensuring your
+                    celebration reflects not just order, but the love that brought it all to life.</p>
 
-                <div class="track-container">
-                    <div class="track-stats">
-                        <div class="stat-card">
-                            <div class="stat-number">150</div>
-                            <div class="stat-label">Guests</div>
+                <!-- Success/Error Messages -->
+                <div id="successMessage" class="success-message"></div>
+                <div id="errorMessage" class="error-message"></div>
+
+                <!-- STATS -->
+                <div class="track-stats">
+                    <div class="stat-card">
+                        <div class="curve-font stat-number" style="font-size: 40px" id="statGuests">0</div>
+                        <div class="stat-label curve-font">Guests</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number curve-font" style="font-size: 40px" id="statConfirmed">0</div>
+                        <div class="stat-label curve-font">Confirmed</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number curve-font" style="font-size: 40px" id="statGifts">0</div>
+                        <div class="stat-label curve-font">Gifts Tracked</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number curve-font" style="font-size: 40px" id="statBudget">$0</div>
+                        <div class="stat-label curve-font">Gift Value</div>
+                    </div>
+                </div>
+
+                <!-- FEATURES -->
+                <div class="track-features">
+
+                    <!-- Guest List -->
+                    <div class="feature-box">
+                        <h3 class="head-title"><img src="../../assets/img/track/guestlist.png" class="head-icon" alt="">
+                            <span style="font-size: 35px; color: #000000;">Guest
+                                List</span>
+                        </h3>
+                        <p>Manage and organize every special person who will be part of your celebration. Use search and
+                            filters to keep track of names, groups, and RSVP status with ease. <b>Importing guests
+                                file?</b>
+                            <i>Make sure your CSV file follows this layout:</i>
+                        <div style="font-size: 14px; margin-left: 20px">Name | Group | RSVP status <br>
+                            (e.g., Anna Lim, Bride’s Family, Yes)</div>
+                        </p>
+
+                        <div style="display:flex; gap:0.75rem; margin-top:1rem; flex-wrap:nowrap; align-items:center;">
+                            <button onclick="openGuestModal()" class="form-btn">Add Guest</button>
+                            <button id="btnImportCsv" class="form-btn"
+                                style="background:#ffffff; color:#a2437c; border: #a2437c solid 1px;">
+                                Import CSV
+                            </button>
+                            <button onclick="deleteAllGuests()" class="form-btn"
+                                style="background:#b42019; color:white;">
+                                Delete All Guests
+                            </button>
+                            <input id="guestCsvInput" type="file" accept=".csv" style="display:none;">
                         </div>
-                        <div class="stat-card">
-                            <div class="stat-number">87</div>
-                            <div class="stat-label">Confirmed</div>
+                        <div style="margin-top:1rem; font-size:0.9rem; color:var(--wed-text);">
+                            Total: <strong id="rsvpTotal">0</strong> |
+                            Comfirmed: <strong id="rsvpYes">0</strong> |
+                            Pending: <strong id="rsvpPending">0</strong> |
+                            Declined: <strong id="rsvpNo">0</strong>
                         </div>
-                        <div class="stat-card">
-                            <div class="stat-number">45</div>
-                            <div class="stat-label">Gifts Tracked</div>
+
+                        <!-- Search & Filters -->
+                        <div class="search-filter-bar">
+                            <div class="search-box">
+                                <input type="text" id="guestSearch" placeholder="Search by guest name...">
+                            </div>
+                            <select id="guestGroupFilter" class="filter-select">
+                                <option value="">All groups</option>
+                            </select>
+                            <select id="guestRsvpFilter" class="filter-select">
+                                <option value="">All RSVP</option>
+                                <option value="yes">Confirmed</option>
+                                <option value="pending">Pending</option>
+                                <option value="no">Declined</option>
+                            </select>
                         </div>
-                        <div class="stat-card">
-                            <div class="stat-number">$34K</div>
-                            <div class="stat-label">Total Budget</div>
+
+                        <!-- SCROLLABLE GUEST LIST -->
+                        <div class="guest-table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Group</th>
+                                        <th>RSVP</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="guestTable"></tbody>
+                            </table>
                         </div>
                     </div>
 
-                    <div class="track-features">
-                        <div class="feature-box">
-                            <h3>📋 Guest List</h3>
-                            <p>Manage and track all your guests in one place</p>
+                    <!-- Seating -->
+                    <div class="feature-box">
+                        <h3 class="head-title"><img class="head-icon" src="../../assets/img/track/seatingchart.png"
+                                alt=""><span style="font-size: 35px; color: #000000;">Seating Chart</span></h3>
+                        <p>Design a beautiful full-ballroom seating plan featuring three meaningful zones: <b>Zone A</b>
+                            for guests on the left, VIP <b>Zone C</b> at the center for your closest loved ones, and
+                            <b>Zone B </b> on the right.
+                            <br>
+                            <i>Only confirmed guests are seated.</i>
+                        </p>
+
+                        <div style="display:flex; gap:0.75rem; flex-wrap:wrap; margin-top:1rem; align-items:center;">
+                            <label>Guests per table:</label>
+                            <input id="tableCapacity" type="number" min="1" max="10" value="10"
+                                style="width:80px; padding:0.4rem; border-radius:0.5rem; border:1px solid var(--wed-border);">
+                            <br>
+
                         </div>
-                        <div class="feature-box">
-                            <h3>💒 Seating Chart</h3>
-                            <p>Plan perfect table arrangements</p>
+                        <div style="display:flex; gap:0.75rem; margin-top:1rem; flex-wrap:nowrap; align-items:center;">
+                            <button id="btnGenerateSeating" class="form-btn">Generate Seating Plan</button>
+
+                            <button id="btnResetSeating" class="form-btn" title="Reset seating"
+                                style="background:#b42019; color:white;">
+                                Delete all Seating Plan
+                            </button>
                         </div>
-                        <div class="feature-box">
-                            <h3>✅ RSVP Tracking</h3>
-                            <p>Monitor confirmations and responses</p>
+                        <div style="margin-top:1rem; font-size:0.9rem; color:var(--wed-text);">
+                            Total Tables: <strong id="tableCount">0</strong> |
+                            Total Seats: <strong id="seatedCount">0</strong>
                         </div>
-                        <div class="feature-box">
-                            <h3>🎁 Gift Registry</h3>
-                            <p>Track gifts from family and friends</p>
+
+
+                        <!-- BALLROOM LAYOUT -->
+                        <div id="ballroomLayout" class="ballroom-layout">
+                            <div class="ballroom-top">
+                                <div class="ballroom-top-label entrance-label"><img
+                                        src="../../assets/img/track/ballroom.png" alt="" class="entrance-icon"><span
+                                        style="font-size: 10px;">Ballroom
+                                        Entrance</span></div>
+                                <div class="ballroom-top-label entrance-label"><img
+                                        src="../../assets/img/track/stage.png" alt="" class="entrance-icon"><span
+                                        style="font-size: 10px;">Stage</span></div>
+                                <div class="ballroom-top-label entrance-label"><img src="../../assets/img/track/dj.png"
+                                        alt="" class="entrance-icon"><span style="font-size: 10px;">DJ</span></div>
+                            </div>
+
+                            <div class="ballroom-middle">
+                                <!-- Zone A (Left) -->
+                                <div class="zone-column">
+                                    <div class="zone-title">Zone A</div>
+                                    <div id="zoneA" class="zone-grid"></div>
+                                </div>
+
+                                <!-- Center VIP + dance floor -->
+                                <div class="zone-column">
+                                    <div class="center-column-inner">
+                                        <div class="center-box entrance-label"><img
+                                                src="../../assets/img/track/cake.png" alt="" class="entrance-icon"><span
+                                                style="font-size: 10px;">Cake Table</span></div>
+                                        <div class="center-box entrance-label"><img
+                                                src="../../assets/img/track/dancefloor.png" alt=""
+                                                class="entrance-icon"><span style="font-size: 10px;">Dance Floor</span>
+                                        </div>
+                                        <div class="zone-title">Zone C – VIP</div>
+                                        <div id="zoneC" class="zone-grid"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Zone B (Right) -->
+                                <div class="zone-column">
+                                    <div class="zone-title">Zone B</div>
+                                    <div id="zoneB" class="zone-grid"></div>
+                                </div>
+                            </div>
+
+                            <div class="ballroom-bottom">
+                                <div class="ballroom-bottom-label entrance-label"><img
+                                        src="../../assets/img/track/gifttable.png" alt="" class="entrance-icon"><span
+                                        style="font-size: 10px;">Gift Table</span></div>
+                                <div class="ballroom-bottom-label entrance-label"><img
+                                        src="../../assets/img/track/exit.png" alt="" class="entrance-icon"><span
+                                        style="font-size: 10px;">Exit</span></div>
+                            </div>
                         </div>
                     </div>
+
+                    <!-- Gifts -->
+                    <div class="feature-box">
+                        <h3 class="head-title"> <img class="head-icon" src="../../assets/img/track/giftregistry.png"
+                                alt=""><span style="font-size: 35px; color: #000000;">Gift Registry</span></h3>
+                        <p>Cherish every heartfelt gesture. Keep track of gifts with ease and automatically see the
+                            total value — <i>a gentle way to honor the love and generosity shared by your guests.</i>
+                        </p>
+
+                        <button onclick="openGiftModal()" class="form-btn" style="margin-top:1rem;">
+                            Add Gift
+                        </button>
+
+                        <div style="margin-top:1rem; font-size:0.9rem; color:var(--wed-text);">
+                            Total Gifts: <strong id="giftCount">0</strong> |
+                            Total Value: <strong id="giftTotalAmount">$0</strong>
+                        </div>
+
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Gift Type</th>
+                                    <th>From</th>
+                                    <th>Value</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="giftTable"></tbody>
+                        </table>
+                    </div>
+
                 </div>
             </div>
         </main>
 
+        <!-- FOOTER -->
         <footer class="footer">
             <div class="footer-container">
                 <div class="footer-section">
@@ -96,21 +717,24 @@
                         <li><a href="index.html">Home</a></li>
                         <li><a href="src/pages/about.html">About</a></li>
                         <li><a href="src/pages/budget.html">Budget</a></li>
+                        <li><a href="src/pages/theme.html">Theme</a></li>
+                        <li><a href="src/pages/track.html">Track</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
                     <h4>Resources</h4>
                     <ul>
                         <li><a href="#">Blog</a></li>
-                        <li><a href="#">Help</a></li>
-                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Contact Us</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
                     <h4>Legal</h4>
                     <ul>
-                        <li><a href="#">Privacy</a></li>
-                        <li><a href="#">Terms</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Cookie Policy</a></li>
                     </ul>
                 </div>
             </div>
@@ -118,7 +742,93 @@
                 <p>&copy; 2025 WedEASE. All rights reserved.</p>
             </div>
         </footer>
+
     </div>
+
+    <!-- Guest Modal -->
+    <div id="guestModal" class="modal hidden">
+        <div class="auth-card" style="width:350px; max-width:90%;">
+            <h3 style="margin-bottom:1rem;">Guest</h3>
+
+            <label>Name *</label>
+            <input id="guestName" placeholder="Enter guest name">
+
+            <!-- NEW: GROUP SELECT WITH OTHER -->
+            <label style="margin-top:0.75rem;">Group</label>
+            <select id="guestGroupSelect"
+                style="padding:0.7rem; border-radius:0.5rem; border:1px solid var(--wed-border);">
+                <option value="">Select group</option>
+                <option value="Bride's Family">Bride's Family</option>
+                <option value="Classmates">Classmates</option>
+                <option value="Co-workers">Co-workers</option>
+                <option value="VIP">VIP</option>
+                <option value="__other">Other</option>
+            </select>
+
+            <div id="guestGroupCustomWrapper" class="hidden" style="margin-top:0.5rem;">
+                <label>Custom Group</label>
+                <input id="guestGroupCustom" placeholder="Enter group or family name">
+            </div>
+
+            <label style="margin-top:0.75rem;">RSVP Status</label>
+            <select id="guestRSVP" style="padding:0.7rem; border-radius:0.5rem; border:1px solid var(--wed-border);">
+                <option value="pending">Pending</option>
+                <option value="yes">Confirmed</option>
+                <option value="no">Declined</option>
+            </select>
+
+            <div style="display:flex; justify-content:flex-end; gap:0.5rem; margin-top:1rem;">
+                <button onclick="closeGuestModal()" class="form-btn" style="background:#bbb;">
+                    Cancel
+                </button>
+                <button onclick="saveGuest()" class="form-btn">
+                    Save
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gift Modal -->
+    <div id="giftModal" class="modal hidden">
+        <div class="auth-card" style="width:380px; max-width:90%;">
+            <h3 style="margin-bottom:1rem;">Gift</h3>
+
+            <label>Gift Type *</label>
+            <select id="giftType" style="padding:0.7rem; border-radius:0.5rem; border:1px solid var(--wed-border);">
+                <option value="money">Money</option>
+                <option value="jewelry">Jewelry</option>
+                <option value="household">Household Items</option>
+                <option value="experience">Experience</option>
+                <option value="other">Other</option>
+            </select>
+
+            <div id="giftTypeCustomWrapper" class="gift-type-custom hidden">
+                <label style="margin-top:0.75rem;">Custom Gift Type</label>
+                <input id="giftTypeCustom" placeholder="e.g. Gold bracelet, Artwork">
+            </div>
+
+            <label style="margin-top:0.75rem;">From (Guest)</label>
+            <select id="giftGuest" style="padding:0.7rem; border-radius:0.5rem; border:1px solid var(--wed-border);">
+                <option value="">Select guest (optional)</option>
+            </select>
+
+            <label style="margin-top:0.75rem;">Value ($) *</label>
+            <input id="giftBudget" type="number" min="0" step="0.01" placeholder="e.g. 50.00">
+
+            <div style="display:flex; justify-content:flex-end; gap:0.5rem; margin-top:1rem;">
+                <button onclick="closeGiftModal()" class="form-btn" style="background:#bbb;">
+                    Cancel
+                </button>
+                <button onclick="saveGift()" class="form-btn">
+                    Save
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../js/track.js"></script>
     <script src="../../js/app.js"></script>
+
 </body>
+
 </html>

@@ -63,6 +63,7 @@ class WedEASEUtils {
   }
 }
 
+
 // ===============================================
 // HERO IMAGE ROTATOR & CTA MANAGER - FIXED
 // ===============================================
@@ -902,51 +903,6 @@ class AuthManager {
     this.updateHeaderUser(current);
   }
 }
-
-
-// ===============================================
-// THEME PAGE FUNCTIONALITY
-// ===============================================
-
-class ThemeManager {
-  constructor() {
-    this.init();
-  }
-
-  init() {
-    if (!document.querySelector('.theme-grid')) return;
-    this.bindThemeEvents();
-  }
-
-  bindThemeEvents() {
-    const themeCards = document.querySelectorAll('.theme-card');
-    themeCards.forEach(card => {
-      card.addEventListener('click', () => {
-        themeCards.forEach(c => c.classList.remove('selected'));
-        card.classList.add('selected');
-        
-        const themeName = card.querySelector('h3').textContent;
-        localStorage.setItem('wedease_selected_theme', themeName);
-        
-        alert(`"${themeName}" theme selected!`);
-      });
-    });
-
-    const savedTheme = localStorage.getItem('wedease_selected_theme');
-    if (savedTheme) {
-      themeCards.forEach(card => {
-        if (card.querySelector('h3').textContent === savedTheme) {
-          card.classList.add('selected');
-        }
-      });
-    }
-  }
-}
-
-// ===============================================
-// BUDGET MANAGER
-// ===============================================
-
 class BudgetManager {
   constructor() {
     this.init();
@@ -957,9 +913,6 @@ class BudgetManager {
   }
 }
 
-// ===============================================
-// MAIN APP INITIALIZATION
-// ===============================================
 
 class WedEASEApp {
   constructor() {
@@ -975,7 +928,6 @@ class WedEASEApp {
     this.utils = WedEASEUtils;
     this.budgetManager = new BudgetManager();
     this.authManager = new AuthManager();
-    this.themeManager = new ThemeManager();
 
     // Initialize managers based on page content
     if (document.getElementById('firstTimeWelcome')) {
@@ -1017,16 +969,24 @@ class WedEASEApp {
   }
 }
 
-// ===============================================
-// GLOBAL INITIALIZATION - FIXED
-// ===============================================
+let budgetManager;
+let heroManager;
+let themeManager;
 
 document.addEventListener("DOMContentLoaded", () => {
   console.log("WedEASE Starting...");
+  budgetManager = new BudgetManager();
+  heroManager = new HeroManager();
   
-  // Initialize the main app
+  const themeGrid = document.querySelector('.theme-grid');
+  const themeSearch = document.getElementById('theme-search');
+  if (themeGrid && themeSearch) {
+      themeManager = new ThemeManager();
+  }
+  
   new WedEASEApp();
 });
 
-// Make utilities globally available
 window.WedEASEUtils = WedEASEUtils;
+window.heroManager = heroManager;
+window.themeManager = themeManager;
