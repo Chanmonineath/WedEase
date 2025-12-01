@@ -63,6 +63,7 @@ class WedEASEUtils {
   }
 }
 
+
 // ===============================================
 // HERO IMAGE ROTATOR & CTA MANAGER - FIXED
 // ===============================================
@@ -902,11 +903,6 @@ class AuthManager {
     this.updateHeaderUser(current);
   }
 }
-
-// ===============================================
-// BUDGET MANAGER
-// ===============================================
-
 class BudgetManager {
   constructor() {
     this.init();
@@ -1148,10 +1144,6 @@ class ThemeManager {
   }
 }
 
-// ===============================================
-// MAIN APP INITIALIZATION - FIXED
-// ===============================================
-
 class WedEASEApp {
   constructor() {
     // Use the global instances instead of creating new ones
@@ -1159,6 +1151,7 @@ class WedEASEApp {
     this.themeManager = window.themeManager;
     this.countdownManager = null;
     this.musicalEntrance = null;
+    this.countdownManager = null;
     this.init();
   }
 
@@ -1169,16 +1162,19 @@ class WedEASEApp {
     this.budgetManager = new BudgetManager();
     this.authManager = new AuthManager();
 
-    // Initialize CountdownManager if on homepage with countdown elements
-    if (document.getElementById('weddingDateInput')) {
-      this.countdownManager = new CountdownManager();
-      window.countdownManager = this.countdownManager; // Make globally accessible
+    // Initialize managers based on page content
+    if (document.getElementById('firstTimeWelcome')) {
+      this.musicalEntrance = new MusicalEntrance();
+    }
+    
+    if (document.getElementById('hero-image')) {
+      this.heroManager = new HeroManager();
+      window.heroManager = this.heroManager; // Make globally available
     }
 
-    this.musicalEntrance = new MusicalEntrance();
-    
-    // Do NOT create another HeroManager instance here
-    // The global instance is already created in DOMContentLoaded
+    if (document.getElementById('weddingDateInput')) {
+      this.countdownManager = new CountdownManager();
+    }
 
     this.utils.setupHeaderScroll();
     this.utils.setupHoverEffects();
@@ -1206,14 +1202,9 @@ class WedEASEApp {
   }
 }
 
-// ===============================================
-// GLOBAL INITIALIZATION - FIXED (No conflicts)
-// ===============================================
-
-let budgetManager = null;
-let heroManager = null;
-let themeManager = null;
-let countdownManager = null;
+let budgetManager;
+let heroManager;
+let themeManager;
 
 document.addEventListener("DOMContentLoaded", () => {
   console.log("WedEASE Starting...");
@@ -1246,9 +1237,10 @@ document.addEventListener("DOMContentLoaded", () => {
     countdownManager = new CountdownManager();
   }
   
-  // Initialize ThemeManager only if on theme page
-  if (document.querySelector('.theme-grid')) {
-    themeManager = new ThemeManager();
+  const themeGrid = document.querySelector('.theme-grid');
+  const themeSearch = document.getElementById('theme-search');
+  if (themeGrid && themeSearch) {
+      themeManager = new ThemeManager();
   }
   
   // Create app instance
