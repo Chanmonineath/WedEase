@@ -1,0 +1,56 @@
+Name,Group,RSVP status
+Lux,VIP,Yes
+Rei,VIP,Yes
+Mae,VIP,Pending
+Ben,VIP,Yes
+Sok,VIP,Yes
+Ben,Bride's Family,Yes
+Sam,Bride's Family,Pending
+Kai,Bride's Family,Yes
+Mae,Bride's Family,No
+Lux,Bride's Family,Yes
+Rei,Bride's Family,Yes
+Tep,Bride's Family,Pending
+Sol,Bride's Family,Yes
+Phu,Bride's Family,No
+Rin,Bride's Family,Yes
+Vei,Groom's Family,Yes
+Jon,Groom's Family,Pending
+Sey,Groom's Family,Yes
+Koy,Groom's Family,Yes
+Mak,Groom's Family,No
+Lin,Groom's Family,Yes
+Tae,Groom's Family,Yes
+Pon,Groom's Family,Pending
+Sok,Groom's Family,Yes
+Kim,Groom's Family,Yes
+Lux,Classmates,Yes
+Rey,Classmates,Pending
+Jay,Classmates,Yes
+Sop,Classmates,No
+Pov,Classmates,Yes
+Kun,Classmates,Yes
+Nok,Classmates,Pending
+Rik,Classmates,Yes
+Nin,Classmates,Yes
+Jad,Classmates,No
+Tep,Co-workers,Yes
+Mak,Co-workers,Pending
+Jon,Co-workers,Yes
+Sey,Co-workers,Yes
+Rei,Co-workers,No
+Pov,Co-workers,Yes
+Sol,Co-workers,Yes
+Rin,Co-workers,Pending
+Ben,Co-workers,Yes
+Kai,Co-workers,Yes
+Lux,Friends,Yes
+Mae,Friends,Pending
+Rei,Friends,Yes
+Pon,Friends,Yes
+Sok,Friends,No
+Tep,Friends,Yes
+Jay,Friends,Yes
+Tae,Friends,Pending
+Rik,Friends,Yes
+Kun,Friends,Yes
