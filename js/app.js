@@ -860,6 +860,10 @@ class AuthManager {
     const pw = document.getElementById("signup-password").value;
     const pw2 = document.getElementById("signup-password2").value;
 
+    if (!email) return this.showStatus("Please enter your email", true);
+    if (!pw) return this.showStatus("Please enter your password", true);
+    if (!pw2) return this.showStatus("Please confirm your password", true);
+
     if (!email.includes("@")) return this.showStatus("Invalid email", true);
     if (pw.length < 8) return this.showStatus("Password must be at least 8 characters", true);
     if (pw !== pw2) return this.showStatus("Passwords do not match", true);
@@ -882,6 +886,9 @@ class AuthManager {
   async handleSignin() {
     const email = document.getElementById("signin-email").value.trim().toLowerCase();
     const pw = document.getElementById("signin-password").value;
+
+    if (!email) return this.showStatus("Please enter your email", true);
+    if (!pw) return this.showStatus("Please enter your password", true);
 
     const users = this.getUsers();
     if (!users[email]) return this.showStatus("Account not found", true);
