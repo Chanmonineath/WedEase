@@ -856,53 +856,69 @@ class AuthManager {
 
   // --- CREATE ACCOUNT ---
   async handleSignup() {
+  try {
     const email = document.getElementById("signup-email").value.trim().toLowerCase();
     const pw = document.getElementById("signup-password").value;
     const pw2 = document.getElementById("signup-password2").value;
 
-    if (!email) return this.showStatus("Please enter your email", true);
-    if (!pw) return this.showStatus("Please enter your password", true);
-    if (!pw2) return this.showStatus("Please confirm your password", true);
-
-    if (!email.includes("@")) return this.showStatus("Invalid email", true);
-    if (pw.length < 8) return this.showStatus("Password must be at least 8 characters", true);
-    if (pw !== pw2) return this.showStatus("Passwords do not match", true);
+    // Validation
+    if (!email) throw new Error("Please enter your email");
+    if (!pw) throw new Error("Please enter your password");
+    if (!pw2) throw new Error("Please confirm your password");
+    if (!email.includes("@")) throw new Error("Invalid email");
+    if (pw.length < 8) throw new Error("Password must be at least 8 characters");
+    if (pw !== pw2) throw new Error("Passwords do not match");
 
     const users = this.getUsers();
-    if (users[email]) return this.showStatus("Account already exists", true);
+    if (users[email]) throw new Error("Account already exists");
 
-    users[email] = { hash: await this.hashPassword(pw), created: Date.now() };
+    // Hash password
+    const hash = await this.hashPassword(pw);
+
+    users[email] = { hash, created: Date.now() };
     this.setUsers(users);
     this.setCurrentUser(email);
 
-    this.showStatus("Account created successfully!");
+    this.showStatus("Account created successfully!", false);
 
     setTimeout(() => {
       window.location.href = "../../index.html";
     }, 1500);
+
+  } catch (err) {
+    this.showStatus(err.message, true);
   }
+}
+
 
   // --- SIGN IN ---
   async handleSignin() {
+  try {
     const email = document.getElementById("signin-email").value.trim().toLowerCase();
     const pw = document.getElementById("signin-password").value;
 
-    if (!email) return this.showStatus("Please enter your email", true);
-    if (!pw) return this.showStatus("Please enter your password", true);
+    // Validation
+    if (!email) throw new Error("Please enter your email");
+    if (!pw) throw new Error("Please enter your password");
 
     const users = this.getUsers();
-    if (!users[email]) return this.showStatus("Account not found", true);
+    if (!users[email]) throw new Error("Account not found");
 
     const hashed = await this.hashPassword(pw);
-    if (hashed !== users[email].hash) return this.showStatus("Incorrect password", true);
+    if (hashed !== users[email].hash) throw new Error("Incorrect password");
 
     this.setCurrentUser(email);
-    this.showStatus("Login successful!");
+    this.showStatus("Login successful!", false);
 
     setTimeout(() => {
       window.location.href = "../../index.html";
     }, 1500);
+
+  } catch (err) {
+    this.showStatus(err.message, true);
   }
+}
+
 
   // --- LOAD USER ON PAGE LOAD ---
   checkCurrentUser() {
