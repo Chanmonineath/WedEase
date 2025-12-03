@@ -22,7 +22,7 @@
                 <nav class="header-nav" aria-label="Main navigation">
                     <a href="../../index.html" class="nav-link">Home</a>
                     <a href="about.html" class="nav-link">About</a>
-                    <a href="budget.html" class="nav-link active">Budget</a>
+                    <a href="budget.html" class="nav-link">Budget</a>
                     <a href="theme.html" class="nav-link">Theme</a>
                     <a href="track.html" class="nav-link">Track</a>
                 </nav>
@@ -40,17 +40,28 @@
 
         <main>
             <div class="page-wrapper">
-                <!-- Simple Currency Selection - Top Right -->
-                <div class="simple-currency-selector">
-                    <select id="currencySelect" class="currency-select-simple">
-                        <option value="USD">USD ($)</option>
-                        <option value="KHR">KHR (៛)</option>
-                    </select>
-                </div>
-                
                 <h1 class="page-title">Budget Tracker</h1>
                 <p class="page-subtitle">Every Dollar, Perfectly Placed</p>
 
+                <!-- Currency Controls -->
+                <div class="currency-controls">
+                    <div class="currency-selector">
+                        <label for="currencySelect">Currency:</label>
+                        <select id="currencySelect" class="currency-select">
+                            <option value="USD">🇺🇸 USD ($)</option>
+                            <option value="KHR">🇰🇭 KHR (៛)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="currency-info" id="currencyInfo">
+                        <div>Current currency: <strong>USD ($)</strong></div>
+                        <div id="ratesStatus" class="rates-status">Loading exchange rates...</div>
+                    </div>
+                    
+                    <button id="refreshRatesBtn" class="refresh-btn" title="Update exchange rates">
+                        <i class="material-icons">refresh</i> Refresh Rates
+                    </button>
+                </div>
 
                 <!-- Budget Progress Section -->
                 <div class="budget-progress-section">
@@ -186,7 +197,6 @@
                     </div>
 
                     <!-- Simple PDF Export Button -->
-                    <!-- In Final Selection View - Simple PDF Button -->
                     <div class="simple-pdf-export">
                         <button id="generatePdfBtn" class="btn-primary pdf-simple-btn">
                             <i class="material-icons">picture_as_pdf</i>
@@ -207,27 +217,24 @@
                 <div class="footer-section">
                     <h4>Quick Links</h4>
                     <ul>
-                        <li><a href="index.html">Home</a></li>
-                        <li><a href="src/pages/about.html">About</a></li>
-                        <li><a href="src/pages/budget.html">Budget</a></li>
-                        <li><a href="src/pages/theme.html">Theme</a></li>
-                        <li><a href="src/pages/track.html">Track</a></li>
+                        <li><a href="../../index.html">Home</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="budget.html">Budget</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
                     <h4>Resources</h4>
                     <ul>
                         <li><a href="#">Blog</a></li>
-                        <li><a href="#">Help Center</a></li>
-                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="#">Help</a></li>
+                        <li><a href="#">Contact</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
                     <h4>Legal</h4>
                     <ul>
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Terms of Service</a></li>
-                        <li><a href="#">Cookie Policy</a></li>
+                        <li><a href="#">Privacy</a></li>
+                        <li><a href="#">Terms</a></li>
                     </ul>
                 </div>
             </div>
