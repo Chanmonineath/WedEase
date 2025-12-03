@@ -832,165 +832,179 @@ main {
 }
 
 /* ===============================================
-   BUDGET PAGE - UPDATED BUTTONS
+   CURRENCY CONVERTER STYLES
    =============================================== */
 
-.budget-container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 3rem;
-  margin-top: 2rem;
-}
-
-.budget-card-main {
-  background: white;
-  border: 2px solid var(--wed-border);
-  border-radius: 0.75rem;
-  padding: 2rem;
-}
-
-.budget-card-main h3 {
-  color: var(--wed-primary);
-  margin-bottom: 1.5rem;
-  font-size: 1.5rem;
-}
-
-.budget-items {
-  margin-bottom: 2rem;
-}
-
-.budget-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 1rem 0;
-  border-bottom: 1px solid var(--wed-border);
-  align-items: center;
-}
-
-.budget-item.add-item {
-  color: var(--wed-primary);
-  cursor: pointer;
-  transition: color 0.3s ease;
-  border-bottom: none;
-}
-
-.budget-item.add-item:hover {
-  color: var(--wed-secondary);
-}
-
-.item-name {
-  font-weight: 500;
-}
-
-.item-amount {
-  font-weight: 700;
-  color: var(--wed-primary);
-}
-
-.budget-total {
-  display: flex;
-  justify-content: space-between;
-  padding: 1rem;
-  background-color: var(--wed-bg);
-  border-radius: 0.5rem;
-  margin-top: 1rem;
-  font-weight: 700;
-}
-
-.total-amount {
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: var(--wed-primary);
-}
-
-.category-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 1.5rem;
-}
-
-.category-card {
-  padding: 1.5rem;
-  background: white;
-  border: 2px solid var(--wed-border);
-  border-radius: 0.75rem;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.category-card:hover {
-  border-color: var(--wed-primary);
-  box-shadow: 0 8px 16px rgba(162, 67, 124, 0.1);
-  transform: translateY(-4px);
-}
-
-.category-card .icon {
-  font-size: 2.5rem;
-  margin-bottom: 0.75rem;
-}
-
-.category-card span {
-  display: block;
-  font-weight: 600;
-  color: var(--wed-primary);
-}
-
-/* ===== Budget CRUD Styles ===== */
-
-.form-popup {
-    margin-top: 1rem;
-    padding: 1rem;
-    background: var(--wed-bg);
-    border: 1px solid var(--wed-border);
-    border-radius: 0.75rem;
+.currency-controls {
     display: flex;
-    flex-direction: column;
-    gap: 0.8rem;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin: 2rem 0;
+    padding: 20px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(248, 243, 255, 0.9));
+    border-radius: 15px;
+    border: 2px solid var(--wed-border);
+    box-shadow: 0 8px 32px rgba(162, 67, 124, 0.15);
+    backdrop-filter: blur(10px);
 }
 
-.form-popup input {
-    padding: 0.8rem;
-    border: 1px solid var(--wed-border);
-    border-radius: 0.5rem;
+.currency-selector {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 0 0 auto;
+}
+
+.currency-selector label {
+    color: var(--wed-primary);
+    font-weight: 600;
     font-size: 1rem;
+    white-space: nowrap;
 }
 
-/* Updated budget buttons with linear gradient */
-.form-popup button {
-    padding: 0.7rem;
-    border: none;
+.currency-select {
+    padding: 10px 15px;
+    border: 2px solid var(--wed-border);
+    border-radius: 10px;
+    font-size: 1rem;
+    background: white;
+    color: var(--wed-secondary);
+    min-width: 180px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: var(--font-sans);
+}
+
+.currency-select:focus {
+    outline: none;
+    border-color: var(--wed-primary);
+    box-shadow: 0 0 0 3px rgba(162, 67, 124, 0.2);
+}
+
+.currency-info {
+    flex: 1;
+    font-size: 0.9rem;
+    color: var(--wed-text);
+    line-height: 1.4;
+}
+
+.currency-info strong {
+    color: var(--wed-primary);
+    font-weight: 600;
+}
+
+.rates-status {
+    font-size: 0.85rem;
+    margin-top: 5px;
+}
+
+.rates-status.success {
+    color: #38a169;
+}
+
+.rates-status.updating {
+    color: #d69e2e;
+}
+
+.rates-status.error {
+    color: #e53e3e;
+}
+
+.refresh-btn {
+    padding: 10px 20px;
     background: linear-gradient(45deg, var(--wed-primary), var(--wed-secondary));
     color: white;
-    border-radius: 0.5rem;
+    border: none;
+    border-radius: 10px;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
     font-weight: 600;
     transition: all 0.3s ease;
     box-shadow: 0 4px 12px rgba(162, 67, 124, 0.3);
+    white-space: nowrap;
 }
 
-.form-popup button:hover {
+.refresh-btn:hover {
     background: linear-gradient(45deg, var(--wed-secondary), var(--wed-primary));
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(162, 67, 124, 0.4);
 }
 
-.actions {
-    display: flex;
-    gap: 0.5rem;
+.refresh-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
 }
 
-.actions button {
-    background: none;
-    border: none;
-    color: var(--wed-primary);
-    cursor: pointer;
-    font-weight: 600;
-    padding: 0.25rem 0.5rem;
+.refresh-btn .material-icons {
+    font-size: 18px;
 }
 
-.actions button:hover {
-    color: var(--wed-secondary);
+/* Currency notification */
+.currency-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 25px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    animation: slideInRight 0.3s ease forwards;
+    border-left: 4px solid var(--wed-primary);
+    max-width: 350px;
+}
+
+.currency-notification.success {
+    border-left-color: #38a169;
+}
+
+.currency-notification.error {
+    border-left-color: #e53e3e;
+}
+
+.currency-notification p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--wed-text);
+    line-height: 1.4;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Responsive design for currency controls */
+@media (max-width: 768px) {
+    .currency-controls {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+    }
+    
+    .currency-selector {
+        justify-content: space-between;
+    }
+    
+    .currency-info {
+        text-align: center;
+    }
+    
+    .refresh-btn {
+        width: 100%;
+        justify-content: center;
+    }
 }
 
 /* ===============================================
