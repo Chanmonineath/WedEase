@@ -1,5 +1,5 @@
 // ===============================================
-// COMPLETE BUDGET MANAGER WITH CURRENCY & PDF EXPORT
+// BUDGET MANAGER WITH REAL API CURRENCY CONVERTER
 // ===============================================
 
 class BudgetManager {
@@ -18,20 +18,154 @@ class BudgetManager {
         this.editVendorId = null;
         this.editingCategoryIndex = null;
         
-        // Currency settings
+        // Currency settings with API integration
         this.selectedCurrency = 'USD';
-        this.exchangeRate = 4100; // 1 USD = 4100 KHR
+        this.apiKey = 'd78fa077cf41fe15f31b2333'; 
+        this.baseCurrency = 'USD';
+        this.exchangeRates = {};
+        this.availableCurrencies = ['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'INR', 'SGD', 'CHF', 'CNY', 'KHR'];
         
         this.init();
     }
 
-    init() {
+    async init() {
         console.log("Budget Manager initialized");
+        await this.loadExchangeRates(); // Load rates first
         this.bindEvents();
         this.renderCategories();
         this.loadCurrencySettings();
         this.loadInitialBudget();
         this.updateBudgetProgress();
+        this.populateCurrencyDropdown();
+    }
+
+    async loadExchangeRates() {
+        try {
+            console.log("Fetching exchange rates from API...");
+            
+            // Try to get cached rates first
+            const cachedRates = this.getCachedRates();
+            if (cachedRates && this.isCacheValid(cachedRates.timestamp)) {
+                console.log("Using cached exchange rates");
+                this.exchangeRates = cachedRates.rates;
+                return;
+            }
+
+            // Fetch fresh rates from API
+            const response = await fetch(`https://v6.exchangerate-api.com/v6/${this.apiKey}/latest/USD`);
+            
+            if (!response.ok) {
+                throw new Error(`API error: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            
+            if (data.result === "success") {
+                this.exchangeRates = data.conversion_rates;
+                console.log("Exchange rates loaded successfully:", this.exchangeRates);
+                
+                // Cache the rates
+                this.cacheRates(this.exchangeRates);
+                
+                // Update available currencies based on API response
+                this.availableCurrencies = Object.keys(this.exchangeRates);
+            } else {
+                throw new Error(data["error-type"] || "Failed to fetch exchange rates");
+            }
+            
+        } catch (error) {
+            console.error("Failed to load exchange rates:", error);
+            
+            // Try to use cached rates even if expired
+            const cachedRates = this.getCachedRates();
+            if (cachedRates) {
+                console.log("Using expired cached rates as fallback");
+                this.exchangeRates = cachedRates.rates;
+            } else {
+                // Fallback to hardcoded rates if API and cache both fail
+                console.log("Using fallback exchange rates");
+                this.exchangeRates = {
+                    USD: 1,
+                    EUR: 0.92,
+                    GBP: 0.79,
+                    JPY: 149.50,
+                    CAD: 1.37,
+                    AUD: 1.53,
+                    INR: 83.21,
+                    SGD: 1.34,
+                    CHF: 0.88,
+                    CNY: 7.23,
+                    KHR: 4100
+                };
+            }
+        }
+    }
+
+    getCachedRates() {
+        try {
+            const cached = localStorage.getItem('wedease_exchange_rates');
+            return cached ? JSON.parse(cached) : null;
+        } catch (error) {
+            console.error("Error reading cached rates:", error);
+            return null;
+        }
+    }
+
+    cacheRates(rates) {
+        try {
+            const cacheData = {
+                rates: rates,
+                timestamp: Date.now()
+            };
+            localStorage.setItem('wedease_exchange_rates', JSON.stringify(cacheData));
+        } catch (error) {
+            console.error("Error caching rates:", error);
+        }
+    }
+
+    isCacheValid(timestamp) {
+        // Cache is valid for 1 hour (3600000 ms)
+        const oneHour = 3600000;
+        return (Date.now() - timestamp) < oneHour;
+    }
+
+    populateCurrencyDropdown() {
+        const currencySelect = document.getElementById('currencySelect');
+        if (!currencySelect) return;
+
+        // Clear existing options
+        currencySelect.innerHTML = '';
+        
+        // Add options for available currencies
+        this.availableCurrencies.forEach(currency => {
+            const option = document.createElement('option');
+            option.value = currency;
+            option.textContent = `${currency} ${this.getCurrencySymbol(currency)}`;
+            
+            // Add country flags for common currencies
+            const flags = {
+                'USD': '🇺🇸',
+                'EUR': '🇪🇺', 
+                'GBP': '🇬🇧',
+                'JPY': '🇯🇵',
+                'CAD': '🇨🇦',
+                'AUD': '🇦🇺',
+                'INR': '🇮🇳',
+                'SGD': '🇸🇬',
+                'CHF': '🇨🇭',
+                'CNY': '🇨🇳',
+                'KHR': '🇰🇭'
+            };
+            
+            if (flags[currency]) {
+                option.textContent = `${flags[currency]} ${currency} ${this.getCurrencySymbol(currency)}`;
+            }
+            
+            currencySelect.appendChild(option);
+        });
+        
+        // Set the selected value
+        currencySelect.value = this.selectedCurrency;
     }
 
     bindEvents() {
@@ -66,6 +200,12 @@ class BudgetManager {
         const generatePdfBtn = document.getElementById('generatePdfBtn');
         if (generatePdfBtn) generatePdfBtn.addEventListener('click', () => this.generatePDF());
 
+        // Refresh rates button
+        const refreshRatesBtn = document.getElementById('refreshRatesBtn');
+        if (refreshRatesBtn) {
+            refreshRatesBtn.addEventListener('click', () => this.refreshExchangeRates());
+        }
+
         if (initialBudgetInput) {
             initialBudgetInput.addEventListener('change', (e) => this.updateInitialBudget(e.target.value));
             initialBudgetInput.addEventListener('blur', (e) => {
@@ -96,69 +236,129 @@ class BudgetManager {
     }
 
     // ===============================================
-    // CURRENCY METHODS - FIXED
+    // CURRENCY METHODS WITH API INTEGRATION
     // ===============================================
+
+    async refreshExchangeRates() {
+        const statusElement = document.getElementById('ratesStatus');
+        const refreshBtn = document.getElementById('refreshRatesBtn');
+        
+        if (refreshBtn) {
+            refreshBtn.disabled = true;
+            refreshBtn.innerHTML = '<i class="material-icons">refresh</i> Updating...';
+        }
+        
+        if (statusElement) {
+            statusElement.textContent = 'Updating exchange rates...';
+            statusElement.className = 'rates-status updating';
+        }
+        
+        try {
+            await this.loadExchangeRates();
+            this.populateCurrencyDropdown();
+            
+            if (statusElement) {
+                statusElement.textContent = `Rates updated at ${new Date().toLocaleTimeString()}`;
+                statusElement.className = 'rates-status success';
+            }
+            
+            // If currency changed, update all displays
+            this.updateAllCurrencyDisplays();
+            
+        } catch (error) {
+            console.error("Failed to refresh rates:", error);
+            
+            if (statusElement) {
+                statusElement.textContent = 'Failed to update rates. Using cached data.';
+                statusElement.className = 'rates-status error';
+            }
+        } finally {
+            if (refreshBtn) {
+                refreshBtn.disabled = false;
+                refreshBtn.innerHTML = '<i class="material-icons">refresh</i> Refresh Rates';
+            }
+        }
+    }
 
     loadCurrencySettings() {
         const savedCurrency = localStorage.getItem('wedease_currency');
-        if (savedCurrency) {
+        if (savedCurrency && this.availableCurrencies.includes(savedCurrency)) {
             this.selectedCurrency = savedCurrency;
             const currencySelect = document.getElementById('currencySelect');
             if (currencySelect) {
                 currencySelect.value = savedCurrency;
             }
         }
+        
+        // Show last update time
+        const cachedRates = this.getCachedRates();
+        const statusElement = document.getElementById('ratesStatus');
+        if (statusElement && cachedRates) {
+            const lastUpdate = new Date(cachedRates.timestamp).toLocaleTimeString();
+            statusElement.textContent = `Rates last updated: ${lastUpdate}`;
+            statusElement.className = 'rates-status success';
+        }
+        
         this.updateBudgetInputDisplay();
         this.updateAllCurrencyDisplays();
     }
 
-    changeCurrency(newCurrency) {
+    async changeCurrency(newCurrency) {
+        if (newCurrency === this.selectedCurrency) return;
+        
         const oldCurrency = this.selectedCurrency;
         this.selectedCurrency = newCurrency;
         localStorage.setItem('wedease_currency', newCurrency);
         
         // Convert all existing data when switching currencies
-        this.convertAllData(oldCurrency, newCurrency);
+        await this.convertAllData(oldCurrency, newCurrency);
         
         this.updateBudgetInputDisplay();
         this.updateAllCurrencyDisplays();
+        
+        // Show notification
+        this.showNotification(`Currency changed to ${newCurrency}`);
     }
 
-    convertAllData(oldCurrency, newCurrency) {
+    async convertAllData(oldCurrency, newCurrency) {
+        if (oldCurrency === newCurrency) return;
+        
+        // Get exchange rates
+        const oldRate = this.exchangeRates[oldCurrency];
+        const newRate = this.exchangeRates[newCurrency];
+        
+        if (!oldRate || !newRate) {
+            console.error("Missing exchange rates for conversion");
+            this.showNotification("Unable to convert: missing exchange rates", true);
+            return;
+        }
+        
+        // Calculate conversion factor
+        const conversionFactor = newRate / oldRate;
+        
         // Convert initial budget
         if (this.initialBudget > 0) {
-            if (oldCurrency === 'USD' && newCurrency === 'KHR') {
-                // Convert USD to KHR
-                this.initialBudget = Math.round(this.initialBudget * this.exchangeRate);
-            } else if (oldCurrency === 'KHR' && newCurrency === 'USD') {
-                // Convert KHR to USD
-                this.initialBudget = Math.round(this.initialBudget / this.exchangeRate);
-            }
+            this.initialBudget = Math.round(this.initialBudget * conversionFactor * 100) / 100;
             localStorage.setItem('wedease_initial_budget', this.initialBudget.toString());
         }
         
         // Convert all vendor costs
         Object.keys(this.vendors).forEach(category => {
             this.vendors[category].forEach(vendor => {
-                if (oldCurrency === 'USD' && newCurrency === 'KHR') {
-                    vendor.cost = Math.round(vendor.cost * this.exchangeRate);
-                } else if (oldCurrency === 'KHR' && newCurrency === 'USD') {
-                    vendor.cost = Math.round(vendor.cost / this.exchangeRate);
-                }
+                vendor.cost = Math.round(vendor.cost * conversionFactor * 100) / 100;
             });
         });
+        
         this.saveVendors();
+        
+        console.log(`Converted all data from ${oldCurrency} to ${newCurrency} using factor ${conversionFactor}`);
     }
 
     updateBudgetInputDisplay() {
         const budgetInput = document.getElementById('initialBudget');
         if (budgetInput) {
             // Update placeholder based on currency
-            if (this.selectedCurrency === 'KHR') {
-                budgetInput.placeholder = 'Enter budget in KHR';
-            } else {
-                budgetInput.placeholder = 'Enter budget in USD';
-            }
+            budgetInput.placeholder = `Enter budget in ${this.selectedCurrency}`;
             
             // Update existing value for display
             if (this.initialBudget > 0) {
@@ -173,19 +373,74 @@ class BudgetManager {
             this.renderActiveVendorTable();
         }
         this.updateFinalSelection();
-    }
-
-    formatCurrency(amount) {
-        // Amount is already in the current currency, just format it
-        if (this.selectedCurrency === 'KHR') {
-            return `៛${amount.toLocaleString()}`;
-        } else {
-            return `$${amount.toLocaleString()}`;
+        
+        // Update currency info display
+        const currencyInfo = document.getElementById('currencyInfo');
+        if (currencyInfo) {
+            currencyInfo.innerHTML = `
+                <div>Current currency: <strong>${this.selectedCurrency} ${this.getCurrencySymbol(this.selectedCurrency)}</strong></div>
+                <div><small>1 USD = ${this.exchangeRates[this.selectedCurrency]?.toFixed(2) || '?'} ${this.selectedCurrency}</small></div>
+            `;
         }
     }
 
-    getCurrencySymbol() {
-        return this.selectedCurrency === 'KHR' ? '៛' : '$';
+    formatCurrency(amount) {
+        if (!amount && amount !== 0) return '';
+        
+        const currency = this.selectedCurrency;
+        const symbol = this.getCurrencySymbol(currency);
+        
+        // Format number with commas
+        const formattedAmount = amount.toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+        
+        return `${symbol}${formattedAmount}`;
+    }
+
+    getCurrencySymbol(currency) {
+        const symbols = {
+            'USD': '$',
+            'EUR': '€',
+            'GBP': '£',
+            'JPY': '¥',
+            'CAD': 'CA$',
+            'AUD': 'A$',
+            'INR': '₹',
+            'SGD': 'S$',
+            'CHF': 'CHF',
+            'CNY': '¥',
+            'KHR': '៛'
+        };
+        
+        return symbols[currency] || currency;
+    }
+
+    showNotification(message, isError = false) {
+        // Remove existing notification
+        const existingNotification = document.querySelector('.currency-notification');
+        if (existingNotification) {
+            existingNotification.remove();
+        }
+        
+        // Create notification
+        const notification = document.createElement('div');
+        notification.className = `currency-notification ${isError ? 'error' : 'success'}`;
+        notification.innerHTML = `<p>${message}</p>`;
+        
+        // Add to page
+        const mainElement = document.querySelector('main');
+        if (mainElement) {
+            mainElement.appendChild(notification);
+        } else {
+            document.body.appendChild(notification);
+        }
+        
+        // Auto-remove after 3 seconds
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
     }
 
     // ===============================================
@@ -201,7 +456,7 @@ class BudgetManager {
     }
 
     updateInitialBudget(newBudget) {
-        let budgetValue = parseInt(newBudget) || 0;
+        let budgetValue = parseFloat(newBudget) || 0;
         
         // Store the value directly in the current currency
         this.initialBudget = budgetValue;
@@ -768,19 +1023,29 @@ class BudgetManager {
             doc.setFontSize(11);
             doc.setFont('helvetica', 'normal');
             doc.text(`Generated on ${new Date().toLocaleDateString()}`, 20, 55);
-            doc.text(`Currency: ${this.selectedCurrency}`, 20, 65);
+            doc.text(`Currency: ${this.selectedCurrency} (${this.getCurrencySymbol(this.selectedCurrency)})`, 20, 65);
+            
+            // Show exchange rate info if not USD
+            if (this.selectedCurrency !== 'USD') {
+                const usdRate = this.exchangeRates[this.selectedCurrency];
+                if (usdRate) {
+                    doc.text(`Exchange rate: 1 USD = ${usdRate.toFixed(4)} ${this.selectedCurrency}`, 20, 75);
+                }
+            }
             
             // Divider line
             doc.setDrawColor(200, 200, 200);
-            doc.line(20, 75, 190, 75);
+            const dividerY = this.selectedCurrency !== 'USD' ? 85 : 75;
+            doc.line(20, dividerY, 190, dividerY);
             
             // ===== TABLE TITLE =====
             doc.setFontSize(14);
             doc.setFont('helvetica', 'bold');
-            doc.text('Final Vendor Selections & Costs', 20, 90);
+            const tableTitleY = dividerY + 15;
+            doc.text('Final Vendor Selections & Costs', 20, tableTitleY);
             
             // ===== TABLE HEADERS =====
-            let yPosition = 110;
+            let yPosition = tableTitleY + 20;
             doc.setFontSize(9);
             doc.setFont('helvetica', 'bold');
             
@@ -838,7 +1103,7 @@ class BudgetManager {
                     const contactDisplay = contact.length > 15 ? contact.substring(0, 15) + '...' : contact;
                     doc.text(contactDisplay, 110, yPosition);
                     
-                    // Cost - Format without currency symbol
+                    // Cost
                     const costText = this.formatCurrencyForPDF(vendor.cost);
                     doc.text(costText, 140, yPosition);
                     
@@ -894,10 +1159,11 @@ class BudgetManager {
                 doc.setFontSize(8);
                 doc.setTextColor(150, 150, 150);
                 doc.text('WedEASE Budget Tracker', 105, 290, { align: 'center' });
+                doc.text(`Currency: ${this.selectedCurrency} • Powered by ExchangeRate-API`, 105, 295, { align: 'center' });
             }
 
             // Save the PDF
-            const fileName = `Wedding-Budget-${new Date().getTime()}.pdf`;
+            const fileName = `Wedding-Budget-${this.selectedCurrency}-${new Date().getTime()}.pdf`;
             doc.save(fileName);
 
             statusElement.textContent = 'PDF generated successfully!';
@@ -910,7 +1176,6 @@ class BudgetManager {
         }
     }
 
-    // Add this method for PDF currency formatting (without symbols)
     formatCurrencyForPDF(amount) {
         // Format without currency symbols, just numbers with commas
         return amount.toLocaleString();
@@ -927,6 +1192,7 @@ class BudgetManager {
             document.head.appendChild(script);
         });
     }
+
     // ===============================================
     // UTILITY METHODS
     // ===============================================
