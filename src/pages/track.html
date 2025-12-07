@@ -8,6 +8,11 @@
 
     <link rel="stylesheet" href="../../css/style.css">
     <link
+      rel="icon"
+      type="image/png"
+      href="../../assets/img/pink-purpleish logo.png"
+    />
+    <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Caveat:wght@400;700&family=Cedarville+Cursive&display=swap"
         rel="stylesheet">
 </head>
@@ -677,17 +682,32 @@
                         <p>Cherish every heartfelt gesture. Keep track of gifts with ease and automatically see the
                             total value — <i>a gentle way to honor the love and generosity shared by your guests.</i>
                         </p>
+                        <div style="display:flex; gap:0.75rem; flex-wrap:nowrap; align-items:center;">
+                            <button onclick="openGiftModal()" class="form-btn" style="margin-top:1rem;">
+                                Add Gift
+                            </button>
 
-                        <button onclick="openGiftModal()" class="form-btn" style="margin-top:1rem;">
-                            Add Gift
-                        </button>
+                            <button id="btnImportGiftCsv" class="form-btn"
+                                style="background:#ffffff; color:#a2437c; border:#a2437c solid 1px; margin-left:0.5rem;">
+                                Import CSV
+                            </button>
+                            <button id="btnDeleteAllGifts" class="form-btn"
+                                style="background:#b42019; color:white; margin-left:0.5rem;">
+                                Delete All Gifts
+                            </button>
+
+                        </div>
+                                                
+
+                        <input id="giftCsvInput" type="file" accept=".csv" style="display:none;">
+
 
                         <div style="margin-top:1rem; font-size:0.9rem; color:var(--wed-text);">
                             Total Gifts: <strong id="giftCount">0</strong> |
                             Total Value: <strong id="giftTotalAmount">$0</strong>
                         </div>
-
-                        <table>
+                        <div class="guest-table-wrapper">
+                            <table>
                             <thead>
                                 <tr>
                                     <th>Gift Type</th>
@@ -698,6 +718,7 @@
                             </thead>
                             <tbody id="giftTable"></tbody>
                         </table>
+                        </div>
                     </div>
 
                 </div>
@@ -798,7 +819,6 @@
                 <option value="money">Money</option>
                 <option value="jewelry">Jewelry</option>
                 <option value="household">Household Items</option>
-                <option value="experience">Experience</option>
                 <option value="other">Other</option>
             </select>
 

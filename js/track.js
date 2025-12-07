@@ -617,6 +617,64 @@ function toggleGiftCustomInput() {
         wrapper.classList.add("hidden");
     }
 }
+/* ==============================
+   IMPORT GIFTS CSV
+   Format: GiftType, FromName, Value
+============================== */
+function importGiftsCSV(file) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        const lines = e.target.result.split(/\r?\n/);
+        let count = 0;
+
+        lines.forEach((line, i) => {
+            if (!line.trim()) return;
+            if (i === 0 && line.toLowerCase().includes("gift")) return;
+
+            const parts = parseCSV(line);
+            const type = parts[0] ? parts[0].trim() : "";
+            const fromName = parts[1] ? parts[1].trim() : "";
+            const value = parseFloat(parts[2] || "0");
+
+            if (!type || isNaN(value)) return;
+
+            // match guest by name (optional)
+            let guestId = "";
+            if (fromName) {
+                const g = guests.find(gg => gg.name.toLowerCase() === fromName.toLowerCase());
+                if (g) guestId = g.id;
+            }
+
+            gifts.push({
+                id: "gift_" + Date.now() + "_" + Math.random(),
+                type,
+                budget: value,
+                guestId
+            });
+
+            count++;
+        });
+
+        showSuccess(`Imported ${count} gifts`);
+        refresh();
+    };
+
+    reader.readAsText(file);
+}
+function deleteAllGifts() {
+    if (!gifts.length) {
+        return showError("No gifts to delete");
+    }
+
+    if (!confirm(`Are you sure you want to delete ALL ${gifts.length} gifts? This cannot be undone.`)) {
+        return;
+    }
+
+    gifts = [];
+    saveState();
+    refresh();
+    showSuccess("All gifts have been deleted");
+}
 
 function saveGift() {
     const typeSelect = $("giftType");
@@ -789,6 +847,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Guest group custom input
     $("guestGroupSelect")?.addEventListener("change", toggleGuestCustomGroup);
+
+    const giftCsvInput = $("giftCsvInput");
+    const btnGiftImport = $("btnImportGiftCsv");
+
+    if (btnGiftImport && giftCsvInput) {
+        btnGiftImport.addEventListener("click", () => giftCsvInput.click());
+        giftCsvInput.addEventListener("change", e => {
+            const file = e.target.files[0];
+            if (file) importGiftsCSV(file);
+            e.target.value = "";
+        });
+    }
+    // Delete All Gifts
+    $("btnDeleteAllGifts")?.addEventListener("click", deleteAllGifts);
+
+
 });
 
 /* ==============================
