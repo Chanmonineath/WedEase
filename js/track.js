@@ -546,28 +546,20 @@ function renderSeating() {
         tableEl.appendChild(tableImg);
 
 
-        // 10 seats around the table
-        // 10 seats around the table
         const totalSeats = table.capacity || 10;
         const centerX = 100; // half of 150
         const centerY = 100;
         const radius = 60;
-
         for (let i = 0; i < totalSeats; i++) {
-            const angle = -Math.PI / 2 + (2 * Math.PI * i) / totalSeats; // start at top
-
+            const angle = -Math.PI / 2 + (2 * Math.PI * i) / totalSeats; 
             const seatX = centerX + radius * Math.cos(angle);
             const seatY = centerY + radius * Math.sin(angle);
-
             const chair = document.createElement("div");
             chair.className = "chair";
             chair.style.left = seatX + "px";
             chair.style.top = seatY + "px";
-
-            // Guest name ABOVE chair
             const nameSpan = document.createElement("span");
             nameSpan.className = "chair-name";
-
             const guest = guestsAtTable[i];
             if (guest) {
                 nameSpan.textContent = guest.name;
@@ -575,18 +567,12 @@ function renderSeating() {
                 nameSpan.textContent = "Empty";
                 nameSpan.classList.add("empty");
             }
-
-            // CHAIR IMAGE instead of dot
             const img = document.createElement("img");
             img.className = "chair-img";
-            img.src = "../../assets/img/track/chair.png"; // your actual image
-
-            // rotation angle: chair faces toward center
-            // add children
+            img.src = "../../assets/img/track/chair.png"; 
             chair.appendChild(nameSpan);
             chair.appendChild(img);
             tableEl.appendChild(chair);
-
         }
 
         if (table.zone === "A") {
@@ -682,23 +668,19 @@ function saveGift() {
     const budgetValue = $("giftBudget").value;
     const budget = parseFloat(budgetValue);
     const guestId = $("giftGuest").value;
-
     if (isNaN(budget)) return showError("Please enter a valid amount");
-
     let type;
     if (typeSelect.value === "other") {
         type = customType || "Other";
     } else {
         type = typeSelect.value;
     }
-
     const gift = {
         id: editingGiftId || ("gift_" + Date.now()),
         type,
         budget,
         guestId
     };
-
     if (editingGiftId) {
         const index = gifts.findIndex(g => g.id === editingGiftId);
         if (index !== -1) gifts[index] = gift;

@@ -1,30 +1,38 @@
 // =========================
-// THEME MANAGER (Unsplash API + search)
+// THEME MANAGER — Instant placeholders + async Unsplash loading
 // =========================
 class ThemeManager {
   constructor() {
     this.accessKey = "i65VqX1kxQVuEwSEABbxMRtA_rufIZ7_DuQWG1W_EBQ";
     this.themeGrid = null;
     this.searchInput = null;
-    this.themes = [];
+    this.themes = []; // will hold API results later
     this.init();
   }
 
+  // =========================
+  // INIT — show placeholders first, then load API in background
+  // =========================
   async init() {
     this.themeGrid = document.querySelector(".theme-grid");
     this.searchInput = document.getElementById("theme-search");
-    if (!this.themeGrid) return;
 
-    // Use a curated list of wedding theme recommendations (title + short blurb)
-    await this.fetchCuratedThemes();
-    this.renderThemes();
+    // Step 1: render local placeholder images immediately
+    this.renderPlaceholderThemes();
+
+    // Step 2: load real images asynchronously (does NOT block UI)
+    this.fetchCuratedThemes().then(() => {
+      this.renderThemes(); // replaces placeholders if API returns
+    });
+
     this.bindEvents();
   }
 
-  // Curated themes with short recommendation descriptions
+  // =========================
+  // Curated themes
+  // =========================
   getCuratedList() {
     return [
-      // Soft & Romantic
       {
         key: "romantic",
         title: "Romantic",
@@ -62,7 +70,6 @@ class ThemeManager {
         desc: "Leafy backdrops, natural textures, and woodland vibes.",
       },
 
-      // Elegant & Classic
       {
         key: "elegant",
         title: "Elegant",
@@ -79,7 +86,6 @@ class ThemeManager {
         desc: "Gold accents, crystal decor, and premium styling.",
       },
 
-      // Modern & Contemporary
       {
         key: "modern",
         title: "Modern",
@@ -102,7 +108,6 @@ class ThemeManager {
         desc: "Vibrant colors, rich fabrics, and celebratory traditions.",
       },
 
-      // Nature Themes
       {
         key: "beach",
         title: "Beach Wedding",
@@ -114,7 +119,6 @@ class ThemeManager {
         desc: "Warm glowing tones and dreamy golden-hour aesthetics.",
       },
 
-      // Fun & Unique
       {
         key: "vintage",
         title: "Vintage",
@@ -128,80 +132,114 @@ class ThemeManager {
     ];
   }
 
+  // =========================
+  // Local placeholder images: 3 per theme
+  // =========================
+  getLocalPlaceholderImages(key) {
+    return [
+      `../../../assets/img/theme-placeholders/${key}-1.png`,
+      `../../../assets/img/theme-placeholders/${key}-2.png`,
+      `../../../assets/img/theme-placeholders/${key}-3.png`,
+    ];
+  }
+
+  // =========================
+  // 1️⃣ Render placeholders instantly (no API wait)
+  // =========================
+  renderPlaceholderThemes() {
+    const themes = this.getCuratedList();
+    this.themeGrid.innerHTML = "";
+
+    themes.forEach((theme) => {
+      const placeholders = this.getLocalPlaceholderImages(theme.key);
+
+      const card = document.createElement("div");
+      card.className = "theme-card";
+
+      const imagesHtml = placeholders
+        .map(
+          (src) => `<img class="theme-img" src="${src}" alt="${theme.title}">`
+        )
+        .join("");
+
+      card.innerHTML = `
+        <div class="theme-image-grid">${imagesHtml}</div>
+        <div class="theme-body">
+          <h3>${theme.title}</h3>
+          <p class="theme-desc">${theme.desc}</p>
+        </div>
+      `;
+
+      this.themeGrid.appendChild(card);
+    });
+  }
+
+  // =========================
+  // 2️⃣ Load real Unsplash images asynchronously
+  // =========================
   async fetchCuratedThemes() {
     const curated = this.getCuratedList();
     const results = [];
+
     for (const item of curated) {
-      try {
-        // Fetch 3 images with varied queries to get more visual diversity
-        const queries = [
-          `${item.key} wedding decoration`,
-          `${item.key} wedding ceremony`,
-          `${item.key} wedding reception`,
-        ];
-        const seenIds = new Set();
-        const images = [];
+      const fallback = this.getLocalPlaceholderImages(item.key);
+      const images = [];
+      let link = "#"; // default link
 
-        for (const q of queries) {
-          const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(
-            q
-          )}&per_page=1&client_id=${this.accessKey}`;
-          try {
-            const resp = await fetch(url);
-            if (!resp.ok) continue;
-            const json = await resp.json();
-            const photo = (json.results || [])[0];
-            if (photo && photo.id && !seenIds.has(photo.id)) {
-              seenIds.add(photo.id);
-              images.push(photo.urls.small);
-            }
-          } catch (e) {
-            // continue to next query if this one fails
-          }
-        }
+      // Fetch 3 small images
+      const queries = [
+        `${item.key} wedding decoration`,
+        `${item.key} wedding ceremony`,
+        `${item.key} wedding reception`,
+      ];
 
-        const firstPhotoUrl = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(
-          `${item.key} wedding`
-        )}&per_page=1&client_id=${this.accessKey}`;
-        let link = "#";
+      for (const q of queries) {
         try {
-          const resp = await fetch(firstPhotoUrl);
+          const resp = await fetch(
+            `https://api.unsplash.com/search/photos?query=${encodeURIComponent(
+              q
+            )}&per_page=1&client_id=${this.accessKey}`
+          );
+
           if (resp.ok) {
             const json = await resp.json();
-            const photo = (json.results || [])[0];
-            if (photo) link = photo.links.html;
-          }
-        } catch (e) {
-          // fallback link stays '#'
-        }
+            const photo = json?.results?.[0];
 
-        console.log(
-          `Theme "${item.key}" fetched ${images.length} unique images:`,
-          images
-        );
-        results.push({
-          key: item.key,
-          title: item.title,
-          description: item.desc,
-          images: images.length ? images : ["assets/img/placeholder.jpg"],
-          link: link,
-        });
-      } catch (err) {
-        console.warn("Curated theme fetch failed for", item.key, err);
-        results.push({
-          key: item.key,
-          title: item.title,
-          description: item.desc,
-          images: ["assets/img/placeholder.jpg"],
-          link: "#",
-        });
+            if (photo) {
+              images.push(photo.urls.small);
+
+              // grab a link if we don't have one yet
+              if (link === "#" && photo.links?.html) {
+                link = photo.links.html;
+              }
+            } else {
+              images.push(null);
+            }
+          } else {
+            images.push(null);
+          }
+        } catch {
+          images.push(null);
+        }
       }
+
+      const finalImages = images.map((img, idx) => img || fallback[idx]);
+
+      results.push({
+        key: item.key,
+        title: item.title,
+        description: item.desc,
+        images: finalImages,
+        link: link,
+      });
     }
+
     this.themes = results;
   }
 
-  // fetchThemes removed — we use curated themes instead
-
+  // =========================
+  // 3️⃣ Replace placeholders with API images (if available)
+  // =========================
   renderThemes(filter = "") {
     this.themeGrid.innerHTML = "";
 
@@ -211,126 +249,37 @@ class ThemeManager {
         t.key.toLowerCase().includes(filter.toLowerCase())
     );
 
-    if (themesToShow.length === 0) {
-      this.themeGrid.innerHTML = "<p>No themes found.</p>";
-      return;
-    }
-
     themesToShow.forEach((theme) => {
       const card = document.createElement("div");
       card.className = "theme-card";
-      const imagesHtml = (theme.images || [])
-        .map((src) => `<img src="${src}" alt="${theme.title}">`)
-        .join("");
-      card.innerHTML = `
-            <div class="theme-image-grid">${imagesHtml}</div>
-            <div class="theme-body">
-              <h3>${theme.title}</h3>
-              <p class="theme-desc">${theme.description}</p>
-              <div class="theme-actions"><a class="inspo-btn" style="" href="${theme.link}" target="_blank" rel="noopener noreferrer">View Inspiration</a></div>
-            </div>
-          `;
 
-      card.addEventListener("click", () => {
-        // Open an in-page explorer so the user can browse more inspiration
-        this.showThemeExplorer(theme);
-        localStorage.setItem("wedease_selected_theme", theme.title);
-      });
+      const imagesHtml = theme.images
+        .map(
+          (src) => `<img class="theme-img" src="${src}" alt="${theme.title}">`
+        )
+        .join("");
+
+      card.innerHTML = `
+        <div class="theme-image-grid">${imagesHtml}</div>
+        <div class="theme-body">
+          <h3>${theme.title}</h3>
+          <p class="theme-desc">${theme.description}</p>
+          <div class="theme-actions"><a class="inspo-btn" style="" href="${theme.link}" target="_blank" rel="noopener noreferrer">View Inspiration</a></div>
+        </div>
+      `;
 
       this.themeGrid.appendChild(card);
     });
   }
 
-  // Open a modal to explore a theme's images in larger view
-  showThemeExplorer(theme) {
-    try {
-      // remove existing modal if any
-      const existing = document.getElementById("theme-modal-overlay");
-      if (existing) existing.remove();
-
-      const overlay = document.createElement("div");
-      overlay.id = "theme-modal-overlay";
-      overlay.className = "theme-modal-overlay";
-
-      const modal = document.createElement("div");
-      modal.className = "theme-modal";
-
-      const header = document.createElement("div");
-      header.className = "theme-modal-header";
-      header.innerHTML = `<h2>${theme.title}</h2>`;
-
-      const closeBtn = document.createElement("button");
-      closeBtn.className = "theme-modal-close";
-      closeBtn.innerHTML = "&times;";
-      closeBtn.addEventListener("click", () => overlay.remove());
-      header.appendChild(closeBtn);
-
-      const body = document.createElement("div");
-      body.className = "theme-modal-body";
-
-      // Large main image area
-      const mainWrap = document.createElement("div");
-      mainWrap.className = "theme-modal-main";
-      const mainImg = document.createElement("img");
-      mainImg.className = "theme-modal-main-img";
-      mainImg.src =
-        theme.images && theme.images[0]
-          ? theme.images[0]
-          : "assets/img/placeholder.jpg";
-      mainImg.alt = theme.title;
-      mainWrap.appendChild(mainImg);
-
-      // Thumbnails
-      const thumbs = document.createElement("div");
-      thumbs.className = "theme-modal-thumbs";
-      (theme.images || []).forEach((src, idx) => {
-        const t = document.createElement("img");
-        t.src = src;
-        t.alt = `${theme.title} ${idx + 1}`;
-        t.className = "theme-modal-thumb";
-        t.addEventListener("click", (e) => {
-          e.stopPropagation();
-          mainImg.src = src;
-        });
-        thumbs.appendChild(t);
-      });
-
-      // External link
-      const actions = document.createElement("div");
-      actions.className = "theme-modal-actions";
-      const viewBtn = document.createElement("a");
-      viewBtn.href = theme.link || "#";
-      viewBtn.target = "_blank";
-      viewBtn.rel = "noopener noreferrer";
-      viewBtn.className = "inspo-btn";
-      viewBtn.innerText = "Open on Unsplash";
-      actions.appendChild(viewBtn);
-
-      body.appendChild(mainWrap);
-      body.appendChild(thumbs);
-      body.appendChild(actions);
-
-      modal.appendChild(header);
-      modal.appendChild(body);
-      overlay.appendChild(modal);
-
-      // close on overlay click (but not when clicking modal)
-      overlay.addEventListener("click", (e) => {
-        if (e.target === overlay) overlay.remove();
-      });
-
-      document.body.appendChild(overlay);
-    } catch (err) {
-      console.error("Error opening theme explorer:", err);
-      alert("Unable to open explorer. Please try again.");
-    }
-  }
-
+  // =========================
+  // Search handling
+  // =========================
   bindEvents() {
     if (!this.searchInput) return;
+
     this.searchInput.addEventListener("input", (e) => {
-      const q = e.target.value.trim();
-      this.renderThemes(q);
+      this.renderThemes(e.target.value.trim());
     });
   }
 }

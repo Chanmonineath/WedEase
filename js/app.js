@@ -856,69 +856,46 @@ class AuthManager {
 
   // --- CREATE ACCOUNT ---
   async handleSignup() {
-  try {
     const email = document.getElementById("signup-email").value.trim().toLowerCase();
     const pw = document.getElementById("signup-password").value;
     const pw2 = document.getElementById("signup-password2").value;
 
-    // Validation
-    if (!email) throw new Error("Please enter your email");
-    if (!pw) throw new Error("Please enter your password");
-    if (!pw2) throw new Error("Please confirm your password");
-    if (!email.includes("@")) throw new Error("Invalid email");
-    if (pw.length < 8) throw new Error("Password must be at least 8 characters");
-    if (pw !== pw2) throw new Error("Passwords do not match");
+    if (!email.includes("@")) return this.showStatus("Invalid email", true);
+    if (pw.length < 8) return this.showStatus("Password must be at least 8 characters", true);
+    if (pw !== pw2) return this.showStatus("Passwords do not match", true);
 
     const users = this.getUsers();
-    if (users[email]) throw new Error("Account already exists");
+    if (users[email]) return this.showStatus("Account already exists", true);
 
-    // Hash password
-    const hash = await this.hashPassword(pw);
-
-    users[email] = { hash, created: Date.now() };
+    users[email] = { hash: await this.hashPassword(pw), created: Date.now() };
     this.setUsers(users);
     this.setCurrentUser(email);
 
-    this.showStatus("Account created successfully!", false);
+    this.showStatus("Account created successfully!");
 
     setTimeout(() => {
       window.location.href = "../../index.html";
     }, 1500);
-
-  } catch (err) {
-    this.showStatus(err.message, true);
   }
-}
-
 
   // --- SIGN IN ---
   async handleSignin() {
-  try {
     const email = document.getElementById("signin-email").value.trim().toLowerCase();
     const pw = document.getElementById("signin-password").value;
 
-    // Validation
-    if (!email) throw new Error("Please enter your email");
-    if (!pw) throw new Error("Please enter your password");
-
     const users = this.getUsers();
-    if (!users[email]) throw new Error("Account not found");
+    if (!users[email]) return this.showStatus("Account not found", true);
 
     const hashed = await this.hashPassword(pw);
-    if (hashed !== users[email].hash) throw new Error("Incorrect password");
+    if (hashed !== users[email].hash) return this.showStatus("Incorrect password", true);
 
     this.setCurrentUser(email);
-    this.showStatus("Login successful!", false);
+    this.showStatus("Login successful!");
 
     setTimeout(() => {
       window.location.href = "../../index.html";
     }, 1500);
-
-  } catch (err) {
-    this.showStatus(err.message, true);
   }
-}
-
 
   // --- LOAD USER ON PAGE LOAD ---
   checkCurrentUser() {
@@ -936,10 +913,12 @@ class BudgetManager {
   }
 }
 
-
 class WedEASEApp {
   constructor() {
-    this.heroManager = null;
+    // Use the global instances instead of creating new ones
+    this.heroManager = window.heroManager;
+    this.themeManager = window.themeManager;
+    this.countdownManager = null;
     this.musicalEntrance = null;
     this.countdownManager = null;
     this.init();
@@ -998,8 +977,34 @@ let themeManager;
 
 document.addEventListener("DOMContentLoaded", () => {
   console.log("WedEASE Starting...");
+  
+  // Initialize BudgetManager
   budgetManager = new BudgetManager();
-  heroManager = new HeroManager();
+  
+  // Initialize HeroManager ONCE - only on pages with hero-image
+  if (document.getElementById('hero-image')) {
+    heroManager = new HeroManager();
+    
+    // Check if welcome was already shown
+    const hasShownWelcome = sessionStorage.getItem('wedease_welcome_shown');
+    const hasWelcomeContainer = document.getElementById('firstTimeWelcome');
+    
+    // Start hero manager immediately if:
+    // 1. Welcome was already shown OR
+    // 2. There's no welcome container (other pages)
+    if (hasShownWelcome || !hasWelcomeContainer) {
+      console.log("Starting hero image rotation immediately...");
+      setTimeout(() => {
+        heroManager.init();
+      }, 100);
+    }
+    // Otherwise, MusicalEntrance will call heroManager.init() after welcome
+  }
+  
+  // Initialize CountdownManager - only on pages with countdown elements
+  if (document.getElementById('weddingDateInput')) {
+    countdownManager = new CountdownManager();
+  }
   
   const themeGrid = document.querySelector('.theme-grid');
   const themeSearch = document.getElementById('theme-search');
@@ -1007,9 +1012,16 @@ document.addEventListener("DOMContentLoaded", () => {
       themeManager = new ThemeManager();
   }
   
+  // Create app instance
   new WedEASEApp();
 });
 
+// Expose utilities globally
 window.WedEASEUtils = WedEASEUtils;
 window.heroManager = heroManager;
 window.themeManager = themeManager;
+window.countdownManager = countdownManager;
+
+// Make CountdownManager available globally
+window.CountdownManager = CountdownManager;
+window.AuthManager = AuthManager;
