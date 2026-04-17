@@ -1,0 +1,20 @@
+{
+  "name": "wedease-frontend",
+  "version": "1.0.0",
+  "description": "WedEase frontend - HTML5, CSS3, and vanilla JavaScript wedding planning client",
+  "private": true,
+  "scripts": {
+    "serve": "python -m http.server 5500",
+    "start": "python -m http.server 5500",
+    "open": "open index.html"
+  },
+  "keywords": [
+    "wedding",
+    "frontend",
+    "html",
+    "css",
+    "javascript"
+  ],
+  "author": "",
+  "license": "ISC"
+}
