@@ -1,0 +1,35 @@
+{
+  "name": "wedease",
+  "version": "1.0.0",
+  "description": "A modern, elegant, single-page wedding planning platform designed to simplify the entire planning experience. Built with HTML, CSS, and JavaScript (frontend) and Node.js + MongoDB (backend).",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "cd backend && npm run dev",
+    "start": "cd backend && npm start",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && python -m http.server 8000",
+    "setup": "npm install && cd backend && npm install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Chanmonineath/WedEase.git"
+  },
+  "keywords": [
+    "wedding",
+    "planner",
+    "budget",
+    "guests"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Chanmonineath/WedEase/issues"
+  },
+  "homepage": "https://github.com/Chanmonineath/WedEase#readme"
+}
