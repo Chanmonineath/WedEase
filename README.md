@@ -143,11 +143,13 @@ WedEASE/
 │   ├── node_modules/
 │   ├── src/
 │   │   ├── config/               # Environment & database setup
-│   │   ├── middlewares/           # Error & not-found handlers
-│   │   ├── modules/              # Feature modules (routes/controllers/models)
-│   │   ├── routes/               # API route registry
+│   │   ├── controllers/          # Request handlers
+│   │   ├── middleware/           # Auth and shared HTTP middleware
+│   │   ├── models/               # MongoDB collection helpers
+│   │   ├── routes/               # API route modules
+│   │   ├── utils/                # Shared helpers
 │   │   ├── app.js                # Express app composition
-│   │   └── server.js             # Startup & graceful shutdown
+│   │   └── db.js                 # MongoDB connection management
 │   ├── package.json              # Backend dependencies
 │   ├── package-lock.json
 │   ├── .env                      # Backend environment config
@@ -250,9 +252,9 @@ open frontend/index.html
 
 # Option 2: Serve locally with Python
 cd frontend
-python -m http.server 8000
+python -m http.server 5500
 
-# Then visit http://localhost:8000/index.html
+# Then visit http://localhost:5500/index.html
 ```
 
 Alternatively, use VS Code Live Server or any static HTTP server of your choice.

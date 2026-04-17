@@ -2,10 +2,10 @@
   "name": "wedease",
   "version": "1.0.0",
   "description": "A modern, elegant, single-page wedding planning platform designed to simplify the entire planning experience.\r Built with **HTML, CSS, and JavaScript** (no frameworks), WedEASE focuses on smooth navigation, beautiful UI, and practical tools for brides, grooms, and coordinators.",
-  "main": "src/server.js",
+  "main": "src/app.js",
   "scripts": {
-    "dev": "nodemon src/server.js",
-    "start": "node src/server.js",
+    "dev": "nodemon src/app.js",
+    "start": "node src/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
