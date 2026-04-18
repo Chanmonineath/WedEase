@@ -1,8 +1,16 @@
 const crypto = require("node:crypto");
+const dotenv = require("dotenv");
+const path = require("node:path");
 
 const User = require("../models/User");
-const env = require("../config/env");
 const { generateToken } = require("../utils/generateToken");
+
+dotenv.config({
+  path: path.resolve(__dirname, "../../.env"),
+  override: true,
+});
+
+const isProduction = process.env.NODE_ENV === "production";
 
 const hashPassword = (
   password,
@@ -62,7 +70,7 @@ const register = async (req, res, next) => {
     res.cookie("token", token, {
       httpOnly: true,
       sameSite: "lax",
-      secure: env.nodeEnv === "production",
+      secure: isProduction,
     });
 
     return res.status(201).json({
@@ -114,7 +122,7 @@ const login = async (req, res, next) => {
     res.cookie("token", token, {
       httpOnly: true,
       sameSite: "lax",
-      secure: env.nodeEnv === "production",
+      secure: isProduction,
     });
 
     return res.status(200).json({

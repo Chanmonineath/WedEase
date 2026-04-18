@@ -1,9 +1,9 @@
 const crypto = require("node:crypto");
 
-const env = require("../config/env");
+const jwtSecret = process.env.JWT_SECRET || "dev_secret_change_me";
 
 const sign = (value) =>
-  crypto.createHmac("sha256", env.jwtSecret).update(value).digest("base64url");
+  crypto.createHmac("sha256", jwtSecret).update(value).digest("base64url");
 
 const generateToken = (payload) => {
   const tokenPayload = {
