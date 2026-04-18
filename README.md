@@ -135,46 +135,44 @@ WedEASE includes a lightweight login system:
 
 # 📁 **Project Structure**
 
-WedEASE is organized as a **monorepo** with separate frontend and backend applications:
-
 ```
 WedEASE/
-├── backend/                       # Node.js + Express + MongoDB server
-│   ├── node_modules/
-│   ├── src/
-│   │   ├── config/               # Environment & database setup
-│   │   ├── controllers/          # Request handlers
-│   │   ├── middleware/           # Auth and shared HTTP middleware
-│   │   ├── models/               # MongoDB collection helpers
-│   │   ├── routes/               # API route modules
-│   │   ├── utils/                # Shared helpers
-│   │   ├── app.js                # Express app composition
-│   │   └── db.js                 # MongoDB connection management
-│   ├── package.json              # Backend dependencies
+├── backend/
+│   ├── package.json
 │   ├── package-lock.json
-│   ├── .env                      # Backend environment config
-│   └── .env.example
+│   ├── .env
+│   ├── .env.example
+│   └── src/
+│       ├── config/
+│       ├── controllers/
+│       ├── middleware/
+│       ├── models/
+│       ├── routes/
+│       └── utils/
 │
-├── frontend/                      # HTML5 + CSS3 + Vanilla JavaScript
+├── frontend/
+│   ├── package.json
+│   ├── package-lock.json
 │   ├── index.html
+│   ├── app.js
+│   ├── budget.js
+│   ├── theme.js
+│   ├── track.js
 │   ├── css/
 │   ├── js/
 │   ├── assets/
-│   ├── src/
-│   ├── app.js, budget.js, theme.js, track.js
-│   └── package.json              # Frontend metadata (optional tooling)
+│   └── src/
 │
-├── package.json                   # Root monorepo orchestration
-├── README.md                      # This file
-├── .gitignore
-└── .vscode/
+├── README.md
+└── .gitignore
 ```
 
 ## **Package Structure**
 
-- **Root `package.json`** — Monorepo management with workspace commands
-- **Backend `package.json`** — Node.js dependencies (Express, Mongoose, etc.)
-- **Frontend `package.json`** — Frontend metadata for future tooling (no build step required)
+- **Backend `package.json`** — Backend dependencies and scripts
+- **Backend `package-lock.json`** — Backend lockfile
+- **Frontend `package.json`** — Frontend metadata and scripts
+- **Frontend `package-lock.json`** — Frontend lockfile
 
 ## **API Endpoints**
 
@@ -195,17 +193,17 @@ cd WedEASE
 
 ## **Quick Start (Backend + Frontend)**
 
-From the root directory, install and run both:
+Install and run each app from its own folder:
 
 ```bash
-# Install all dependencies (root + backend)
-npm run setup
-
-# Start backend server (from root)
+# Backend
+cd backend
+npm install
 npm run dev
 
-# In a separate terminal, start frontend (optional - can open directly in browser)
-npm run dev:frontend
+# Frontend (in a separate terminal)
+cd frontend
+python -m http.server 5500
 ```
 
 ## **Backend Setup** (Detailed)
@@ -244,7 +242,7 @@ Backend API runs on **http://localhost:5000**
 
 The frontend is a static site with no build step required.
 
-From root, open the frontend directly or serve locally:
+Open the frontend directly or serve locally:
 
 ```bash
 # Option 1: Direct file open
