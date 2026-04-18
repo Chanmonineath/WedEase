@@ -4,8 +4,17 @@ const helmet = require("helmet");
 const morgan = require("morgan");
 const compression = require("compression");
 const cookieParser = require("cookie-parser");
+const dotenv = require("dotenv");
+const path = require("node:path");
 
-const env = require("./config/env");
+dotenv.config({
+  path: path.resolve(__dirname, "../.env"),
+  override: false,
+});
+
+const port = Number(process.env.PORT) || 5000;
+const corsOrigin = process.env.CORS_ORIGIN || "http://localhost:5500";
+
 const { connectToDatabase, closeDatabase } = require("./config/db");
 const authRoutes = require("./routes/auth.routes");
 const guestRoutes = require("./routes/guest.routes");
@@ -20,7 +29,7 @@ const app = express();
 app.disable("x-powered-by");
 
 app.use(helmet());
-app.use(cors({ origin: env.corsOrigin }));
+app.use(cors({ origin: corsOrigin }));
 app.use(compression());
 app.use(morgan("dev"));
 app.use(express.json());
@@ -50,30 +59,40 @@ app.use("/api/gifts", giftRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
-const startServer = async () => {
-  try {
-    await connectToDatabase();
-    console.log("Database connected successfully.");
+const startServer = () =>
+  connectToDatabase()
+    .then(() => {
+      const server = app.listen(port, () =>
+        console.log(`
+╔════════════════════════════════════════════════╗
+║   Backend Server Running                       ║
+╠════════════════════════════════════════════════╣
+║   Express started on http://localhost:${port}     ║
+║   press Ctrl-C to terminate.                   ║
+╚════════════════════════════════════════════════╝
+  `),
+      );
 
-    const server = app.listen(env.port, () => {
-      console.log(`Server running on port ${env.port}`);
+      const shutdown = async () => {
+        await closeDatabase();
+        server.close(() => {
+          console.log("Server closed.");
+          process.exit(0);
+        });
+      };
+
+      process.on("SIGINT", shutdown);
+      process.on("SIGTERM", shutdown);
+
+      return server;
+    })
+    .catch((error) => {
+      console.error(
+        "Failed to connect to the database. Server not started.",
+        error,
+      );
+      process.exit(1);
     });
-
-    const shutdown = async () => {
-      await closeDatabase();
-      server.close(() => {
-        console.log("Server closed.");
-        process.exit(0);
-      });
-    };
-
-    process.on("SIGINT", shutdown);
-    process.on("SIGTERM", shutdown);
-  } catch (error) {
-    console.error("Failed to start server:", error.message);
-    process.exit(1);
-  }
-};
 
 if (require.main === module) {
   startServer();
