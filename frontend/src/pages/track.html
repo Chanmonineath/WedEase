@@ -5,16 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Track & Manage - WedEASE</title>
 
-<<<<<<< Updated upstream:src/pages/track.html
-    <link rel="stylesheet" href="../../css/style.css">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Caveat:wght@400;700&family=Cedarville+Cursive&display=swap"
-        rel="stylesheet">
-=======
   <!-- Styles -->
-    <link rel="stylesheet" href="../../css/base.css" />
-    <link rel="stylesheet" href="../../css/track.css" />
-    <link rel="stylesheet" href="../../css/chatbot.css" />
+  <link rel="stylesheet" href="../../css/style.css" />
+  <link rel="stylesheet" href="../../css/track.css" />
+  <link rel="stylesheet" href="../../css/chatbot.css" />
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="../../assets/img/pink-purpleish logo.png" />
@@ -23,7 +17,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Caveat:wght@400;700&family=Cedarville+Cursive&display=swap" rel="stylesheet" />
->>>>>>> Stashed changes:frontend/src/pages/track.html
 </head>
 <body>
 
@@ -106,230 +99,11 @@
             </p>
             <p class="csv-hint">Name | Group | RSVP status &nbsp;(e.g., Anna Lim, Bride's Family, Yes)</p>
 
-<<<<<<< Updated upstream:src/pages/track.html
-                        <!-- Search & Filters -->
-                        <div class="search-filter-bar">
-                            <div class="search-box">
-                                <input type="text" id="guestSearch" placeholder="Search by guest name...">
-                            </div>
-                            <select id="guestGroupFilter" class="filter-select">
-                                <option value="">All groups</option>
-                            </select>
-                            <select id="guestRsvpFilter" class="filter-select">
-                                <option value="">All RSVP</option>
-                                <option value="yes">Confirmed</option>
-                                <option value="pending">Pending</option>
-                                <option value="no">Declined</option>
-                            </select>
-                        </div>
-
-                        <!-- SCROLLABLE GUEST LIST -->
-                        <div class="guest-table-wrapper">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Group</th>
-                                        <th>RSVP</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody id="guestTable"></tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!-- Seating -->
-                    <div class="feature-box">
-                        <h3 class="head-title"><img class="head-icon" src="../../assets/img/track/seatingchart.png"
-                                alt=""><span style="font-size: 35px; color: #000000;">Seating Chart</span></h3>
-                        <p>Design a beautiful full-ballroom seating plan featuring three meaningful zones: <b>Zone A</b>
-                            for guests on the left, VIP <b>Zone C</b> at the center for your closest loved ones, and
-                            <b>Zone B </b> on the right.
-                            <br>
-                            <i>Only confirmed guests are seated.</i>
-                        </p>
-
-                        <div style="display:flex; gap:0.75rem; flex-wrap:wrap; margin-top:1rem; align-items:center;">
-                            <label>Guests per table:</label>
-                            <input id="tableCapacity" type="number" min="1" max="10" value="10"
-                                style="width:80px; padding:0.4rem; border-radius:0.5rem; border:1px solid var(--wed-border);">
-                            <br>
-
-                        </div>
-                        <div style="display:flex; gap:0.75rem; margin-top:1rem; flex-wrap:nowrap; align-items:center;">
-                            <button id="btnGenerateSeating" class="form-btn">Generate Seating Plan</button>
-
-                            <button id="btnResetSeating" class="form-btn" title="Reset seating"
-                                style="background:#b42019; color:white;">
-                                Delete all Seating Plan
-                            </button>
-                        </div>
-                        <div style="margin-top:1rem; font-size:0.9rem; color:var(--wed-text);">
-                            Total Tables: <strong id="tableCount">0</strong> |
-                            Total Seats: <strong id="seatedCount">0</strong>
-                        </div>
-
-
-                        <!-- BALLROOM LAYOUT -->
-                        <div id="ballroomLayout" class="ballroom-layout">
-                            <div class="ballroom-top">
-                                <div class="ballroom-top-label entrance-label"><img
-                                        src="../../assets/img/track/ballroom.png" alt="" class="entrance-icon"><span
-                                        style="font-size: 10px;">Ballroom
-                                        Entrance</span></div>
-                                <div class="ballroom-top-label entrance-label"><img
-                                        src="../../assets/img/track/stage.png" alt="" class="entrance-icon"><span
-                                        style="font-size: 10px;">Stage</span></div>
-                                <div class="ballroom-top-label entrance-label"><img src="../../assets/img/track/dj.png"
-                                        alt="" class="entrance-icon"><span style="font-size: 10px;">DJ</span></div>
-                            </div>
-
-                            <div class="ballroom-middle">
-                                <!-- Zone A (Left) -->
-                                <div class="zone-column">
-                                    <div class="zone-title">Zone A</div>
-                                    <div id="zoneA" class="zone-grid"></div>
-                                </div>
-
-                                <!-- Center VIP + dance floor -->
-                                <div class="zone-column">
-                                    <div class="center-column-inner">
-                                        <div class="center-box entrance-label"><img
-                                                src="../../assets/img/track/cake.png" alt="" class="entrance-icon"><span
-                                                style="font-size: 10px;">Cake Table</span></div>
-                                        <div class="center-box entrance-label"><img
-                                                src="../../assets/img/track/dancefloor.png" alt=""
-                                                class="entrance-icon"><span style="font-size: 10px;">Dance Floor</span>
-                                        </div>
-                                        <div class="zone-title">Zone C – VIP</div>
-                                        <div id="zoneC" class="zone-grid"></div>
-                                    </div>
-                                </div>
-
-                                <!-- Zone B (Right) -->
-                                <div class="zone-column">
-                                    <div class="zone-title">Zone B</div>
-                                    <div id="zoneB" class="zone-grid"></div>
-                                </div>
-                            </div>
-
-                            <div class="ballroom-bottom">
-                                <div class="ballroom-bottom-label entrance-label"><img
-                                        src="../../assets/img/track/gifttable.png" alt="" class="entrance-icon"><span
-                                        style="font-size: 10px;">Gift Table</span></div>
-                                <div class="ballroom-bottom-label entrance-label"><img
-                                        src="../../assets/img/track/exit.png" alt="" class="entrance-icon"><span
-                                        style="font-size: 10px;">Exit</span></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Gifts -->
-                    <div class="feature-box">
-                        <h3 class="head-title"> <img class="head-icon" src="../../assets/img/track/giftregistry.png"
-                                alt=""><span style="font-size: 35px; color: #000000;">Gift Registry</span></h3>
-                        <p>Cherish every heartfelt gesture. Keep track of gifts with ease and automatically see the
-                            total value — <i>a gentle way to honor the love and generosity shared by your guests.</i>
-                        </p>
-
-                        <button onclick="openGiftModal()" class="form-btn" style="margin-top:1rem;">
-                            Add Gift
-                        </button>
-
-                        <div style="margin-top:1rem; font-size:0.9rem; color:var(--wed-text);">
-                            Total Gifts: <strong id="giftCount">0</strong> |
-                            Total Value: <strong id="giftTotalAmount">$0</strong>
-                        </div>
-
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Gift Type</th>
-                                    <th>From</th>
-                                    <th>Value</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody id="giftTable"></tbody>
-                        </table>
-                    </div>
-
-                </div>
-            </div>
-        </main>
-
-        <!-- FOOTER -->
-        <footer class="footer">
-            <div class="footer-container">
-                <div class="footer-section">
-                    <h4>WedEASE</h4>
-                    <p>Making wedding planning beautiful and stress-free.</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Quick Links</h4>
-                    <ul>
-                        <li><a href="index.html">Home</a></li>
-                        <li><a href="src/pages/about.html">About</a></li>
-                        <li><a href="src/pages/budget.html">Budget</a></li>
-                        <li><a href="src/pages/theme.html">Theme</a></li>
-                        <li><a href="src/pages/track.html">Track</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Resources</h4>
-                    <ul>
-                        <li><a href="#">Blog</a></li>
-                        <li><a href="#">Help Center</a></li>
-                        <li><a href="#">Contact Us</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Legal</h4>
-                    <ul>
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Terms of Service</a></li>
-                        <li><a href="#">Cookie Policy</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2025 WedEASE. All rights reserved.</p>
-            </div>
-        </footer>
-
-    </div>
-
-    <!-- Guest Modal -->
-    <div id="guestModal" class="modal hidden">
-        <div class="auth-card" style="width:350px; max-width:90%;">
-            <h3 style="margin-bottom:1rem;">Guest</h3>
-
-            <label>Name *</label>
-            <input id="guestName" placeholder="Enter guest name">
-
-            <!-- NEW: GROUP SELECT WITH OTHER -->
-            <label style="margin-top:0.75rem;">Group</label>
-            <select id="guestGroupSelect"
-                style="padding:0.7rem; border-radius:0.5rem; border:1px solid var(--wed-border);">
-                <option value="">Select group</option>
-                <option value="Bride's Family">Bride's Family</option>
-                <option value="Classmates">Classmates</option>
-                <option value="Co-workers">Co-workers</option>
-                <option value="VIP">VIP</option>
-                <option value="__other">Other</option>
-            </select>
-
-            <div id="guestGroupCustomWrapper" class="hidden" style="margin-top:0.5rem;">
-                <label>Custom Group</label>
-                <input id="guestGroupCustom" placeholder="Enter group or family name">
-=======
             <div class="btn-row">
               <button onclick="openGuestModal()" class="form-btn">Add Guest</button>
               <button id="btnImportCsv" class="form-btn btn-outline">Import CSV</button>
               <button onclick="deleteAllGuests()" class="form-btn btn-danger">Delete All Guests</button>
               <input id="guestCsvInput" type="file" accept=".csv" style="display:none;" />
->>>>>>> Stashed changes:frontend/src/pages/track.html
             </div>
 
             <div class="rsvp-summary">
@@ -501,45 +275,6 @@
           <h4>WedEASE</h4>
           <p>Making wedding planning beautiful and stress-free.</p>
         </div>
-<<<<<<< Updated upstream:src/pages/track.html
-    </div>
-
-    <!-- Gift Modal -->
-    <div id="giftModal" class="modal hidden">
-        <div class="auth-card" style="width:380px; max-width:90%;">
-            <h3 style="margin-bottom:1rem;">Gift</h3>
-
-            <label>Gift Type *</label>
-            <select id="giftType" style="padding:0.7rem; border-radius:0.5rem; border:1px solid var(--wed-border);">
-                <option value="money">Money</option>
-                <option value="jewelry">Jewelry</option>
-                <option value="household">Household Items</option>
-                <option value="experience">Experience</option>
-                <option value="other">Other</option>
-            </select>
-
-            <div id="giftTypeCustomWrapper" class="gift-type-custom hidden">
-                <label style="margin-top:0.75rem;">Custom Gift Type</label>
-                <input id="giftTypeCustom" placeholder="e.g. Gold bracelet, Artwork">
-            </div>
-
-            <label style="margin-top:0.75rem;">From (Guest)</label>
-            <select id="giftGuest" style="padding:0.7rem; border-radius:0.5rem; border:1px solid var(--wed-border);">
-                <option value="">Select guest (optional)</option>
-            </select>
-
-            <label style="margin-top:0.75rem;">Value ($) *</label>
-            <input id="giftBudget" type="number" min="0" step="0.01" placeholder="e.g. 50.00">
-
-            <div style="display:flex; justify-content:flex-end; gap:0.5rem; margin-top:1rem;">
-                <button onclick="closeGiftModal()" class="form-btn" style="background:#bbb;">
-                    Cancel
-                </button>
-                <button onclick="saveGift()" class="form-btn">
-                    Save
-                </button>
-            </div>
-=======
         <div class="footer-section">
           <h4>Quick Links</h4>
           <ul>
@@ -549,7 +284,6 @@
             <li><a href="theme.html">Theme</a></li>
             <li><a href="track.html">Track</a></li>
           </ul>
->>>>>>> Stashed changes:frontend/src/pages/track.html
         </div>
         <div class="footer-section">
           <h4>Resources</h4>
