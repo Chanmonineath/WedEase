@@ -23,63 +23,46 @@ const chat = async (req, res) => {
     return res.status(400).json({ success: false, message: "messages array is required." });
   }
 
-  const apiKey = process.env.GEMINI_API_KEY;
+  const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
-    console.error("❌ GEMINI_API_KEY not found");
-    return res.status(500).json({ success: false, message: "Gemini API key is not configured." });
+    console.error("❌ GROQ_API_KEY not found");
+    return res.status(500).json({ success: false, message: "Groq API key is not configured." });
   }
 
   try {
-    // Get the last user message
-    const lastUserMessage = messages.filter(m => m.role === "user").pop();
-    if (!lastUserMessage) {
-      return res.status(400).json({ success: false, message: "No user message found." });
-    }
+    console.log("🤖 Calling Groq API with model: llama-3.3-70b-versatile");
 
-    // Build conversation context
-    let conversationHistory = "";
-    for (const msg of messages.slice(0, -1)) {
-      conversationHistory += `${msg.role === "user" ? "User" : "Assistant"}: ${msg.content}\n`;
-    }
-
-    const prompt = `${SYSTEM_PROMPT}\n\nConversation history:\n${conversationHistory}\nUser: ${lastUserMessage.content}\nAssistant:`;
-
-    console.log("🤖 Calling Gemini API with model: gemini-2.5-flash");
-
-    // Use the correct model from your available models
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{
-            parts: [{ text: prompt }]
-          }],
-          generationConfig: {
-            temperature: 0.7,
-            maxOutputTokens: 1000,
-            topP: 0.95,
-            topK: 64,
-          },
-        }),
-      }
-    );
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${apiKey}`
+      },
+      body: JSON.stringify({
+        model: "llama-3.3-70b-versatile",
+        messages: [
+          { role: "system", content: SYSTEM_PROMPT },
+          ...messages
+        ],
+        temperature: 0.7,
+        max_tokens: 1000,
+      }),
+    });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("❌ Gemini API error:", errorText);
-      return res.status(502).json({ 
-        success: false, 
+      console.error("❌ Groq API error:", errorText);
+      return res.status(502).json({
+        success: false,
         message: "Failed to reach AI service.",
-        details: errorText 
+        details: errorText
       });
     }
 
     const data = await response.json();
-    console.log("✅ Gemini API response received");
-    
-    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || 
+    console.log("✅ Groq API response received");
+
+    const reply = data.choices?.[0]?.message?.content ||
                   "I'm sorry, I couldn't generate a response. Please try again.";
 
     return res.status(200).json({ success: true, reply });
