@@ -5,7 +5,6 @@
 (function() {
     console.log("🚀 Initializing Chatbot...");
     
-    // Use 127.0.0.1 instead of localhost for consistency
     const API_BASE = 'http://127.0.0.1:5000';
     
     // DOM Elements
@@ -62,7 +61,9 @@
             panel.style.display = "flex";
             setTimeout(() => panel.classList.add("open"), 10);
             if (chatHistory.length === 0) {
-                appendMessage("assistant", "Hello! I'm your WedEASE wedding planning assistant! What would you like to know?");
+                const welcomeMsg = "Hello! I'm your WedEASE wedding planning assistant! What would you like to know?";
+                chatHistory.push({ role: "assistant", content: welcomeMsg });
+                appendMessage("assistant", welcomeMsg);
                 renderSuggestions();
             }
             if (inputEl) inputEl.focus();
@@ -81,7 +82,6 @@
             chip.textContent = question;
             chip.onclick = (e) => {
                 e.preventDefault();
-                console.log("Suggestion clicked:", question);
                 if (inputEl) {
                     inputEl.value = question;
                 }
@@ -120,17 +120,12 @@
     
     async function sendMessage() {
         const message = inputEl?.value.trim();
-        if (!message || isLoading) {
-            console.log("No message or already loading");
-            return;
-        }
-        
-        console.log("Sending message:", message);
+        if (!message || isLoading) return;
         
         // Clear input
         inputEl.value = "";
         
-        // Clear suggestions
+        // Clear suggestions after first message
         if (suggestionsEl) {
             suggestionsEl.innerHTML = "";
         }
@@ -146,8 +141,6 @@
         showTyping();
         
         try {
-            console.log("Calling API:", `${API_BASE}/api/chatbot`);
-            
             const response = await fetch(`${API_BASE}/api/chatbot`, {
                 method: "POST",
                 headers: {
@@ -156,15 +149,12 @@
                 body: JSON.stringify({ messages: chatHistory }),
             });
             
-            console.log("Response status:", response.status);
-            
             if (!response.ok) {
                 const errorText = await response.text();
                 throw new Error(`HTTP ${response.status}: ${errorText}`);
             }
             
             const data = await response.json();
-            console.log("Response data:", data);
             
             if (data.success && data.reply) {
                 hideTyping();
@@ -176,7 +166,7 @@
         } catch (error) {
             console.error("Chatbot error:", error);
             hideTyping();
-            appendMessage("assistant", `Error: ${error.message}. Make sure backend is running on port 5000.`);
+            appendMessage("assistant", "Sorry, I couldn't connect. Make sure the backend is running on port 5000.");
         } finally {
             isLoading = false;
             if (sendBtn) sendBtn.disabled = false;
