@@ -1205,6 +1205,7 @@ class WedEASEApp {
 let budgetManager;
 let heroManager;
 let themeManager;
+let countdownManager;
 
 document.addEventListener("DOMContentLoaded", () => {
   console.log("WedEASE Starting...");

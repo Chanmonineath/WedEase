@@ -3,45 +3,63 @@
 // ===============================================
 
 (function() {
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('Starting mobile menu...');
-        
-        // Get elements
+    function initNav() {
         const menuBtn = document.getElementById('mobileMenuBtn');
         const closeBtn = document.getElementById('mobileCloseBtn');
         const mobileNav = document.getElementById('mobileNav');
         const overlay = document.getElementById('navOverlay');
         const hamburger = document.getElementById('hamburger');
-        
-        // Open menu
+
+        if (!menuBtn || !mobileNav) {
+            console.log('Nav elements not found, retrying...');
+            setTimeout(initNav, 100);
+            return;
+        }
+
+        console.log('✅ Nav elements found, attaching listeners...');
+
         function openMenu() {
-            console.log('Open menu');
-            if (mobileNav) mobileNav.classList.add('open');
+            mobileNav.classList.add('open');
             if (overlay) overlay.classList.add('open');
             if (hamburger) hamburger.classList.add('open');
             document.body.style.overflow = 'hidden';
         }
-        
-        // Close menu
+
         function closeMenu() {
-            console.log('Close menu');
-            if (mobileNav) mobileNav.classList.remove('open');
+            mobileNav.classList.remove('open');
             if (overlay) overlay.classList.remove('open');
             if (hamburger) hamburger.classList.remove('open');
             document.body.style.overflow = '';
         }
-        
-        // Add events
-        if (menuBtn) menuBtn.addEventListener('click', openMenu);
+
+        // TOGGLE instead of just open
+        menuBtn.addEventListener('click', () => {
+            if (mobileNav.classList.contains('open')) {
+                closeMenu();
+            } else {
+                openMenu();
+            }
+        });
+
         if (closeBtn) closeBtn.addEventListener('click', closeMenu);
         if (overlay) overlay.addEventListener('click', closeMenu);
-        
-        // Close when clicking links
+
         if (mobileNav) {
-            const links = mobileNav.querySelectorAll('a');
-            links.forEach(link => link.addEventListener('click', closeMenu));
+            mobileNav.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', closeMenu);
+            });
         }
-        
-        console.log('✅ Ready');
-    });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeMenu();
+        });
+
+        console.log('✅ Mobile nav fully initialized');
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initNav);
+    } else {
+        initNav();
+    }
 })();
