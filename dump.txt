@@ -395,63 +395,46 @@ const chat = async (req, res) => {
     return res.status(400).json({ success: false, message: "messages array is required." });
   }
 
-  const apiKey = process.env.GEMINI_API_KEY;
+  const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
-    console.error("❌ GEMINI_API_KEY not found");
-    return res.status(500).json({ success: false, message: "Gemini API key is not configured." });
+    console.error("❌ GROQ_API_KEY not found");
+    return res.status(500).json({ success: false, message: "Groq API key is not configured." });
   }
 
   try {
-    // Get the last user message
-    const lastUserMessage = messages.filter(m => m.role === "user").pop();
-    if (!lastUserMessage) {
-      return res.status(400).json({ success: false, message: "No user message found." });
-    }
+    console.log("🤖 Calling Groq API with model: llama-3.3-70b-versatile");
 
-    // Build conversation context
-    let conversationHistory = "";
-    for (const msg of messages.slice(0, -1)) {
-      conversationHistory += `${msg.role === "user" ? "User" : "Assistant"}: ${msg.content}\n`;
-    }
-
-    const prompt = `${SYSTEM_PROMPT}\n\nConversation history:\n${conversationHistory}\nUser: ${lastUserMessage.content}\nAssistant:`;
-
-    console.log("🤖 Calling Gemini API with model: gemini-2.5-flash");
-
-    // Use the correct model from your available models
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{
-            parts: [{ text: prompt }]
-          }],
-          generationConfig: {
-            temperature: 0.7,
-            maxOutputTokens: 1000,
-            topP: 0.95,
-            topK: 64,
-          },
-        }),
-      }
-    );
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${apiKey}`
+      },
+      body: JSON.stringify({
+        model: "llama-3.3-70b-versatile",
+        messages: [
+          { role: "system", content: SYSTEM_PROMPT },
+          ...messages
+        ],
+        temperature: 0.7,
+        max_tokens: 1000,
+      }),
+    });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("❌ Gemini API error:", errorText);
-      return res.status(502).json({ 
-        success: false, 
+      console.error("❌ Groq API error:", errorText);
+      return res.status(502).json({
+        success: false,
         message: "Failed to reach AI service.",
-        details: errorText 
+        details: errorText
       });
     }
 
     const data = await response.json();
-    console.log("✅ Gemini API response received");
-    
-    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || 
+    console.log("✅ Groq API response received");
+
+    const reply = data.choices?.[0]?.message?.content ||
                   "I'm sorry, I couldn't generate a response. Please try again.";
 
     return res.status(200).json({ success: true, reply });
@@ -2637,164 +2620,99 @@ main {
 
 === ./frontend/css/chatbot.css ===
 /* ===============================================
-   WEDEASE CHATBOT WIDGET - PREMIUM DESIGN
+   WEDEASE CHATBOT - MOBILE FIRST
    =============================================== */
 
 /* ── Floating Button ── */
 #wedease-chat-btn {
   position: fixed;
-  bottom: 24px;
-  right: 24px;
-  width: 56px;
-  height: 56px;
-  border-radius: 28px;
-  background: linear-gradient(135deg, #a2437c, #7a3a5c, #6f3054);
-  background-size: 200% 200%;
+  bottom: 20px;
+  right: 20px;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #a2437c, #6f3054);
   border: none;
   cursor: pointer;
   z-index: 9000;
-  box-shadow: 0 8px 20px rgba(162, 67, 124, 0.35);
+  box-shadow: 0 4px 16px rgba(162, 67, 124, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  animation: float 3s ease-in-out infinite;
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
-}
-
-#wedease-chat-btn:hover {
-  transform: scale(1.08) translateY(-2px);
-  box-shadow: 0 12px 28px rgba(162, 67, 124, 0.5);
-  background-position: 100% 100%;
-}
-
-#wedease-chat-btn:active {
-  transform: scale(0.95);
-}
-
-#wedease-chat-btn svg {
-  width: 26px;
-  height: 26px;
-  display: block;
-  fill: white;
   transition: transform 0.2s ease;
 }
 
-#wedease-chat-btn:hover svg {
-  transform: scale(1.05);
-}
+#wedease-chat-btn:active { transform: scale(0.93); }
+#wedease-chat-btn svg { width: 24px; height: 24px; fill: white; }
 
 /* ── Chat Panel ── */
 #wedease-chat-panel {
   position: fixed;
-  bottom: 90px;
-  right: 24px;
-  width: 400px;
-  max-width: calc(100vw - 48px);
-  height: 600px;
-  max-height: calc(100vh - 120px);
-  background: #ffffff;
-  border-radius: 24px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  background: #f5f5f5;
   display: none;
   flex-direction: column;
   z-index: 9001;
   overflow: hidden;
-  animation: slideIn 0.35s cubic-bezier(0.34, 1.2, 0.64, 1);
 }
 
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(30px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-#wedease-chat-panel.open {
-  display: flex;
-}
+#wedease-chat-panel.open { display: flex; }
 
 /* ── Header ── */
 #wedease-chat-header {
   background: linear-gradient(135deg, #a2437c, #6f3054);
-  padding: 18px 20px;
+  padding: 50px 18px 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-shrink: 0;
-  position: relative;
-  overflow: hidden;
-}
-
-#wedease-chat-header::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  right: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-  pointer-events: none;
 }
 
 #wedease-chat-header-left {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  position: relative;
-  z-index: 1;
+  gap: 3px;
 }
 
 #wedease-chat-title {
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   font-weight: 700;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
-  letter-spacing: -0.3px;
   color: white;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 #wedease-chat-subtitle {
-  font-size: 0.7rem;
-  opacity: 0.85;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.8);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  color: white;
 }
 
 #wedease-chat-close {
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: white;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
   width: 34px;
   height: 34px;
-  border-radius: 17px;
+  border-radius: 50%;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: background 0.2s ease;
   padding: 0;
-  z-index: 1;
 }
 
-#wedease-chat-close:hover {
-  background: rgba(255, 255, 255, 0.25);
-  transform: rotate(90deg);
-}
+#wedease-chat-close:active { background: rgba(255, 255, 255, 0.35); }
 
 #wedease-chat-close svg {
   width: 16px;
   height: 16px;
-  display: block;
   stroke: white;
-  stroke-width: 2;
+  stroke-width: 2.5;
   fill: none;
 }
 
@@ -2802,95 +2720,61 @@ main {
 #wedease-chat-messages {
   flex: 1;
   overflow-y: auto;
-  padding: 16px;
+  padding: 16px 14px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  background: linear-gradient(180deg, #faf9fb 0%, #ffffff 100%);
-}
-
-#wedease-chat-messages::-webkit-scrollbar {
-  width: 5px;
-}
-
-#wedease-chat-messages::-webkit-scrollbar-track {
-  background: #f0edf2;
-  border-radius: 10px;
-}
-
-#wedease-chat-messages::-webkit-scrollbar-thumb {
-  background: #c4b5cf;
-  border-radius: 10px;
-}
-
-#wedease-chat-messages::-webkit-scrollbar-thumb:hover {
-  background: #a2437c;
+  gap: 8px;
+  background: #f5f5f5;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* ── Message Bubbles ── */
 .wc-msg {
   display: flex;
   flex-direction: column;
-  max-width: 85%;
-  animation: messageFadeIn 0.3s ease;
+  max-width: 78%;
+  animation: msgFade 0.2s ease;
 }
 
-@keyframes messageFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+@keyframes msgFade {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-.wc-msg.assistant {
-  align-self: flex-start;
-}
-
-.wc-msg.user {
-  align-self: flex-end;
-}
+.wc-msg.assistant { align-self: flex-start; }
+.wc-msg.user      { align-self: flex-end; }
 
 .wc-bubble {
   padding: 10px 14px;
-  border-radius: 18px;
-  font-size: 0.85rem;
-  line-height: 1.45;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   word-wrap: break-word;
-  transition: all 0.2s ease;
 }
 
 .wc-msg.assistant .wc-bubble {
   background: white;
-  color: #1a1a2e;
-  border-bottom-left-radius: 5px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  border: 1px solid #f0e6f0;
+  color: #1a1a1a;
+  border-radius: 18px 18px 18px 4px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
 .wc-msg.user .wc-bubble {
-  background: linear-gradient(135deg, #a2437c, #7a3a5c);
+  background: #a2437c;
   color: white;
-  border-bottom-right-radius: 5px;
-  box-shadow: 0 2px 8px rgba(162, 67, 124, 0.2);
+  border-radius: 18px 18px 4px 18px;
 }
 
 /* ── Typing Indicator ── */
 .wc-typing {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 10px 14px;
+  gap: 5px;
+  padding: 12px 16px;
   background: white;
-  border-radius: 18px;
-  border-bottom-left-radius: 5px;
+  border-radius: 18px 18px 18px 4px;
   width: fit-content;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  border: 1px solid #f0e6f0;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
 .wc-dot {
@@ -2901,69 +2785,52 @@ main {
   animation: typingBounce 1.4s ease-in-out infinite;
 }
 
-.wc-dot:nth-child(2) {
-  animation-delay: 0.2s;
-}
-
-.wc-dot:nth-child(3) {
-  animation-delay: 0.4s;
-}
+.wc-dot:nth-child(2) { animation-delay: 0.2s; }
+.wc-dot:nth-child(3) { animation-delay: 0.4s; }
 
 @keyframes typingBounce {
-  0%, 60%, 100% {
-    transform: translateY(0);
-    opacity: 0.4;
-  }
-  30% {
-    transform: translateY(-8px);
-    opacity: 1;
-  }
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.35; }
+  30%           { transform: translateY(-6px); opacity: 1; }
 }
 
-/* ── Suggested Questions ── */
+/* ── Suggestions ── */
 #wedease-suggestions {
-  padding: 12px 16px;
+  padding: 10px 14px;
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  flex-direction: column;
+  gap: 6px;
   flex-shrink: 0;
-  background: #faf9fb;
-  border-top: 1px solid #f0edf2;
-  border-bottom: 1px solid #f0edf2;
+  background: #f5f5f5;
 }
 
 .wc-suggestion {
-  padding: 6px 14px;
+  padding: 10px 16px;
   background: white;
-  border: 1.5px solid #e5d9e8;
-  border-radius: 24px;
+  border: 1.5px solid #e8d5e8;
+  border-radius: 12px;
   color: #a2437c;
-  font-size: 0.75rem;
+  font-size: 0.88rem;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.25s ease;
-  white-space: nowrap;
-}
-
-.wc-suggestion:hover {
-  background: linear-gradient(135deg, #a2437c, #6f3054);
-  color: white;
-  border-color: #a2437c;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(162, 67, 124, 0.25);
+  transition: all 0.15s ease;
+  text-align: left;
+  white-space: normal;
 }
 
 .wc-suggestion:active {
-  transform: translateY(0);
+  background: #a2437c;
+  color: white;
+  border-color: #a2437c;
+  transform: scale(0.98);
 }
 
 /* ── Input Area ── */
 #wedease-chat-input-area {
-  padding: 12px 16px;
-  border-top: 1px solid #e5e7eb;
+  padding: 10px 14px 24px;
+  border-top: 1px solid #e8e8e8;
   display: flex;
-  gap: 10px;
+  gap: 8px;
   align-items: flex-end;
   flex-shrink: 0;
   background: white;
@@ -2971,114 +2838,87 @@ main {
 
 #wedease-chat-input {
   flex: 1;
-  border: 1.5px solid #e5e7eb;
-  border-radius: 24px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 22px;
   padding: 10px 16px;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   resize: none;
   outline: none;
   max-height: 100px;
   line-height: 1.4;
-  color: #1a1a2e;
-  transition: all 0.2s ease;
-  background: #fefefe;
+  color: #1a1a1a;
+  background: #f9f9f9;
+  -webkit-appearance: none;
+  transition: border-color 0.2s ease;
 }
 
 #wedease-chat-input:focus {
   border-color: #a2437c;
-  box-shadow: 0 0 0 3px rgba(162, 67, 124, 0.08);
+  background: white;
 }
 
-#wedease-chat-input::placeholder {
-  color: #b4a5c0;
-}
+#wedease-chat-input::placeholder { color: #aaa; }
 
 #wedease-chat-send {
-  width: 38px;
-  height: 38px;
-  min-width: 38px;
-  min-height: 38px;
-  border-radius: 19px;
-  background: linear-gradient(135deg, #a2437c, #6f3054);
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  border-radius: 50%;
+  background: #a2437c;
   border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  transition: all 0.25s ease;
+  transition: transform 0.15s ease;
   padding: 0;
 }
 
-#wedease-chat-send:hover:not(:disabled) {
-  transform: scale(1.08);
-  box-shadow: 0 4px 12px rgba(162, 67, 124, 0.35);
-}
+#wedease-chat-send:active:not(:disabled) { transform: scale(0.92); }
+#wedease-chat-send:disabled { opacity: 0.4; cursor: not-allowed; }
+#wedease-chat-send svg { width: 16px; height: 16px; fill: white; }
 
-#wedease-chat-send:active:not(:disabled) {
-  transform: scale(0.95);
-}
-
-#wedease-chat-send:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none;
-}
-
-#wedease-chat-send svg {
-  width: 16px;
-  height: 16px;
-  display: block;
-  fill: white;
-}
-
-/* ── Mobile Responsive ── */
-@media (max-width: 560px) {
+/* ── Desktop override ── */
+@media (min-width: 560px) {
   #wedease-chat-panel {
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    max-width: 100%;
-    height: 100%;
-    max-height: 100%;
-    border-radius: 0;
-    bottom: auto;
-    right: auto;
+    top: auto;
+    left: auto;
+    bottom: 84px;
+    right: 20px;
+    width: 380px;
+    height: 580px;
+    max-width: calc(100vw - 40px);
+    max-height: calc(100vh - 110px);
+    border-radius: 20px;
+    animation: chatSlideIn 0.3s ease;
   }
-  
-  #wedease-chat-btn {
-    bottom: 16px;
-    right: 16px;
-    width: 52px;
-    height: 52px;
-  }
-  
-  @keyframes slideIn {
-    from {
-      opacity: 0;
-      transform: translateX(100%);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(0);
-    }
-  }
-}
 
-/* ── Empty State / Welcome Animation ── */
-#wedease-chat-messages:empty::before {
-  content: "💭";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 48px;
-  opacity: 0.3;
-  pointer-events: none;
+  #wedease-chat-header {
+    padding: 18px 18px 16px;
+  }
+
+  @keyframes chatSlideIn {
+    from { opacity: 0; transform: translateY(16px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  #wedease-suggestions {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .wc-suggestion {
+    white-space: nowrap;
+    padding: 6px 14px;
+    border-radius: 20px;
+  }
+
+  #wedease-chat-input-area {
+    padding: 10px 14px;
+  }
 }
 === ./frontend/css/index.css ===
 /* ===============================================
@@ -8178,6 +8018,7 @@ class WedEASEApp {
 let budgetManager;
 let heroManager;
 let themeManager;
+let countdownManager;
 
 document.addEventListener("DOMContentLoaded", () => {
   console.log("WedEASE Starting...");
@@ -9476,7 +9317,6 @@ window.budgetManager = budgetManager;
 (function() {
     console.log("🚀 Initializing Chatbot...");
     
-    // Use 127.0.0.1 instead of localhost for consistency
     const API_BASE = 'http://127.0.0.1:5000';
     
     // DOM Elements
@@ -9533,7 +9373,9 @@ window.budgetManager = budgetManager;
             panel.style.display = "flex";
             setTimeout(() => panel.classList.add("open"), 10);
             if (chatHistory.length === 0) {
-                appendMessage("assistant", "Hello! I'm your WedEASE wedding planning assistant! What would you like to know?");
+                const welcomeMsg = "Hello! I'm your WedEASE wedding planning assistant! What would you like to know?";
+                chatHistory.push({ role: "assistant", content: welcomeMsg });
+                appendMessage("assistant", welcomeMsg);
                 renderSuggestions();
             }
             if (inputEl) inputEl.focus();
@@ -9552,7 +9394,6 @@ window.budgetManager = budgetManager;
             chip.textContent = question;
             chip.onclick = (e) => {
                 e.preventDefault();
-                console.log("Suggestion clicked:", question);
                 if (inputEl) {
                     inputEl.value = question;
                 }
@@ -9591,17 +9432,12 @@ window.budgetManager = budgetManager;
     
     async function sendMessage() {
         const message = inputEl?.value.trim();
-        if (!message || isLoading) {
-            console.log("No message or already loading");
-            return;
-        }
-        
-        console.log("Sending message:", message);
+        if (!message || isLoading) return;
         
         // Clear input
         inputEl.value = "";
         
-        // Clear suggestions
+        // Clear suggestions after first message
         if (suggestionsEl) {
             suggestionsEl.innerHTML = "";
         }
@@ -9617,8 +9453,6 @@ window.budgetManager = budgetManager;
         showTyping();
         
         try {
-            console.log("Calling API:", `${API_BASE}/api/chatbot`);
-            
             const response = await fetch(`${API_BASE}/api/chatbot`, {
                 method: "POST",
                 headers: {
@@ -9627,15 +9461,12 @@ window.budgetManager = budgetManager;
                 body: JSON.stringify({ messages: chatHistory }),
             });
             
-            console.log("Response status:", response.status);
-            
             if (!response.ok) {
                 const errorText = await response.text();
                 throw new Error(`HTTP ${response.status}: ${errorText}`);
             }
             
             const data = await response.json();
-            console.log("Response data:", data);
             
             if (data.success && data.reply) {
                 hideTyping();
@@ -9647,7 +9478,7 @@ window.budgetManager = budgetManager;
         } catch (error) {
             console.error("Chatbot error:", error);
             hideTyping();
-            appendMessage("assistant", `Error: ${error.message}. Make sure backend is running on port 5000.`);
+            appendMessage("assistant", "Sorry, I couldn't connect. Make sure the backend is running on port 5000.");
         } finally {
             isLoading = false;
             if (sendBtn) sendBtn.disabled = false;
@@ -9699,47 +9530,65 @@ window.budgetManager = budgetManager;
 // ===============================================
 
 (function() {
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('Starting mobile menu...');
-        
-        // Get elements
+    function initNav() {
         const menuBtn = document.getElementById('mobileMenuBtn');
         const closeBtn = document.getElementById('mobileCloseBtn');
         const mobileNav = document.getElementById('mobileNav');
         const overlay = document.getElementById('navOverlay');
         const hamburger = document.getElementById('hamburger');
-        
-        // Open menu
+
+        if (!menuBtn || !mobileNav) {
+            console.log('Nav elements not found, retrying...');
+            setTimeout(initNav, 100);
+            return;
+        }
+
+        console.log('✅ Nav elements found, attaching listeners...');
+
         function openMenu() {
-            console.log('Open menu');
-            if (mobileNav) mobileNav.classList.add('open');
+            mobileNav.classList.add('open');
             if (overlay) overlay.classList.add('open');
             if (hamburger) hamburger.classList.add('open');
             document.body.style.overflow = 'hidden';
         }
-        
-        // Close menu
+
         function closeMenu() {
-            console.log('Close menu');
-            if (mobileNav) mobileNav.classList.remove('open');
+            mobileNav.classList.remove('open');
             if (overlay) overlay.classList.remove('open');
             if (hamburger) hamburger.classList.remove('open');
             document.body.style.overflow = '';
         }
-        
-        // Add events
-        if (menuBtn) menuBtn.addEventListener('click', openMenu);
+
+        // TOGGLE instead of just open
+        menuBtn.addEventListener('click', () => {
+            if (mobileNav.classList.contains('open')) {
+                closeMenu();
+            } else {
+                openMenu();
+            }
+        });
+
         if (closeBtn) closeBtn.addEventListener('click', closeMenu);
         if (overlay) overlay.addEventListener('click', closeMenu);
-        
-        // Close when clicking links
+
         if (mobileNav) {
-            const links = mobileNav.querySelectorAll('a');
-            links.forEach(link => link.addEventListener('click', closeMenu));
+            mobileNav.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', closeMenu);
+            });
         }
-        
-        console.log('✅ Ready');
-    });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeMenu();
+        });
+
+        console.log('✅ Mobile nav fully initialized');
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initNav);
+    } else {
+        initNav();
+    }
 })();
 === ./frontend/js/theme.js ===
 // =========================
@@ -11497,10 +11346,6 @@ window.deleteGift = deleteGift;
         </div>
       </div>
     </header>
-
-    <!-- Mobile Navigation Overlay -->
-    <div class="nav-overlay" id="navOverlay"></div>
-
 
     <!-- Mobile Navigation Overlay -->
     <div class="nav-overlay" id="navOverlay"></div>
