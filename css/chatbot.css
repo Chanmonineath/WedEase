@@ -1,0 +1,348 @@
+/* ===============================================
+   WEDEASE CHATBOT WIDGET STYLES
+   =============================================== */
+
+/* ── Floating Button ── */
+#wedease-chat-btn {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #a2437c, #6f3054);
+  border: none;
+  cursor: pointer;
+  z-index: 9000;
+  box-shadow: 0 4px 20px rgba(162, 67, 124, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+#wedease-chat-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 8px 28px rgba(162, 67, 124, 0.55);
+}
+
+#wedease-chat-btn svg {
+  width: 26px;
+  height: 26px;
+  fill: white;
+  transition: opacity 0.2s ease;
+}
+
+/* ── Panel ── */
+#wedease-chat-panel {
+  position: fixed;
+  bottom: 5.5rem;
+  right: 2rem;
+  width: 360px;
+  max-width: calc(100vw - 2rem);
+  height: 520px;
+  max-height: calc(100vh - 7rem);
+  background: #fff;
+  border-radius: 1.25rem;
+  box-shadow: 0 12px 48px rgba(162, 67, 124, 0.18), 0 2px 8px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  z-index: 9001;
+  overflow: hidden;
+  border: 1.5px solid #e0d5e3;
+  transform: translateY(16px) scale(0.97);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1),
+              opacity 0.22s ease;
+}
+
+#wedease-chat-panel.open {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ── Header ── */
+#wedease-chat-header {
+  background: linear-gradient(135deg, #a2437c, #6f3054);
+  color: white;
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+#wedease-chat-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+#wedease-chat-title {
+  font-family: 'Caveat', cursive;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1;
+}
+
+#wedease-chat-subtitle {
+  font-size: 0.72rem;
+  opacity: 0.82;
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+#wedease-chat-close {
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: white;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+  flex-shrink: 0;
+}
+
+#wedease-chat-close:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+#wedease-chat-close svg {
+  width: 16px;
+  height: 16px;
+  stroke: white;
+  fill: none;
+}
+
+/* ── Messages ── */
+#wedease-chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem 1rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  scroll-behavior: smooth;
+}
+
+#wedease-chat-messages::-webkit-scrollbar {
+  width: 4px;
+}
+
+#wedease-chat-messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#wedease-chat-messages::-webkit-scrollbar-thumb {
+  background: #e0d5e3;
+  border-radius: 4px;
+}
+
+/* ── Message Bubbles ── */
+.wc-msg {
+  display: flex;
+  flex-direction: column;
+  max-width: 82%;
+  animation: wcFadeIn 0.22s ease forwards;
+}
+
+@keyframes wcFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.wc-msg.assistant {
+  align-self: flex-start;
+}
+
+.wc-msg.user {
+  align-self: flex-end;
+}
+
+.wc-bubble {
+  padding: 0.65rem 0.9rem;
+  border-radius: 1rem;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  font-family: 'Inter', sans-serif;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.wc-msg.assistant .wc-bubble {
+  background: #fcf4fb;
+  color: #333;
+  border-bottom-left-radius: 4px;
+  border: 1px solid #e0d5e3;
+}
+
+.wc-msg.user .wc-bubble {
+  background: linear-gradient(135deg, #a2437c, #6f3054);
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+/* ── Typing Indicator ── */
+.wc-typing {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0.65rem 0.9rem;
+  background: #fcf4fb;
+  border: 1px solid #e0d5e3;
+  border-radius: 1rem;
+  border-bottom-left-radius: 4px;
+  width: fit-content;
+}
+
+.wc-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #a2437c;
+  animation: wcBounce 1.2s ease-in-out infinite;
+}
+
+.wc-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.wc-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes wcBounce {
+  0%, 80%, 100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+  40% {
+    transform: translateY(-5px);
+    opacity: 1;
+  }
+}
+
+/* ── Suggested Questions ── */
+#wedease-suggestions {
+  padding: 0.5rem 1rem 0.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.wc-suggestion {
+  padding: 0.35rem 0.75rem;
+  border: 1.5px solid #e0d5e3;
+  border-radius: 2rem;
+  background: white;
+  color: #a2437c;
+  font-size: 0.75rem;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.wc-suggestion:hover {
+  border-color: #a2437c;
+  background: #fcf4fb;
+}
+
+/* ── Input Area ── */
+#wedease-chat-input-area {
+  padding: 0.75rem 1rem;
+  border-top: 1px solid #e0d5e3;
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-end;
+  flex-shrink: 0;
+  background: white;
+}
+
+#wedease-chat-input {
+  flex: 1;
+  border: 1.5px solid #e0d5e3;
+  border-radius: 0.75rem;
+  padding: 0.6rem 0.85rem;
+  font-size: 0.875rem;
+  font-family: 'Inter', sans-serif;
+  resize: none;
+  outline: none;
+  max-height: 100px;
+  overflow-y: auto;
+  line-height: 1.5;
+  color: #333;
+  transition: border-color 0.2s ease;
+}
+
+#wedease-chat-input:focus {
+  border-color: #a2437c;
+  box-shadow: 0 0 0 3px rgba(162, 67, 124, 0.08);
+}
+
+#wedease-chat-input::placeholder {
+  color: #bbb;
+}
+
+#wedease-chat-send {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #a2437c, #6f3054);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 8px rgba(162, 67, 124, 0.3);
+}
+
+#wedease-chat-send:hover {
+  transform: scale(1.08);
+  box-shadow: 0 4px 14px rgba(162, 67, 124, 0.4);
+}
+
+#wedease-chat-send:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+#wedease-chat-send svg {
+  width: 16px;
+  height: 16px;
+  fill: white;
+  transform: translateX(1px);
+}
+
+/* ── Mobile ── */
+@media (max-width: 480px) {
+  #wedease-chat-panel {
+    right: 0.75rem;
+    bottom: 5rem;
+    width: calc(100vw - 1.5rem);
+  }
+
+  #wedease-chat-btn {
+    right: 0.75rem;
+    bottom: 0.75rem;
+  }
+}
