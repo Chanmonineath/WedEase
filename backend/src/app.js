@@ -20,7 +20,7 @@ const guestRoutes = require("./routes/guestRoutes");
 const invitationRoutes = require("./routes/invitationRoutes");
 const giftRoutes = require("./routes/giftRoutes");
 const chatbotRoutes = require("./routes/chatbotRoutes");
-const { listThemes } = require("./controllers/themeController");
+const themeRoutes = require("./routes/themeRoutes");
 const notFound = require("./middleware/notFound");
 const errorHandler = require("./middleware/errorHandler");
 
@@ -109,8 +109,8 @@ const startServer = () =>
     .then(() => {
       const server = app.listen(port, () =>
         console.log(`
-╔════════════════════════════════════════════════╗
-║   Backend Server Running                       ║
+╔════════════════════════════════════════════════╗          
+║   Backend Server Running                       ║  
 ╠════════════════════════════════════════════════╣
 ║   Express started on http://localhost:${port}  ║
 ║   Chatbot endpoint: /api/chatbot               ║
@@ -118,6 +118,17 @@ const startServer = () =>
 ║   CORS enabled for development                 ║
 ║   press Ctrl-C to terminate.                   ║
 ╚════════════════════════════════════════════════╝
+                                                               
+╔════════════════════════════════════════════════╗            ╔════════════════════════════════════════════════╗                                                              AUTH ENDPOINTS                     
+║             AUTH SYSTEM                        ║            ║               AUTH ENDPOINTS                   ║
+║       Login / Register / Session               ║            ╠════════════════════════════════════════════════╣
+╠════════════════════════════════════════════════╣            ║   - POST /api/auth/register                    ║
+║   - Security Layer Active                      ║            ║   - PATCH /api/auth/login                      ║
+║   - JWT Cookie Authentication                  ║            ║   - GET /api/auth/me                           ║
+║   - bcrypt Password Hashing                    ║            ║   - POST /api/auth/logout                      ║
+║   - express-validator enabled                  ║            ║   - DELETE /api/auth/account                   ║
+║    - MongoDB User Model                        ║            ║                                                ║
+╚════════════════════════════════════════════════╝            ╚════════════════════════════════════════════════╝
   `),
       );
 
