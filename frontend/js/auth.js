@@ -8,9 +8,6 @@ function isStrongPassword(pw) {
     /[0-9]/.test(pw)
   );
 }
-// =====================================
-// WedEASE AUTH (Facebook-style validation)
-// =====================================
 
 const API_BASE = "http://localhost:5000/api/auth";
 
@@ -29,15 +26,11 @@ function showAuthStatus(message, isError = false) {
   else if (message) statusDiv.classList.add("success");
 }
 
-// ----------------------
-// FIELD ERROR (FACEBOOK STYLE)
-// ----------------------
 function showFieldError(input, msg, msgElem) {
   if (!input) return;
 
   input.classList.add("input-error");
 
-  // shake wrapper (facebook style)
   const wrapper = input.closest(".password-wrapper") || input;
   wrapper.classList.remove("shake");
   void wrapper.offsetWidth; // restart animation
