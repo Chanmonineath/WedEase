@@ -22,7 +22,7 @@
 
   <div id="app">
 
-    <!-- HEADER WITH MOBILE NAVIGATION -->
+    <!-- HEADER -->
     <header class="header" id="header">
       <div class="header-container">
         <div class="header-left">
@@ -31,7 +31,6 @@
           </a>
         </div>
         
-        <!-- Desktop Navigation -->
         <nav class="header-nav" aria-label="Main navigation">
           <a href="../../index.html" class="nav-link">Home</a>
           <a href="about.html" class="nav-link">About</a>
@@ -48,7 +47,6 @@
             <span>Login</span>
           </a>
           
-          <!-- Mobile Menu Button (Hamburger) -->
           <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">
             <div class="hamburger" id="hamburger">
               <span></span>
@@ -60,10 +58,8 @@
       </div>
     </header>
 
-    <!-- Mobile Navigation Overlay -->
     <div class="nav-overlay" id="navOverlay"></div>
-
-    <!-- Mobile Navigation Menu -->
+    
     <nav class="header-nav-mobile" id="mobileNav" aria-label="Mobile navigation">
       <button class="mobile-close-btn" id="mobileCloseBtn" aria-label="Close menu">✕</button>
       <a href="../../index.html" class="nav-link">Home</a>
@@ -78,14 +74,10 @@
         <h1 class="page-title">Choose Your Wedding Theme</h1>
         <p class="page-subtitle">Select a style that matches your vision</p>
 
-        <input
-          type="text"
-          id="theme-search"
-          placeholder="Search wedding themes..."
-        />
+        <input type="text" id="theme-search" placeholder="Search wedding themes..." />
 
         <div class="theme-grid">
-          <!-- Themes populate dynamically from theme.js via Unsplash API -->
+          <!-- Themes populate dynamically -->
         </div>
       </div>
     </main>
@@ -102,7 +94,6 @@
           <ul>
             <li><a href="../../index.html">Home</a></li>
             <li><a href="about.html">About</a></li>
-            <li><a href="budget.html">Budget</a></li>
             <li><a href="theme.html">Theme</a></li>
             <li><a href="track.html">Track</a></li>
           </ul>
@@ -129,12 +120,13 @@
       </div>
     </footer>
 
-  </div><!-- /#app -->
+  </div>
 
   <!-- CHATBOT WIDGET -->
   <button id="wedease-chat-btn" aria-label="Open wedding assistant">
     <svg viewBox="0 0 24 24" fill="white">
-      <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+      <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+    </svg>
   </button>
 
   <div id="wedease-chat-panel" role="dialog" aria-label="Wedding planning assistant">
@@ -144,7 +136,7 @@
         <span id="wedease-chat-subtitle">Ask me anything about your big day</span>
       </div>
       <button id="wedease-chat-close" aria-label="Close chat">
-        <svg viewBox="0 0 24 24" stroke="white" stroke-width="2" fill="none" stroke-linecap="round">
+        <svg viewBox="0 0 24 24" stroke="white" stroke-width="2" fill="none">
           <line x1="18" y1="6" x2="6" y2="18"/>
           <line x1="6" y1="6" x2="18" y2="18"/>
         </svg>
@@ -153,12 +145,7 @@
     <div id="wedease-chat-messages" role="log" aria-live="polite"></div>
     <div id="wedease-suggestions"></div>
     <div id="wedease-chat-input-area">
-      <textarea
-        id="wedease-chat-input"
-        rows="1"
-        placeholder="Ask about venues, themes, budgets..."
-        aria-label="Message input"
-      ></textarea>
+      <textarea id="wedease-chat-input" rows="1" placeholder="Ask about venues, themes, budgets..."></textarea>
       <button id="wedease-chat-send" aria-label="Send message">
         <svg viewBox="0 0 24 24" fill="white">
           <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>

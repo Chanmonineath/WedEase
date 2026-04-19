@@ -85,7 +85,10 @@ app.get("/api/health", (req, res) => {
   });
 });
 
-app.get("/api/themes", listThemes);
+// Theme routes - ADD THESE LINES
+app.use("/api/themes", themeRoutes);
+
+// Other routes
 app.use("/api/auth", authRoutes);
 app.use("/api/guests", guestRoutes);
 app.use("/api/invitations", invitationRoutes);
@@ -111,6 +114,7 @@ const startServer = () =>
 ╠════════════════════════════════════════════════╣
 ║   Express started on http://localhost:${port}  ║
 ║   Chatbot endpoint: /api/chatbot               ║
+║   Themes endpoint: /api/themes/fetch-all       ║
 ║   CORS enabled for development                 ║
 ║   press Ctrl-C to terminate.                   ║
 ╚════════════════════════════════════════════════╝
