@@ -20,7 +20,7 @@ const guestRoutes = require("./routes/guest.routes");
 const invitationRoutes = require("./routes/invitation.routes");
 const giftRoutes = require("./routes/gift.routes");
 const chatbotRoutes = require("./routes/chatbot.routes");
-const { listThemes } = require("./controllers/theme.controller");
+const themeRoutes = require("./routes/theme.routes"); // ADD THIS LINE
 const notFound = require("./middleware/notFound");
 const errorHandler = require("./middleware/errorHandler");
 
@@ -38,13 +38,12 @@ app.use(cors({
     'http://127.0.0.1:3000',
     'http://localhost:5500',
     'http://127.0.0.1:5500',
-    'http://localhost:5503',      // ADD THIS
-    'http://127.0.0.1:5503',      // ADD THIS
+    'http://localhost:5503',
+    'http://127.0.0.1:5503',
     'http://localhost:8080',
     'http://127.0.0.1:8080',
     'http://localhost:5000',
     'http://127.0.0.1:5000',
-    '*',
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
@@ -83,7 +82,10 @@ app.get("/api/health", (req, res) => {
   });
 });
 
-app.get("/api/themes", listThemes);
+// Theme routes - ADD THESE LINES
+app.use("/api/themes", themeRoutes);
+
+// Other routes
 app.use("/api/auth", authRoutes);
 app.use("/api/guests", guestRoutes);
 app.use("/api/invitations", invitationRoutes);
@@ -109,6 +111,7 @@ const startServer = () =>
 ╠════════════════════════════════════════════════╣
 ║   Express started on http://localhost:${port}  ║
 ║   Chatbot endpoint: /api/chatbot               ║
+║   Themes endpoint: /api/themes/fetch-all       ║
 ║   CORS enabled for development                 ║
 ║   press Ctrl-C to terminate.                   ║
 ╚════════════════════════════════════════════════╝
