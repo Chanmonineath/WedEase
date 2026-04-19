@@ -85,7 +85,7 @@ class HeroManager {
     ];
 
     this.ctaTexts = [
-      "Find Your Partner",
+      "Schedule Your Day",
       "Plan Your Journey",
       "Start Your Story"
     ];
@@ -321,31 +321,65 @@ class CountdownManager {
 
 
 // ===============================================
-// AUTHENTICATION SYSTEM
+// AUTHENTICATION SYSTEM WITH DATABASE
 // ===============================================
 
 class AuthManager {
-  constructor() { this.init(); }
+  constructor() { 
+    this.API_BASE = 'http://127.0.0.1:5000';
+    this.init(); 
+  }
 
   init() {
     this.bindAuthEvents();
     this.checkCurrentUser();
   }
 
-  encode(str) { return new TextEncoder().encode(str); }
-
-  async hashPassword(password) {
-    const buf = await crypto.subtle.digest("SHA-256", this.encode(password));
-    return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
+  getAuthToken() {
+    return localStorage.getItem('wedease_auth_token') || sessionStorage.getItem('wedease_auth_token');
   }
 
-  getUsers() { return JSON.parse(localStorage.getItem("wedease_users") || "{}"); }
-  setUsers(obj) { localStorage.setItem("wedease_users", JSON.stringify(obj)); }
+  setAuthToken(token, remember = false) {
+    if (remember) {
+      localStorage.setItem('wedease_auth_token', token);
+    } else {
+      sessionStorage.setItem('wedease_auth_token', token);
+    }
+  }
 
-  setCurrentUser(email) { sessionStorage.setItem("wedease_current", email); this.updateHeaderUser(email); }
-  clearCurrentUser() { sessionStorage.removeItem("wedease_current"); this.updateHeaderUser(null); }
+  clearAuthToken() {
+    localStorage.removeItem('wedease_auth_token');
+    sessionStorage.removeItem('wedease_auth_token');
+  }
 
-  updateHeaderUser(email) {
+  setCurrentUser(user, remember = false) {
+    const userData = {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role
+    };
+    if (remember) {
+      localStorage.setItem('wedease_current_user', JSON.stringify(userData));
+    } else {
+      sessionStorage.setItem('wedease_current_user', JSON.stringify(userData));
+    }
+    this.updateHeaderUser(userData);
+  }
+
+  getCurrentUser() {
+    const userStr = localStorage.getItem('wedease_current_user') || sessionStorage.getItem('wedease_current_user');
+    return userStr ? JSON.parse(userStr) : null;
+  }
+
+  clearCurrentUser() {
+    localStorage.removeItem('wedease_current_user');
+    sessionStorage.removeItem('wedease_current_user');
+    this.clearAuthToken();
+    this.updateHeaderUser(null);
+  }
+
+  updateHeaderUser(user) {
     const headerRight = document.querySelector(".header-right");
     if (!headerRight) return;
 
@@ -353,7 +387,7 @@ class AuthManager {
     if (existing) existing.remove();
 
     const loginBtn = headerRight.querySelector(".login-btn");
-    if (!email) {
+    if (!user) {
       if (loginBtn) loginBtn.style.display = "flex";
       return;
     }
@@ -368,15 +402,33 @@ class AuthManager {
         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
         <circle cx="12" cy="7" r="4" />
       </svg>
-      ${email.split("@")[0]}
+      ${user.name || user.email.split("@")[0]}
     `;
     btn.addEventListener("click", () => {
       if (confirm("Sign out?")) {
-        this.clearCurrentUser();
-        window.location.href = "../../src/pages/login.html";
+        this.logout();
       }
     });
     headerRight.appendChild(btn);
+  }
+
+  async logout() {
+    const token = this.getAuthToken();
+    if (token) {
+      try {
+        await fetch(`${this.API_BASE}/api/auth/logout`, {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        });
+      } catch (error) {
+        console.error("Logout error:", error);
+      }
+    }
+    this.clearCurrentUser();
+    window.location.href = "../../src/pages/login.html";
   }
 
   showStatus(msg, isError = false) {
@@ -384,6 +436,14 @@ class AuthManager {
     if (!el) return;
     el.textContent = msg;
     el.className = isError ? "error" : "success";
+    if (!isError) {
+      setTimeout(() => {
+        if (el.className === "success") {
+          el.textContent = "";
+          el.className = "";
+        }
+      }, 3000);
+    }
   }
 
   bindAuthEvents() {
@@ -405,76 +465,130 @@ class AuthManager {
     const email = document.getElementById("signup-email").value.trim().toLowerCase();
     const pw = document.getElementById("signup-password").value;
     const pw2 = document.getElementById("signup-password2").value;
+    const rememberCheckbox = document.getElementById("signup-remember");
+    const remember = rememberCheckbox ? rememberCheckbox.checked : false;
 
-    if (!email.includes("@")) return this.showStatus("Invalid email", true);
-    if (pw.length < 8) return this.showStatus("Password must be at least 8 characters", true);
-    if (pw !== pw2) return this.showStatus("Passwords do not match", true);
+    if (!email.includes("@")) {
+      this.showStatus("Invalid email", true);
+      return;
+    }
+    if (pw.length < 8) {
+      this.showStatus("Password must be at least 8 characters", true);
+      return;
+    }
+    if (pw !== pw2) {
+      this.showStatus("Passwords do not match", true);
+      return;
+    }
 
-    const users = this.getUsers();
-    if (users[email]) return this.showStatus("Account already exists", true);
+    const name = email.split("@")[0];
 
-    users[email] = { hash: await this.hashPassword(pw), created: Date.now() };
-    this.setUsers(users);
-    this.setCurrentUser(email);
-    this.showStatus("Account created successfully!");
-    setTimeout(() => { window.location.href = "../../index.html"; }, 1500);
+    try {
+      const response = await fetch(`${this.API_BASE}/api/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password: pw })
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        if (data.token) {
+          this.setAuthToken(data.token, remember);
+        }
+        if (data.user) {
+          this.setCurrentUser(data.user, remember);
+        }
+        this.showStatus("Account created successfully!");
+        setTimeout(() => { 
+          window.location.href = "../../index.html"; 
+        }, 1500);
+      } else {
+        this.showStatus(data.message || "Signup failed", true);
+      }
+    } catch (error) {
+      console.error("Signup error:", error);
+      this.showStatus("Connection error. Make sure backend is running on port 5000.", true);
+    }
   }
 
   async handleSignin() {
     const email = document.getElementById("signin-email").value.trim().toLowerCase();
     const pw = document.getElementById("signin-password").value;
-    const users = this.getUsers();
+    const rememberCheckbox = document.getElementById("signin-remember");
+    const remember = rememberCheckbox ? rememberCheckbox.checked : false;
 
-    if (!users[email]) return this.showStatus("Account not found", true);
-    const hashed = await this.hashPassword(pw);
-    if (hashed !== users[email].hash) return this.showStatus("Incorrect password", true);
+    if (!email || !pw) {
+      this.showStatus("Please enter email and password", true);
+      return;
+    }
 
-    this.setCurrentUser(email);
-    this.showStatus("Login successful!");
-    setTimeout(() => { window.location.href = "../../index.html"; }, 1500);
+    try {
+      const response = await fetch(`${this.API_BASE}/api/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password: pw })
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        if (data.token) {
+          this.setAuthToken(data.token, remember);
+        }
+        if (data.user) {
+          this.setCurrentUser(data.user, remember);
+        }
+        this.showStatus("Login successful!");
+        setTimeout(() => { 
+          window.location.href = "../../index.html"; 
+        }, 1500);
+      } else {
+        this.showStatus(data.message || "Login failed", true);
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      this.showStatus("Connection error. Make sure backend is running on port 5000.", true);
+    }
   }
 
   checkCurrentUser() {
-    this.updateHeaderUser(sessionStorage.getItem("wedease_current"));
+    const user = this.getCurrentUser();
+    if (user) {
+      this.updateHeaderUser(user);
+    }
   }
 }
 
 // ===============================================
-// MAIN ENTRY POINT — single, clean init
+// MAIN ENTRY POINT
 // ===============================================
 
 document.addEventListener("DOMContentLoaded", () => {
   console.log("WedEASE Starting...");
 
-  // Auth runs on every page
   window.authManager = new AuthManager();
 
-  // Hero — only on pages that have the hero image
   if (document.getElementById('hero-image')) {
     window.heroManager = new HeroManager();
     window.heroManager.init();
   }
 
-  // Countdown — only on pages that have the date input
   if (document.getElementById('weddingDateInput')) {
     window.countdownManager = new CountdownManager();
   }
 
-  // Shared utilities
   WedEASEUtils.setupHeaderScroll();
   WedEASEUtils.setupHoverEffects();
   WedEASEUtils.updateActiveNavLink();
 
-  // Generic CTA buttons
   document.querySelectorAll(".cta-button").forEach((btn) => {
     if (btn.getAttribute('href')) return;
     btn.addEventListener("click", () => { window.location.href = "src/pages/about.html"; });
   });
 });
 
-// Expose classes globally
 window.WedEASEUtils = WedEASEUtils;
 window.CountdownManager = CountdownManager;
 window.AuthManager = AuthManager;
 window.HeroManager = HeroManager;
-window.ThemeManager = ThemeManager;

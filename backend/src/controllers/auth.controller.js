@@ -1,36 +1,7 @@
-const crypto = require("node:crypto");
-const dotenv = require("dotenv");
-const path = require("node:path");
-
 const User = require("../models/User");
 const { generateToken } = require("../utils/generateToken");
 
-dotenv.config({
-  path: path.resolve(__dirname, "../../.env"),
-  override: true,
-});
-
 const isProduction = process.env.NODE_ENV === "production";
-
-const hashPassword = (
-  password,
-  salt = crypto.randomBytes(16).toString("hex"),
-) => {
-  const hash = crypto
-    .pbkdf2Sync(password, salt, 100000, 64, "sha512")
-    .toString("hex");
-
-  return { salt, hash };
-};
-
-const sanitizeUser = (user) => {
-  if (!user) {
-    return null;
-  }
-
-  const { passwordHash, passwordSalt, ...safeUser } = user;
-  return safeUser;
-};
 
 const register = async (req, res, next) => {
   try {
@@ -39,7 +10,14 @@ const register = async (req, res, next) => {
     if (!name || !email || !password) {
       return res.status(400).json({
         success: false,
-        message: "name, email, and password are required.",
+        message: "Name, email, and password are required.",
+      });
+    }
+
+    if (password.length < 8) {
+      return res.status(400).json({
+        success: false,
+        message: "Password must be at least 8 characters.",
       });
     }
 
@@ -52,34 +30,27 @@ const register = async (req, res, next) => {
       });
     }
 
-    const passwordDigest = hashPassword(password);
     const createdUser = await User.createUser({
       name,
       email,
+      password,
       role: role || "user",
-      passwordHash: passwordDigest.hash,
-      passwordSalt: passwordDigest.salt,
     });
 
     const token = generateToken({
-      userId: createdUser._id,
+      userId: createdUser._id.toString(),
       email: createdUser.email,
       role: createdUser.role,
-    });
-
-    res.cookie("token", token, {
-      httpOnly: true,
-      sameSite: "lax",
-      secure: isProduction,
     });
 
     return res.status(201).json({
       success: true,
       message: "Account created successfully.",
       token,
-      user: sanitizeUser(createdUser),
+      user: createdUser,
     });
   } catch (error) {
+    console.error("Registration error:", error);
     return next(error);
   }
 };
@@ -91,11 +62,11 @@ const login = async (req, res, next) => {
     if (!email || !password) {
       return res.status(400).json({
         success: false,
-        message: "email and password are required.",
+        message: "Email and password are required.",
       });
     }
 
-    const user = await User.findUserByEmail(email);
+    const user = await User.validateUserCredentials(email, password);
 
     if (!user) {
       return res.status(401).json({
@@ -104,48 +75,47 @@ const login = async (req, res, next) => {
       });
     }
 
-    const { hash } = hashPassword(password, user.passwordSalt);
-
-    if (hash !== user.passwordHash) {
-      return res.status(401).json({
-        success: false,
-        message: "Invalid email or password.",
-      });
-    }
-
     const token = generateToken({
-      userId: user._id,
+      userId: user._id.toString(),
       email: user.email,
       role: user.role,
-    });
-
-    res.cookie("token", token, {
-      httpOnly: true,
-      sameSite: "lax",
-      secure: isProduction,
     });
 
     return res.status(200).json({
       success: true,
       message: "Login successful.",
       token,
-      user: sanitizeUser(user),
+      user: user,
     });
   } catch (error) {
+    console.error("Login error:", error);
     return next(error);
   }
 };
 
 const me = async (req, res) => {
-  res.status(200).json({
-    success: true,
-    user: req.user || null,
-  });
+  try {
+    const user = await User.findUserById(req.user.userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found.",
+      });
+    }
+    res.status(200).json({
+      success: true,
+      user: user,
+    });
+  } catch (error) {
+    console.error("Get me error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error.",
+    });
+  }
 };
 
 const logout = async (req, res) => {
-  res.clearCookie("token");
-
   res.status(200).json({
     success: true,
     message: "Logged out successfully.",
