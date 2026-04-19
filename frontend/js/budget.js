@@ -21,9 +21,21 @@ class BudgetManager {
         // Currency settings with API integration
         this.selectedCurrency = 'USD';
         this.apiKey = 'd78fa077cf41fe15f31b2333'; 
+<<<<<<< HEAD
         this.baseCurrency = 'KHR';
         this.exchangeRates = {};
         this.availableCurrencies = ['KHR','USD'];
+=======
+<<<<<<<< HEAD:frontend/budget.js
+        this.baseCurrency = 'KHR';
+        this.exchangeRates = {};
+        this.availableCurrencies = ['KHR','USD'];
+========
+        this.baseCurrency = 'USD';
+        this.exchangeRates = {};
+        this.availableCurrencies = ['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'INR', 'SGD', 'CHF', 'CNY', 'KHR'];
+>>>>>>>> sandbox-meysorng:frontend/js/budget.js
+>>>>>>> sandbox-meysorng
         
         this.init();
     }
@@ -52,7 +64,15 @@ class BudgetManager {
             }
 
             // Fetch fresh rates from API
+<<<<<<< HEAD
             const response = await fetch(`https://v6.exchangerate-api.com/v6/d78fa077cf41fe15f31b2333/latest/USD`);
+=======
+<<<<<<<< HEAD:frontend/budget.js
+            const response = await fetch(`https://v6.exchangerate-api.com/v6/d78fa077cf41fe15f31b2333/latest/USD`);
+========
+            const response = await fetch(`https://v6.exchangerate-api.com/v6/${this.apiKey}/latest/USD`);
+>>>>>>>> sandbox-meysorng:frontend/js/budget.js
+>>>>>>> sandbox-meysorng
             
             if (!response.ok) {
                 throw new Error(`API error: ${response.status}`);
