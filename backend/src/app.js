@@ -12,12 +12,12 @@ dotenv.config({
 const port = Number(process.env.PORT) || 5000;
 
 const { connectToDatabase, closeDatabase } = require("./config/db");
-const authRoutes = require("./routes/auth.routes");
-const guestRoutes = require("./routes/guest.routes");
-const invitationRoutes = require("./routes/invitation.routes");
-const giftRoutes = require("./routes/gift.routes");
-const chatbotRoutes = require("./routes/chatbot.routes");
-const { listThemes } = require("./controllers/theme.controller");
+const authRoutes = require("./routes/authRoutes");
+const guestRoutes = require("./routes/guestRoutes");
+const invitationRoutes = require("./routes/invitationRoutes");
+const giftRoutes = require("./routes/giftRoutes");
+const chatbotRoutes = require("./routes/chatbotRoutes");
+const { listThemes } = require("./controllers/themeController");
 const notFound = require("./middleware/notFound");
 const errorHandler = require("./middleware/errorHandler");
 

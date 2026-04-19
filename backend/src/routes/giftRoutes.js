@@ -1,7 +1,7 @@
 const express = require("express");
 
-const giftController = require("../controllers/gift.controller");
-const authMiddleware = require("../middleware/auth.middleware");
+const giftController = require("../controllers/giftController");
+const authMiddleware = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
