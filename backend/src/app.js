@@ -3,6 +3,9 @@ const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const path = require("node:path");
+const helmet = require("helmet");
+const compression = require("compression");
+const morgan = require("morgan");
 
 dotenv.config({
   path: path.resolve(__dirname, "../.env"),

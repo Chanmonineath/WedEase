@@ -10,7 +10,15 @@ router.post(
   [
     body("name").isLength({ min: 2, max: 50 }),
     body("email").isEmail(),
-    body("password").isLength({ min: 6 }),
+    body("password")
+      .isLength({ min: 8 })
+      .withMessage("Password must be at least 8 characters long.")
+      .matches(/[a-z]/)
+      .withMessage("Password must contain a lowercase letter.")
+      .matches(/[A-Z]/)
+      .withMessage("Password must contain an uppercase letter.")
+      .matches(/[0-9]/)
+      .withMessage("Password must contain a number."),
   ],
   ctrl.register,
 );
@@ -22,7 +30,7 @@ router.post(
 );
 
 router.post("/logout", ctrl.logout);
-router.get("/me", auth, ctrl.me);
+router.get("/me", auth, ctrl.getMe);
 router.delete("/delete", auth, ctrl.deleteAccount);
 
 module.exports = router;
