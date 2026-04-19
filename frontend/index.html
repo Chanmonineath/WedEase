@@ -1,216 +1,259 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WedEASE — Wedding Planning Made Easy</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Caveat:wght@400;700&family=Cedarville+Cursive&display=swap" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-      rel="icon"
-      type="image/png"
-      href="assets/img/pink-purpleish logo.png"
-    />
-    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant:wght@300;400&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WedEASE — Wedding Planning Made Easy</title>
+
+  <!-- From src/pages/index.html -->
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/index.css" />
+  <link rel="stylesheet" href="css/chatbot.css" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="assets/img/pink-purpleish logo.png" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Caveat:wght@400;700&family=Cedarville+Cursive&family=Great+Vibes&family=Cormorant:wght@300;400&display=swap" rel="stylesheet" />
+
+  <style>
+    #app {
+      opacity: 1;
+      transition: opacity 1s ease-in-out;
+    }
+    #app.reveal {
+      opacity: 1;
+    }
+  </style>
 </head>
 <body>
+<!-- FIRST-TIME WELCOME -->
+<!--
+<div id="firstTimeWelcome" class="window-open-container">
+  <div class="window-panel top"></div>
+  <div class="window-panel bottom"></div>
+  <div class="window-panel left"></div>
+  <div class="window-panel right"></div>
+  <div class="portal"></div>
+  <div class="hologram-text">
+    Welcome to WedEASE
+    <div style="font-size: 1.5rem; margin-top: 1rem;">Your Dream Wedding Awaits</div>
+  </div>
+  <button id="startExperience" class="start-experience-btn">Begin Your Journey</button>
+</div>
+-->
 
-    <!-- EPIC First-Time Welcome -->
-    <div id="firstTimeWelcome" class="window-open-container">
-        <div class="window-panel top"></div>
-        <div class="window-panel bottom"></div>
-        <div class="window-panel left"></div>
-        <div class="window-panel right"></div>
-        
-        <div class="portal"></div>
-        
-        <div class="hologram-text">
-            Welcome to WedEASE
-            <div style="font-size: 1.5rem; margin-top: 1rem;">Your Dream Wedding Awaits</div>
+<!-- BACKGROUND AUDIO -->
+<!--
+<audio id="welcomeAudio">
+  <source src="assets/audio/Cute Piano Intro Sound.mp3" type="audio/mp3" />
+</audio>
+-->
+  <div id="app">
+
+    <!-- HEADER -->
+    <header class="header" id="header">
+      <div class="header-container">
+        <div class="header-left">
+          <a href="index.html" class="logo">
+            <img src="assets/img/pink-purpleish logo.png" alt="WedEASE" class="logo-image" />
+          </a>
         </div>
         
-        <button id="startExperience" style="
-            position: absolute;
-            top: 70%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0);
-            padding: 1rem 2rem;
-            font-size: 1.2rem;
-            background: linear-gradient(45deg, #ff6b9d, #667eea);
-            color: white;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
-            font-weight: 600;
-            box-shadow: 0 10px 30px rgba(255, 107, 157, 0.4);
-            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            opacity: 0;
-            z-index: 10004;
-        ">Begin Your Journey</button>
-    </div>
-
-    <!-- Background Audio -->
-    <audio id="welcomeAudio">
-        <source src="assets/audio/Cute Piano Intro Sound.mp3" type="audio/mp3">
-    </audio>
-
-    <!-- Hide main content initially -->
-    <style>
-        #app {
-            opacity: 0;
-            transition: opacity 1s ease-in-out;
-        }
+        <!-- Desktop Navigation -->
+        <nav class="header-nav" aria-label="Main navigation">
+          <a href="index.html" class="nav-link active">Home</a>
+          <a href="src/pages/about.html" class="nav-link">About</a>
+          <a href="src/pages/theme.html" class="nav-link">Theme</a>
+          <a href="src/pages/track.html" class="nav-link">Track</a>
+        </nav>
         
-        #app.reveal {
-            opacity: 1;
-        }
-    </style>
-
-    <div id="app">
-        <header class="header" id="header">
-            <div class="header-container">
-                <div class="header-left">
-                    <a href="index.html" class="logo">
-                        <img src="assets/img/pink-purpleish logo.png" alt="WedEASE" class="logo-image">
-                    </a>
-                </div>
-                <nav class="header-nav" aria-label="Main navigation">
-                    <a href="index.html" class="nav-link active">Home</a>
-                    <a href="src/pages/about.html" class="nav-link">About</a>
-                    <a href="src/pages/budget.html" class="nav-link">Budget</a>
-                    <a href="src/pages/theme.html" class="nav-link">Theme</a>
-                    <a href="src/pages/track.html" class="nav-link">Track</a>
-                </nav>
-                <div class="header-right">
-                    <a href="src/pages/login.html" class="login-btn" aria-label="Login">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                            <circle cx="12" cy="7" r="4" />
-                        </svg>
-                        Login
-                    </a>
-                </div>
+        <div class="header-right">
+          <a href="src/pages/login.html" class="login-btn" aria-label="Login">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+            <span>Login</span>
+          </a>
+          
+          <!-- Mobile Menu Button (Hamburger) -->
+          <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">
+            <div class="hamburger" id="hamburger">
+              <span></span>
+              <span></span>
+              <span></span>
             </div>
-        </header>
+          </button>
+        </div>
+      </div>
+    </header>
 
-        <main>
-            <!-- Hero Section -->
-            <div class="hero-section">
-                <div class="hero-container">
-                    <div class="hero-content-left">
-                        <h2 class="hero-subheading">WedEASE</h2>
-                        <p class="hero-description">
-                            All the tools you need to design, plan, and celebrate your big day—
-                            smart, seamless, and stress-free.
-                        </p>
-                        <a href="#weddingCountdown" class="cta-button" id="hero-cta-button">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="white">
-                                <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
-                            </svg>
-                            <span style="color: white;">Start Now</span>
-                        </a>
-                    </div>
-                    <div class="hero-illustration-right">
-                        <img src="assets/img/bride and groom.png" alt="bride and Groom" id="hero-image">
-                    </div>
-                </div>
+<!-- Mobile Navigation Overlay -->
+<div class="nav-overlay" id="navOverlay"></div>
+
+<!-- Mobile Navigation Menu -->
+<nav class="header-nav-mobile" id="mobileNav" aria-label="Mobile navigation">
+  <button class="mobile-close-btn" id="mobileCloseBtn" aria-label="Close menu">✕</button>
+  <a href="index.html" class="nav-link">Home</a>
+  <a href="src/pages/about.html" class="nav-link">About</a>
+  <a href="src/pages/theme.html" class="nav-link">Theme</a>
+  <a href="src/pages/track.html" class="nav-link">Track</a>
+</nav>
+
+    <!-- MAIN -->
+    <main>
+
+      <!-- Hero Section -->
+      <div class="hero-section">
+        <div class="hero-container">
+          <div class="hero-content-left">
+            <h2 class="hero-subheading">WedEASE</h2>
+            <p class="hero-description">
+              All the tools you need to design, plan, and celebrate your big day —
+              smart, seamless, and stress-free.
+            </p>
+            <a href="#weddingCountdown" class="cta-button" id="hero-cta-button">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="white">
+                <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+              </svg>
+              <span style="color: white;">Start Now</span>
+            </a>
+          </div>
+          <div class="hero-illustration-right">
+            <img src="assets/img/bride and groom.png" alt="Bride and Groom" id="hero-image" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Wedding Countdown Section -->
+      <section id="weddingCountdown" class="countdown-section">
+        <div class="countdown-container">
+          <h2 class="countdown-title">Your Wedding Countdown</h2>
+          <p class="countdown-subtitle">Enter your wedding date to start the countdown to your special day</p>
+
+          <div class="countdown-input-section">
+            <input type="date" class="wedding-date-input" id="weddingDateInput" min="" required />
+            <button class="set-date-btn" id="setDateBtn">Start Countdown</button>
+            <button class="clear-date-btn" id="clearDateBtn" style="display: none;">Change Date</button>
+          </div>
+
+          <div class="wedding-date-display" id="weddingDateDisplay" style="display: none;">
+            <h3>Your Wedding Date</h3>
+            <div class="wedding-date" id="weddingDateText"></div>
+          </div>
+
+          <div class="countdown-display" id="countdownDisplay" style="display: none;">
+            <div class="countdown-grid">
+              <div class="countdown-item">
+                <span class="countdown-number" id="days">0</span>
+                <span class="countdown-label">Days</span>
+              </div>
+              <div class="countdown-item">
+                <span class="countdown-number" id="hours">0</span>
+                <span class="countdown-label">Hours</span>
+              </div>
+              <div class="countdown-item">
+                <span class="countdown-number" id="minutes">0</span>
+                <span class="countdown-label">Minutes</span>
+              </div>
+              <div class="countdown-item">
+                <span class="countdown-number" id="seconds">0</span>
+                <span class="countdown-label">Seconds</span>
+              </div>
             </div>
+            <div class="countdown-message" id="countdownMessage"></div>
+            <button class="explore-more-btn" id="exploreMoreBtn" style="display: none;">Explore More</button>
+          </div>
+        </div>
+      </section>
 
-            <!-- Wedding Countdown Section -->
-            <section id="weddingCountdown" class="countdown-section">
-                <div class="countdown-container">
-                    <h2 class="countdown-title">Your Wedding Countdown</h2>
-                    <p class="countdown-subtitle">Enter your wedding date to start the countdown to your special day</p>
-                    
-                    <div class="countdown-input-section">
-                        <input type="date" 
-                            class="wedding-date-input" 
-                            id="weddingDateInput" 
-                            min=""
-                            required>
-                        <button class="set-date-btn" id="setDateBtn">Start Countdown</button>
-                        <button class="clear-date-btn" id="clearDateBtn" style="display: none;">Change Date</button>
-                    </div>
-                    
-                    <!-- Wedding Date Display -->
-                    <div class="wedding-date-display" id="weddingDateDisplay" style="display: none;">
-                        <h3>Your Wedding Date</h3>
-                        <div class="wedding-date" id="weddingDateText"></div>
-                    </div>
-                    
-                    <div class="countdown-display" id="countdownDisplay" style="display: none;">
-                        <div class="countdown-grid">
-                            <div class="countdown-item">
-                                <span class="countdown-number" id="days">0</span>
-                                <span class="countdown-label">Days</span>
-                            </div>
-                            <div class="countdown-item">
-                                <span class="countdown-number" id="hours">0</span>
-                                <span class="countdown-label">Hours</span>
-                            </div>
-                            <div class="countdown-item">
-                                <span class="countdown-number" id="minutes">0</span>
-                                <span class="countdown-label">Minutes</span>
-                            </div>
-                            <div class="countdown-item">
-                                <span class="countdown-number" id="seconds">0</span>
-                                <span class="countdown-label">Seconds</span>
-                            </div>
-                        </div>
-                        
-                        <div class="countdown-message" id="countdownMessage"></div>
-                        
-                        <!-- Explore More Button -->
-                        <button class="explore-more-btn" id="exploreMoreBtn" style="display: none;">
-                            Explore More
-                        </button>
-                    </div>
-                </div>
-            </section>
+    </main>
 
-        </main>
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div class="footer-container">
+        <div class="footer-section">
+          <h4>WedEASE</h4>
+          <p>Making wedding planning beautiful and stress-free.</p>
+        </div>
+        <div class="footer-section">
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="src/pages/about.html">About</a></li>
+            <li><a href="src/pages/budget.html">Budget</a></li>
+            <li><a href="src/pages/theme.html">Theme</a></li>
+            <li><a href="src/pages/track.html">Track</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h4>Resources</h4>
+          <ul>
+            <li><a href="#">Blog</a></li>
+            <li><a href="#">Help Center</a></li>
+            <li><a href="#">Contact Us</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+            <li><a href="#">Cookie Policy</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 WedEASE. All rights reserved.</p>
+      </div>
+    </footer>
 
-        <footer class="footer">
-            <div class="footer-container">
-                <div class="footer-section">
-                    <h4>WedEASE</h4>
-                    <p>Making wedding planning beautiful and stress-free.</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Quick Links</h4>
-                    <ul>
-                        <li><a href="index.html">Home</a></li>
-                        <li><a href="src/pages/about.html">About</a></li>
-                        <li><a href="src/pages/budget.html">Budget</a></li>
-                        <li><a href="src/pages/theme.html">Theme</a></li>
-                        <li><a href="src/pages/track.html">Track</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Resources</h4>
-                    <ul>
-                        <li><a href="#">Blog</a></li>
-                        <li><a href="#">Help Center</a></li>
-                        <li><a href="#">Contact Us</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Legal</h4>
-                    <ul>
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Terms of Service</a></li>
-                        <li><a href="#">Cookie Policy</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2025 WedEASE. All rights reserved.</p>
-            </div>
-        </footer>
+  </div><!-- /#app -->
+
+  <!-- CHATBOT WIDGET -->
+  <button id="wedease-chat-btn" aria-label="Open wedding assistant">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+    </svg>
+  </button>
+
+  <div id="wedease-chat-panel" role="dialog" aria-label="Wedding planning assistant">
+    <div id="wedease-chat-header">
+      <div id="wedease-chat-header-left">
+        <span id="wedease-chat-title">Wedding Assistant</span>
+        <span id="wedease-chat-subtitle">Ask me anything about your big day</span>
+      </div>
+      <button id="wedease-chat-close" aria-label="Close chat">
+        <svg viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
     </div>
-    <script src="js/app.js"></script>
+    <div id="wedease-chat-messages" role="log" aria-live="polite"></div>
+    <div id="wedease-suggestions"></div>
+    <div id="wedease-chat-input-area">
+      <textarea
+        id="wedease-chat-input"
+        rows="1"
+        placeholder="Ask about venues, themes, budgets..."
+        aria-label="Message input"
+      ></textarea>
+      <button id="wedease-chat-send" aria-label="Send message">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script src="js/app.js"></script>
+  <script src="js/chatbot.js"></script>
+  <script src="js/nav.js"></script>
+
 </body>
 </html>

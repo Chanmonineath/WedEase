@@ -1,0 +1,301 @@
+/* ===============================================
+   WEDEASE CHATBOT - MOBILE FIRST
+   =============================================== */
+
+/* ── Floating Button ── */
+#wedease-chat-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #a2437c, #6f3054);
+  border: none;
+  cursor: pointer;
+  z-index: 9000;
+  box-shadow: 0 4px 16px rgba(162, 67, 124, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+#wedease-chat-btn:active { transform: scale(0.93); }
+#wedease-chat-btn svg { width: 24px; height: 24px; fill: white; }
+
+/* ── Chat Panel ── */
+#wedease-chat-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  background: #f5f5f5;
+  display: none;
+  flex-direction: column;
+  z-index: 9001;
+  overflow: hidden;
+}
+
+#wedease-chat-panel.open { display: flex; }
+
+/* ── Header ── */
+#wedease-chat-header {
+  background: linear-gradient(135deg, #a2437c, #6f3054);
+  padding: 50px 18px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+#wedease-chat-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+#wedease-chat-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: white;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+#wedease-chat-subtitle {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+#wedease-chat-close {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+  padding: 0;
+}
+
+#wedease-chat-close:active { background: rgba(255, 255, 255, 0.35); }
+
+#wedease-chat-close svg {
+  width: 16px;
+  height: 16px;
+  stroke: white;
+  stroke-width: 2.5;
+  fill: none;
+}
+
+/* ── Messages Area ── */
+#wedease-chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: #f5f5f5;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ── Message Bubbles ── */
+.wc-msg {
+  display: flex;
+  flex-direction: column;
+  max-width: 78%;
+  animation: msgFade 0.2s ease;
+}
+
+@keyframes msgFade {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.wc-msg.assistant { align-self: flex-start; }
+.wc-msg.user      { align-self: flex-end; }
+
+.wc-bubble {
+  padding: 10px 14px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  word-wrap: break-word;
+}
+
+.wc-msg.assistant .wc-bubble {
+  background: white;
+  color: #1a1a1a;
+  border-radius: 18px 18px 18px 4px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.wc-msg.user .wc-bubble {
+  background: #a2437c;
+  color: white;
+  border-radius: 18px 18px 4px 18px;
+}
+
+/* ── Typing Indicator ── */
+.wc-typing {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 12px 16px;
+  background: white;
+  border-radius: 18px 18px 18px 4px;
+  width: fit-content;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.wc-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #a2437c;
+  animation: typingBounce 1.4s ease-in-out infinite;
+}
+
+.wc-dot:nth-child(2) { animation-delay: 0.2s; }
+.wc-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typingBounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.35; }
+  30%           { transform: translateY(-6px); opacity: 1; }
+}
+
+/* ── Suggestions ── */
+#wedease-suggestions {
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex-shrink: 0;
+  background: #f5f5f5;
+}
+
+.wc-suggestion {
+  padding: 10px 16px;
+  background: white;
+  border: 1.5px solid #e8d5e8;
+  border-radius: 12px;
+  color: #a2437c;
+  font-size: 0.88rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+  white-space: normal;
+}
+
+.wc-suggestion:active {
+  background: #a2437c;
+  color: white;
+  border-color: #a2437c;
+  transform: scale(0.98);
+}
+
+/* ── Input Area ── */
+#wedease-chat-input-area {
+  padding: 10px 14px 24px;
+  border-top: 1px solid #e8e8e8;
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  flex-shrink: 0;
+  background: white;
+}
+
+#wedease-chat-input {
+  flex: 1;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 22px;
+  padding: 10px 16px;
+  font-size: 0.95rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  resize: none;
+  outline: none;
+  max-height: 100px;
+  line-height: 1.4;
+  color: #1a1a1a;
+  background: #f9f9f9;
+  -webkit-appearance: none;
+  transition: border-color 0.2s ease;
+}
+
+#wedease-chat-input:focus {
+  border-color: #a2437c;
+  background: white;
+}
+
+#wedease-chat-input::placeholder { color: #aaa; }
+
+#wedease-chat-send {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  border-radius: 50%;
+  background: #a2437c;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.15s ease;
+  padding: 0;
+}
+
+#wedease-chat-send:active:not(:disabled) { transform: scale(0.92); }
+#wedease-chat-send:disabled { opacity: 0.4; cursor: not-allowed; }
+#wedease-chat-send svg { width: 16px; height: 16px; fill: white; }
+
+/* ── Desktop override ── */
+@media (min-width: 560px) {
+  #wedease-chat-panel {
+    position: fixed;
+    top: auto;
+    left: auto;
+    bottom: 84px;
+    right: 20px;
+    width: 380px;
+    height: 580px;
+    max-width: calc(100vw - 40px);
+    max-height: calc(100vh - 110px);
+    border-radius: 20px;
+    animation: chatSlideIn 0.3s ease;
+  }
+
+  #wedease-chat-header {
+    padding: 18px 18px 16px;
+  }
+
+  @keyframes chatSlideIn {
+    from { opacity: 0; transform: translateY(16px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  #wedease-suggestions {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .wc-suggestion {
+    white-space: nowrap;
+    padding: 6px 14px;
+    border-radius: 20px;
+  }
+
+  #wedease-chat-input-area {
+    padding: 10px 14px;
+  }
+}
