@@ -1,0 +1,419 @@
+/* ===============================================
+   TRACK PAGE STYLES
+   track.css — included only on track.html
+   =============================================== */
+
+/* ── Modals ── */
+.modal {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: rgba(0, 0, 0, 0.5) !important;
+  display: none !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 999999 !important;
+}
+.modal.active { display: flex !important; }
+.hidden { display: none !important; }
+
+/* ── Toast messages ── */
+.success-message,
+.error-message {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  display: none;
+  font-size: 0.95rem;
+}
+.success-message { background: #4caf50; color: #fff; }
+.error-message   { background: #f44336; color: #fff; }
+.success-message.show,
+.error-message.show {
+  display: block;
+  animation: slideDown 0.3s ease;
+}
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Layout ── */
+.track-features {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-top: 1.5rem;
+}
+.feature-box { width: 100%; }
+
+/* ── Badges ── */
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.badge-success { background: #e8f5e9; color: #2e7d32; }
+.badge-warning { background: #fff3e0; color: #f57c00; }
+.badge-danger  { background: #ffebee; color: #c62828; }
+.badge-info    { background: #e3f2fd; color: #1976d2; }
+
+/* ── Icon buttons ── */
+.icon-btn {
+  border: none;
+  border-radius: 999px;
+  padding: 0.3rem 0.5rem;
+  font-size: 0.95rem;
+  cursor: pointer;
+  margin-left: 0.25rem;
+}
+.icon-btn:hover        { background: #e7e7e7; transform: translateY(-1px); }
+.icon-btn.danger:hover { background: #ffcdd2; }
+
+/* ── Search + filters ── */
+.search-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+  align-items: center;
+}
+.search-box { flex: 1; min-width: 200px; }
+.search-box input {
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  border-radius: 0.6rem;
+  border: 1px solid var(--wed-border);
+  font-size: 0.9rem;
+}
+.filter-select {
+  padding: 0.55rem 0.7rem;
+  border-radius: 0.6rem;
+  border: 1px solid var(--wed-border);
+  font-size: 0.9rem;
+  min-width: 140px;
+}
+
+/* ── Guest list table ── */
+.track-features table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+.track-features th,
+.track-features td {
+  padding: 0.55rem 0.4rem;
+  border-bottom: 1px solid var(--wed-border);
+}
+.track-features th {
+  text-align: left;
+  font-weight: 600;
+  color: #555;
+}
+.track-features td:last-child { text-align: right; }
+
+/* ── Scrollable guest/gift table wrapper ── */
+.guest-table-wrapper {
+  margin-top: 1rem;
+  max-height: 230px;
+  overflow-y: auto;
+  border-radius: 12px;
+  border: 1px solid var(--wed-border);
+  background: #fff;
+}
+.guest-table-wrapper table { margin-top: 0; }
+.guest-group-row td {
+  background: #f7f2fb;
+  font-weight: 600;
+  color: #6b4a9c;
+  padding-top: 0.8rem;
+}
+.guest-row td { padding-right: 30px; }
+
+/* ── Empty state ── */
+.empty-state {
+  text-align: center;
+  padding: 2.5rem 1rem;
+  color: #999;
+  font-size: 0.95rem;
+}
+.empty-state-icon {
+  font-size: 30px;
+  margin-bottom: 0.5rem;
+  margin-left: 48%;
+}
+
+/* ── Ballroom layout ── */
+.ballroom-layout {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 20px;
+  border: 2px solid #e0d2f7;
+  background: radial-gradient(circle at top, #f7f4ff, #fdfbfd);
+  box-shadow: 0 15px 40px rgba(31, 38, 135, 0.12);
+  font-size: 0.9rem;
+}
+.ballroom-top,
+.ballroom-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+.ballroom-top-label,
+.ballroom-bottom-label {
+  padding: 0.35rem 0.75rem;
+  border-radius: 10px;
+  font-size: 0.8rem;
+}
+.ballroom-middle {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr 1fr;
+  gap: 1rem;
+  align-items: flex-start;
+}
+.zone-column {
+  border-radius: 16px;
+  border: 1px dashed #d1c4e9;
+  padding: 0.5rem;
+  background: rgba(255, 255, 255, 0.7);
+}
+.zone-title {
+  text-align: center;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #5b4f88;
+}
+.zone-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+}
+.center-column-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: stretch;
+}
+.center-box {
+  padding: 0.4rem 0.6rem;
+  text-align: center;
+  border-radius: 12px;
+  border: 1px solid #d1c4e9;
+  background: #faf5ff;
+  font-size: 0.8rem;
+}
+.center-box.dance { padding: 1.4rem 0.6rem; font-weight: 600; }
+
+/* ── Stats grid ── */
+.track-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.stat-card {
+  padding: 1.25rem 1rem;  /* override the existing 2rem padding */
+}
+
+.stat-number {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.stat-label {
+  font-size: 0.95rem;
+  margin-top: 0.25rem;
+}
+
+/* ── Round tables & chairs ── */
+.round-table {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin: 0.25rem;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 6px 14px rgba(31, 38, 135, 0.09);
+}
+.table-label {
+  position: absolute;
+  top: 72px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #000;
+  pointer-events: none;
+  z-index: 99;
+}
+.table-circle { display: none; }
+.table-img {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.chair {
+  position: absolute;
+  width: 50px;
+  text-align: center;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.chair-name {
+  font-size: 0.6rem;
+  display: block;
+  margin-bottom: 2px;
+  max-width: 40px;
+  margin-left: 5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #444;
+}
+.chair-name.empty { color: #b5b5b5; font-style: italic; }
+.chair-img {
+  width: 28px;
+  height: 23px;
+  object-fit: contain;
+  transform-origin: center;
+}
+
+/* ── Typography helpers ── */
+.curve-font {
+  font-family: var(--font-script);
+  color: #000;
+  font-size: 30px;
+}
+.entrance-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.entrance-icon { width: 50px; height: auto; display: block; }
+.head-title {
+  display: flex;
+  font-family: var(--font-script);
+  align-items: center;
+  font-size: 40px;
+  gap: 8px;
+}
+.head-icon { width: 40px; height: 40px; object-fit: contain; display: block; }
+
+/* ── Stat cards ── */
+.stat-card {
+  background: linear-gradient(135deg, var(--cta-pink), var(--wed-primary));
+  border: #000 solid 2px;
+  padding: 2rem;
+  border-radius: 0.75rem;
+  text-align: center;
+  color: black;
+}
+
+/* ── Misc ── */
+.edit-icon { width: 17px; height: 17px; }
+.gift-type-custom { margin-top: 0.5rem; }
+
+/* ── Helper classes used in track.html ── */
+.btn-row {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  flex-wrap: nowrap;
+  align-items: center;
+}
+
+.btn-outline {
+  background: #ffffff;
+  color: #a2437c;
+  border: 1px solid #a2437c !important;
+}
+
+.btn-danger {
+  background: #b42019 !important;
+  color: white !important;
+}
+
+.btn-cancel {
+  background: #bbb !important;
+}
+
+.rsvp-summary {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: var(--wed-text);
+}
+
+.csv-hint {
+  font-size: 14px;
+  margin-left: 20px;
+  color: var(--wed-text);
+}
+
+.seating-controls {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+  align-items: center;
+}
+
+.capacity-input {
+  width: 80px;
+  padding: 0.4rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--wed-border);
+}
+
+.modal-card {
+  width: 370px;
+  max-width: 90%;
+}
+
+.modal-select {
+  width: 100%;
+  padding: 0.7rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--wed-border);
+  margin-top: 0.35rem;
+  font-size: 1rem;
+  font-family: var(--font-sans);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+@media (max-width: 600px) {
+  .track-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.6rem;
+  }
+
+  .stat-card {
+    padding: 0.85rem 0.5rem;
+  }
+
+  .stat-number {
+    font-size: 1.4rem;
+  }
+
+  .stat-label {
+    font-size: 1rem;
+    white-space: nowrap;
+  }
+}
