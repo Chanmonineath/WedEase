@@ -123,7 +123,7 @@ const startServer = () =>
 ║             AUTH SYSTEM                        ║            ║               AUTH ENDPOINTS                   ║
 ║       Login / Register / Session               ║            ╠════════════════════════════════════════════════╣
 ╠════════════════════════════════════════════════╣            ║   - POST /api/auth/register                    ║
-║   - Security Layer Active                      ║            ║   - PATCH /api/auth/login                      ║
+║   - Security Layer Active                      ║            ║   - POST /api/auth/login                       ║
 ║   - JWT Cookie Authentication                  ║            ║   - GET /api/auth/me                           ║
 ║   - bcrypt Password Hashing                    ║            ║   - POST /api/auth/logout                      ║
 ║   - express-validator enabled                  ║            ║   - DELETE /api/auth/account                   ║
