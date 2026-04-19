@@ -402,7 +402,7 @@ class AuthManager {
         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
         <circle cx="12" cy="7" r="4" />
       </svg>
-      ${user.name || user.email.split("@")[0]}
+      <span class="user-name">${user.name || user.email.split("@")[0]}</span>
     `;
     btn.addEventListener("click", () => {
       if (confirm("Sign out?")) {
@@ -428,7 +428,13 @@ class AuthManager {
       }
     }
     this.clearCurrentUser();
-    window.location.href = "../../src/pages/login.html";
+    // Fix: Use correct path based on current location
+    const currentPath = window.location.pathname;
+    if (currentPath.includes('/src/pages/')) {
+      window.location.href = 'login.html';
+    } else {
+      window.location.href = 'src/pages/login.html';
+    }
   }
 
   showStatus(msg, isError = false) {
