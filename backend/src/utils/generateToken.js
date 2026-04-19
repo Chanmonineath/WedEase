@@ -1,37 +1,14 @@
-const crypto = require("node:crypto");
+const jwt = require("jsonwebtoken");
 
 const jwtSecret = process.env.JWT_SECRET || "dev_secret_change_me";
+const jwtExpiresIn = process.env.JWT_EXPIRES_IN || "7d";
 
-const sign = (value) =>
-  crypto.createHmac("sha256", jwtSecret).update(value).digest("base64url");
+function generateToken(payload) {
+  return jwt.sign(payload, jwtSecret, { expiresIn: jwtExpiresIn });
+}
 
-const generateToken = (payload) => {
-  const tokenPayload = {
-    ...payload,
-    iat: Date.now(),
-  };
-  const encodedPayload = Buffer.from(JSON.stringify(tokenPayload)).toString(
-    "base64url",
-  );
+function verifyToken(token) {
+  return jwt.verify(token, jwtSecret);
+}
 
-  return `${encodedPayload}.${sign(encodedPayload)}`;
-};
-
-const verifyToken = (token) => {
-  const [encodedPayload, signature] = token.split(".");
-
-  if (!encodedPayload || !signature) {
-    throw new Error("Invalid token.");
-  }
-
-  if (sign(encodedPayload) !== signature) {
-    throw new Error("Invalid token.");
-  }
-
-  return JSON.parse(Buffer.from(encodedPayload, "base64url").toString("utf8"));
-};
-
-module.exports = {
-  generateToken,
-  verifyToken,
-};
+module.exports = { generateToken, verifyToken };

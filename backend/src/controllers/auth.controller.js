@@ -1,160 +1,206 @@
-const crypto = require("node:crypto");
-const dotenv = require("dotenv");
-const path = require("node:path");
-
+// backend/src/controllers/auth.controller.js
+const bcrypt = require("bcryptjs");
+const { validationResult } = require("express-validator");
 const User = require("../models/User");
 const { generateToken } = require("../utils/generateToken");
 
-dotenv.config({
-  path: path.resolve(__dirname, "../../.env"),
-  override: true,
-});
-
-const isProduction = process.env.NODE_ENV === "production";
-
-const hashPassword = (
-  password,
-  salt = crypto.randomBytes(16).toString("hex"),
-) => {
-  const hash = crypto
-    .pbkdf2Sync(password, salt, 100000, 64, "sha512")
-    .toString("hex");
-
-  return { salt, hash };
-};
-
+// Helper to remove sensitive data
 const sanitizeUser = (user) => {
-  if (!user) {
-    return null;
-  }
-
-  const { passwordHash, passwordSalt, ...safeUser } = user;
+  if (!user) return null;
+  const { passwordHash, passwordSalt, ...safeUser } = user._doc || user;
   return safeUser;
 };
 
-const register = async (req, res, next) => {
+// @desc    Register new user
+// @route   POST /api/auth/register
+// @access  Public
+exports.register = async (req, res) => {
+  // Validate input
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      errors: errors.array(),
+    });
+  }
+
+  const { name, email, password } = req.body;
+
   try {
-    const { name, email, password, role } = req.body;
-
-    if (!name || !email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: "name, email, and password are required.",
-      });
-    }
-
-    const existingUser = await User.findUserByEmail(email);
-
+    // Check if user exists
+    const existingUser = await User.findByEmail(email);
     if (existingUser) {
       return res.status(409).json({
         success: false,
-        message: "An account with this email already exists.",
+        message: "Email already exists",
       });
     }
 
-    const passwordDigest = hashPassword(password);
-    const createdUser = await User.createUser({
+    // Hash password
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(password, salt);
+
+    // Create user
+    const user = await User.create({
       name,
       email,
-      role: role || "user",
-      passwordHash: passwordDigest.hash,
-      passwordSalt: passwordDigest.salt,
+      passwordHash: hash,
+      passwordSalt: salt,
     });
 
-    const token = generateToken({
-      userId: createdUser._id,
-      email: createdUser.email,
-      role: createdUser.role,
-    });
-
-    res.cookie("token", token, {
-      httpOnly: true,
-      sameSite: "lax",
-      secure: isProduction,
-    });
-
-    return res.status(201).json({
-      success: true,
-      message: "Account created successfully.",
-      token,
-      user: sanitizeUser(createdUser),
-    });
-  } catch (error) {
-    return next(error);
-  }
-};
-
-const login = async (req, res, next) => {
-  try {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: "email and password are required.",
-      });
-    }
-
-    const user = await User.findUserByEmail(email);
-
-    if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: "Invalid email or password.",
-      });
-    }
-
-    const { hash } = hashPassword(password, user.passwordSalt);
-
-    if (hash !== user.passwordHash) {
-      return res.status(401).json({
-        success: false,
-        message: "Invalid email or password.",
-      });
-    }
-
+    // Generate token
     const token = generateToken({
       userId: user._id,
       email: user.email,
-      role: user.role,
     });
 
+    // Set HTTP-only cookie
     res.cookie("token", token, {
       httpOnly: true,
       sameSite: "lax",
-      secure: isProduction,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
-    return res.status(200).json({
+    // Return user data (without password)
+    res.status(201).json({
       success: true,
-      message: "Login successful.",
-      token,
       user: sanitizeUser(user),
     });
   } catch (error) {
-    return next(error);
+    console.error("Register error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
   }
 };
 
-const me = async (req, res) => {
-  res.status(200).json({
-    success: true,
-    user: req.user || null,
-  });
+// @desc    Login user
+// @route   POST /api/auth/login
+// @access  Public
+exports.login = async (req, res) => {
+  // Validate input
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      errors: errors.array(),
+    });
+  }
+
+  const { email, password } = req.body;
+
+  try {
+    // Find user
+    const user = await User.findByEmail(email);
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid credentials",
+      });
+    }
+
+    // Check password
+    const isMatch = await bcrypt.compare(password, user.passwordHash);
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid credentials",
+      });
+    }
+
+    // Generate token
+    const token = generateToken({
+      userId: user._id,
+      email: user.email,
+    });
+
+    // Set HTTP-only cookie
+    res.cookie("token", token, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    // Return user data
+    res.json({
+      success: true,
+      user: sanitizeUser(user),
+    });
+  } catch (error) {
+    console.error("Login error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
 };
 
-const logout = async (req, res) => {
+// @desc    Get current user
+// @route   GET /api/auth/me
+// @access  Private
+exports.getMe = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.userId).select(
+      "-passwordHash -passwordSalt",
+    );
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+    res.json({
+      success: true,
+      user: sanitizeUser(user),
+    });
+  } catch (error) {
+    console.error("Get me error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
+
+// @desc    Logout user
+// @route   POST /api/auth/logout
+// @access  Private
+exports.logout = (req, res) => {
   res.clearCookie("token");
-
-  res.status(200).json({
+  res.json({
     success: true,
-    message: "Logged out successfully.",
+    message: "Logged out successfully",
   });
 };
 
-module.exports = {
-  register,
-  login,
-  me,
-  logout,
+// @desc    Delete account
+// @route   DELETE /api/auth/account
+// @access  Private
+exports.deleteAccount = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    await User.findByIdAndDelete(req.user.userId);
+    res.clearCookie("token");
+
+    res.json({
+      success: true,
+      message: "Account deleted successfully",
+    });
+  } catch (error) {
+    console.error("Delete account error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
 };
