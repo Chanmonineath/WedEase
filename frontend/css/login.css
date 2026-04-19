@@ -1,7 +1,24 @@
+.center-link {
+  text-align: center;
+  width: 100%;
+  display: block;
+  margin-top: 1rem;
+}
 /* ===============================================
-   LOGIN.CSS — Login page styles (login.html only)
+   LOGIN.CSS — WedEASE Auth Page (UPDATED UX)
+   Facebook-style validation + shake effect
    =============================================== */
 
+/* Ensure password wrapper positions eye icon correctly */
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+/* Auth container */
 .auth-container {
   display: grid;
   grid-template-columns: 1fr;
@@ -35,30 +52,74 @@
 
 .auth-card input {
   width: 100%;
-  padding: 0.7rem;
+  padding: 0.7rem 2.5rem 0.7rem 0.7rem;
   margin-top: 0.35rem;
   border-radius: 0.5rem;
   border: 1px solid var(--wed-border);
   font-size: 1rem;
-  transition: border-color 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 .auth-card input:focus {
   outline: none;
-  border-color: var(--wed-primary);
+  border-color: #1877f2;
+  box-shadow: 0 0 0 3px rgba(24, 119, 242, 0.15);
 }
 
-.auth-link {
-  margin-top: 0.9rem;
-  font-size: 0.95rem;
-  color: var(--wed-text);
-  text-align: center;
+/* Red input border */
+.auth-card input.input-error {
+  border: 1.5px solid #e53935 !important;
+  background-color: #fffafa;
 }
 
+/* Shake animation */
+@keyframes shake {
+  0% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-6px);
+  }
+  40% {
+    transform: translateX(6px);
+  }
+  60% {
+    transform: translateX(-4px);
+  }
+  80% {
+    transform: translateX(4px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* Apply shake */
+.shake {
+  animation: shake 0.35s ease-in-out;
+}
+
+/* Validation message */
+.validation-msg {
+  font-size: 0.85rem;
+  color: #e53935;
+  margin-top: 0.3rem;
+  display: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  width: 100%;
+  display: block;
+}
+
+.validation-msg.active {
+  display: block;
+  opacity: 1;
+}
+
+/* Auth status box */
 #auth-status {
   max-width: 480px;
   margin: 1rem auto;
-  color: var(--wed-secondary);
   font-weight: 600;
   text-align: center;
   padding: 1rem;
@@ -75,4 +136,29 @@
   background: #fef2f2;
   color: #991b1b;
   border: 1px solid #fecaca;
+}
+
+/* Eye Toggle */
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  z-index: 2;
+  height: 18px;
+  width: 18px;
+}
+
+.eye-icon {
+  width: 16px;
+  height: 16px;
+  display: block;
 }
