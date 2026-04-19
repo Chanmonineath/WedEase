@@ -1,5 +1,5 @@
 // ===============================================
-// MOBILE NAVIGATION - WORKING
+// MOBILE NAVIGATION - FULLY WORKING
 // ===============================================
 
 (function() {
@@ -16,7 +16,7 @@
             return;
         }
 
-        console.log('✅ Nav elements found, attaching listeners...');
+        console.log('Nav elements found, attaching listeners...');
 
         function openMenu() {
             mobileNav.classList.add('open');
@@ -32,8 +32,8 @@
             document.body.style.overflow = '';
         }
 
-        // TOGGLE instead of just open
-        menuBtn.addEventListener('click', () => {
+        menuBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
             if (mobileNav.classList.contains('open')) {
                 closeMenu();
             } else {
@@ -41,20 +41,29 @@
             }
         });
 
-        if (closeBtn) closeBtn.addEventListener('click', closeMenu);
-        if (overlay) overlay.addEventListener('click', closeMenu);
-
-        if (mobileNav) {
-            mobileNav.querySelectorAll('a').forEach(link => {
-                link.addEventListener('click', closeMenu);
+        if (closeBtn) {
+            closeBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                closeMenu();
             });
         }
 
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') closeMenu();
+        if (overlay) {
+            overlay.addEventListener('click', closeMenu);
+        }
+
+        const mobileLinks = document.querySelectorAll('.header-nav-mobile .nav-link');
+        mobileLinks.forEach(function(link) {
+            link.addEventListener('click', closeMenu);
         });
 
-        console.log('✅ Mobile nav fully initialized');
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeMenu();
+            }
+        });
+
+        console.log('Mobile nav fully initialized');
     }
 
     if (document.readyState === 'loading') {
