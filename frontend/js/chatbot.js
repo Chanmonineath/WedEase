@@ -28,6 +28,13 @@
                sessionStorage.getItem('wedease_auth_token');
     }
 
+    function authHeaders() {
+        return {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${getAuthToken()}`
+        };
+    }
+
     function hidePanel() {
         if (panel) {
             panel.classList.remove('open');
@@ -156,7 +163,6 @@
                     e.preventDefault();
                     e.stopPropagation();
                     if (isLoading || isSending) return;
-                    // Directly call the send function without touching input
                     sendMessageDirect(q);
                 };
                 suggestionsEl.appendChild(chip);
@@ -167,14 +173,11 @@
         }
     }
 
-    // New function for direct sending from suggestions
     async function sendMessageDirect(message) {
         if (!message || isLoading || isSending) return;
-        
+
         isSending = true;
-        
         if (suggestionsEl) suggestionsEl.style.display = "none";
-        
         if (sendBtn) sendBtn.disabled = true;
 
         appendMessage("user", message);
@@ -184,13 +187,9 @@
         showTyping();
 
         try {
-            const token   = getAuthToken();
-            const headers = { "Content-Type": "application/json" };
-            if (token) headers["Authorization"] = `Bearer ${token}`;
-
-            const res  = await fetch(`${API_BASE}/api/chatbot`, {
+            const res = await fetch(`${API_BASE}/api/chatbot`, {
                 method: "POST",
-                headers,
+                headers: authHeaders(),
                 body: JSON.stringify({ messages: chatHistory, chatId: currentChatId }),
             });
             const data = await res.json();
@@ -337,16 +336,43 @@
             };
         });
 
+        // ── FIXED: properly await delete and check success ──
         hp.querySelectorAll('.history-delete').forEach(delBtn => {
             delBtn.onclick = async (e) => {
                 e.stopPropagation();
                 if (!confirm('Delete this conversation?')) return;
-                const token = getAuthToken();
-                await fetch(`${API_BASE}/api/chatbot/${delBtn.dataset.id}`, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                showHistoryPanel();
+
+                // Disable button while deleting to prevent double-clicks
+                delBtn.disabled = true;
+                delBtn.textContent = 'Deleting...';
+
+                try {
+                    const res = await fetch(`${API_BASE}/api/chatbot/${delBtn.dataset.id}`, {
+                        method: 'DELETE',
+                        headers: authHeaders()
+                    });
+                    const data = await res.json();
+
+                    if (data.success) {
+                        // If the deleted chat is the currently open one, start fresh
+                        if (currentChatId === delBtn.dataset.id) {
+                            currentChatId = null;
+                            chatHistory = [];
+                        }
+                        // Refresh the history panel from the server
+                        showHistoryPanel();
+                    } else {
+                        console.error('Delete failed:', data.message);
+                        delBtn.disabled = false;
+                        delBtn.textContent = 'Remove';
+                        alert('Failed to delete conversation: ' + (data.message || 'Unknown error'));
+                    }
+                } catch (err) {
+                    console.error('Delete chat error:', err);
+                    delBtn.disabled = false;
+                    delBtn.textContent = 'Remove';
+                    alert('Could not connect to server. Please check your backend is running.');
+                }
             };
         });
     }
@@ -355,7 +381,7 @@
         const token = getAuthToken();
         if (!token) return;
         try {
-            const res  = await fetch(`${API_BASE}/api/chatbot/${chatId}`, {
+            const res = await fetch(`${API_BASE}/api/chatbot/${chatId}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const data = await res.json();
@@ -379,7 +405,7 @@
         isSending = true;
         inputEl.value = "";
         if (suggestionsEl) suggestionsEl.style.display = "none";
-        
+
         if (sendBtn) sendBtn.disabled = true;
         if (inputEl) inputEl.disabled = true;
 
@@ -390,13 +416,9 @@
         showTyping();
 
         try {
-            const token   = getAuthToken();
-            const headers = { "Content-Type": "application/json" };
-            if (token) headers["Authorization"] = `Bearer ${token}`;
-
-            const res  = await fetch(`${API_BASE}/api/chatbot`, {
+            const res = await fetch(`${API_BASE}/api/chatbot`, {
                 method: "POST",
-                headers,
+                headers: authHeaders(),
                 body: JSON.stringify({ messages: chatHistory, chatId: currentChatId }),
             });
             const data = await res.json();
