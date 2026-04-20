@@ -48,6 +48,26 @@
   border-color: var(--wed-primary);
 }
 
+.auth-password-field {
+  position: relative;
+}
+
+.auth-password-field input {
+  padding-right: 4.4rem;
+}
+
+.auth-eye-toggle {
+  position: absolute;
+  top: 50%;
+  right: 0.85rem;
+  transform: translateY(-50%);
+  border: none;
+  background: none;
+  color: var(--wed-primary);
+  font-weight: 700;
+  cursor: pointer;
+}
+
 .auth-link {
   margin-top: 0.9rem;
   font-size: 0.95rem;
