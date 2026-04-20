@@ -15,12 +15,13 @@ dotenv.config({
 const port = Number(process.env.PORT) || 5000;
 
 const { connectToDatabase, closeDatabase } = require("./config/db");
+
+// Routes - ONLY invitationGuest routes (no guest routes)
 const authRoutes = require("./routes/auth.routes");
-const guestRoutes = require("./routes/guest.routes");
-const invitationRoutes = require("./routes/invitation.routes");
+const invitationGuestRoutes = require("./routes/invitationGuest.routes");  // MAIN ROUTE
 const giftRoutes = require("./routes/gift.routes");
 const chatbotRoutes = require("./routes/chatbot.routes");
-const themeRoutes = require("./routes/theme.routes"); // ADD THIS LINE
+const themeRoutes = require("./routes/theme.routes");
 const notFound = require("./middleware/notFound");
 const errorHandler = require("./middleware/errorHandler");
 
@@ -28,9 +29,7 @@ const app = express();
 
 app.disable("x-powered-by");
 
-// ============================================
-// COMPLETE CORS CONFIGURATION - FIXED
-// ============================================
+// CORS Configuration
 app.use(helmet());
 app.use(cors({
   origin: [
@@ -65,13 +64,11 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
 
-// ============================================
-// ROUTES
-// ============================================
+// Routes
 app.get("/", (req, res) => {
   res.json({
     success: true,
-    message: "WedEase backend API is ready.",
+    message: "WedEASE backend API is ready.",
   });
 });
 
@@ -82,25 +79,18 @@ app.get("/api/health", (req, res) => {
   });
 });
 
-// Theme routes - ADD THESE LINES
+// API Routes - Using invitationGuest routes for guest management
 app.use("/api/themes", themeRoutes);
-
-// Other routes
 app.use("/api/auth", authRoutes);
-app.use("/api/guests", guestRoutes);
-app.use("/api/invitations", invitationRoutes);
+app.use("/api/invitation-guests", invitationGuestRoutes);  // This handles all guest operations
 app.use("/api/gifts", giftRoutes);
 app.use("/api/chatbot", chatbotRoutes);
 
-// ============================================
-// ERROR HANDLING
-// ============================================
+// Error Handling
 app.use(notFound);
 app.use(errorHandler);
 
-// ============================================
-// START SERVER
-// ============================================
+// Start Server
 const startServer = () =>
   connectToDatabase()
     .then(() => {
@@ -110,6 +100,7 @@ const startServer = () =>
 ║   Backend Server Running                       ║
 ╠════════════════════════════════════════════════╣
 ║   Express started on http://localhost:${port}  ║
+║   Invitation Guests: /api/invitation-guests    ║
 ║   Chatbot endpoint: /api/chatbot               ║
 ║   Themes endpoint: /api/themes/fetch-all       ║
 ║   CORS enabled for development                 ║

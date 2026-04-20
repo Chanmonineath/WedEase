@@ -1,0 +1,741 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>E-Invitation Designer - WedEASE</title>
+    <link rel="stylesheet" href="../../css/style.css" />
+    <link rel="stylesheet" href="../../css/base.css" />
+    <link rel="stylesheet" href="../../css/chatbot.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Caveat:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Cinzel:wght@400;600&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      href="../../assets/img/pink-purpleish logo.png"
+    />
+    <style>
+      .invitation-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-top: 2rem;
+      }
+      .guest-section {
+        background: white;
+        border-radius: 1.5rem;
+        border: 2px solid var(--wed-border);
+        overflow: hidden;
+        transition: all 0.3s ease;
+        margin-bottom: 1.5rem;
+      }
+      .guest-section:hover {
+        border-color: var(--wed-primary);
+        box-shadow: 0 8px 24px rgba(162, 67, 124, 0.1);
+      }
+      .section-header {
+        background: var(--wed-bg);
+        padding: 1rem 1.5rem;
+        border-bottom: 2px solid var(--wed-border);
+      }
+      .section-header h3 {
+        color: var(--wed-primary);
+        font-family: var(--font-script);
+        font-size: 1.5rem;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .form-group {
+        margin-bottom: 1rem;
+      }
+      .form-group label {
+        display: block;
+        color: var(--wed-primary);
+        font-weight: 600;
+        font-size: 0.85rem;
+        margin-bottom: 0.4rem;
+      }
+      .form-group input,
+      .form-group select,
+      .form-group textarea,
+      .inv-input {
+        width: 100%;
+        padding: 0.7rem 0.9rem;
+        border: 2px solid var(--wed-border);
+        border-radius: 0.75rem;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        font-family: var(--font-sans);
+        background: white;
+        box-sizing: border-box;
+      }
+      .btn-custom {
+        padding: 0.65rem 1.2rem;
+        background: linear-gradient(
+          45deg,
+          var(--wed-primary),
+          var(--wed-secondary)
+        );
+        color: white;
+        border: none;
+        border-radius: 0.75rem;
+        font-weight: 600;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        white-space: nowrap;
+      }
+      .btn-custom:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(162, 67, 124, 0.35);
+      }
+      .btn-outline {
+        background: transparent;
+        border: 2px solid var(--wed-primary);
+        color: var(--wed-primary);
+        box-shadow: none;
+      }
+      .btn-success {
+        background: linear-gradient(45deg, #1e8449, #27ae60);
+      }
+      .btn-danger {
+        background: linear-gradient(45deg, #c0392b, #e74c3c);
+      }
+      .btn-amber {
+        background: linear-gradient(45deg, #d68910, #f39c12);
+      }
+      .action-buttons {
+        display: flex;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+        margin-top: 1rem;
+      }
+      .guest-table-wrapper {
+        max-height: 320px;
+        overflow-y: auto;
+        overflow-x: auto;
+        margin-top: 0.75rem;
+      }
+      .guest-table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+      }
+      .guest-table th {
+        background: var(--wed-bg);
+        color: var(--wed-primary);
+        padding: 0.65rem 0.75rem;
+        text-align: left;
+        font-weight: 600;
+        font-size: 0.78rem;
+        position: sticky;
+        top: 0;
+        z-index: 1;
+      }
+      .guest-table td {
+        padding: 0.65rem 0.75rem;
+        border-bottom: 1px solid var(--wed-border);
+        font-size: 0.82rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .status-badge {
+        padding: 0.2rem 0.65rem;
+        border-radius: 1rem;
+        font-size: 0.68rem;
+        font-weight: 700;
+        display: inline-block;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+      }
+      .status-pending {
+        background: #fff3cd;
+        color: #856404;
+      }
+      .status-sent {
+        background: #cce5ff;
+        color: #004085;
+      }
+      .status-responded {
+        background: #d4edda;
+        color: #155724;
+      }
+      .tracking-link-cell {
+        font-size: 0.7rem;
+        font-family: monospace;
+        color: var(--wed-primary);
+        cursor: pointer;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: block;
+        max-width: 100%;
+      }
+      .invitation-card-preview {
+        background: white;
+        border-radius: 1.5rem;
+        overflow: hidden;
+        border: 2px solid var(--wed-border);
+        box-shadow: 0 4px 15px rgba(162, 67, 124, 0.08);
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      .invitation-card-preview:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 18px 40px rgba(162, 67, 124, 0.15);
+        border-color: var(--wed-primary);
+      }
+      .preview-header {
+        background: linear-gradient(
+          135deg,
+          var(--wed-primary),
+          var(--wed-secondary)
+        );
+        padding: 0.9rem;
+        text-align: center;
+        color: white;
+      }
+      .preview-header h3 {
+        margin: 0;
+        font-family: var(--font-script);
+        font-size: 1.4rem;
+      }
+      .invitation-display {
+        padding: 1.75rem;
+        min-height: 420px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .invitation-card {
+        text-align: center;
+        padding: 2rem 1.75rem;
+        border-radius: 0.75rem;
+        position: relative;
+        overflow: hidden;
+      }
+      .invitation-card.classic {
+        background: #0d0d0d;
+        color: #c9a84c;
+        border: 1px solid #c9a84c;
+      }
+      .invitation-card.rustic {
+        background: #faf3e8;
+        color: #4a3728;
+        border: none;
+      }
+      .invitation-card.modern {
+        background: #ffffff;
+        color: #1a1a1a;
+        border: 1.5px solid #1a1a1a;
+        box-shadow: 6px 6px 0 #1a1a1a;
+      }
+      .invitation-card.beach {
+        background: linear-gradient(
+          160deg,
+          #0a4a5a 0%,
+          #0d6b80 50%,
+          #0f8399 100%
+        );
+        color: #f0e6d3;
+      }
+      .invitation-card.garden {
+        background: #1c3a28;
+        color: #f5e8e0;
+      }
+      .couple-names {
+        font-family: "Great Vibes", cursive;
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+      }
+      .invitation-details {
+        margin: 1rem 0;
+        font-size: 0.9rem;
+        line-height: 1.6;
+      }
+      .personal-message {
+        font-style: italic;
+        margin: 1rem 0;
+        padding: 0.75rem;
+      }
+      .rsvp-text {
+        font-size: 0.65rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        margin-top: 1rem;
+      }
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+      .stat-item {
+        background: white;
+        border: 2px solid var(--wed-border);
+        border-radius: 1rem;
+        padding: 1rem;
+        text-align: center;
+      }
+      .stat-number {
+        font-size: 1.9rem;
+        font-weight: 700;
+        color: var(--wed-primary);
+        font-family: var(--font-script);
+      }
+      .stat-label {
+        font-size: 0.78rem;
+        color: var(--wed-text);
+        margin-top: 0.2rem;
+      }
+      .progress-bar-custom {
+        width: 100%;
+        height: 8px;
+        background: var(--wed-bg);
+        border-radius: 10px;
+        overflow: hidden;
+        margin-top: 1rem;
+      }
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--cta-pink), var(--wed-primary));
+        border-radius: 10px;
+        transition: width 0.5s ease;
+        width: 0%;
+      }
+      hr {
+        border: none;
+        border-top: 1px solid var(--wed-border);
+        margin: 1rem 0;
+      }
+      @media (max-width: 768px) {
+        .invitation-grid {
+          grid-template-columns: 1fr;
+        }
+        .stats-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <!-- HEADER -->
+      <header class="header" id="header">
+        <div class="header-container">
+          <div class="header-left">
+            <a href="../../index.html" class="logo">
+              <img
+                src="../../assets/img/pink-purpleish logo.png"
+                alt="WedEASE"
+                class="logo-image"
+              />
+            </a>
+          </div>
+
+          <nav class="header-nav" aria-label="Main navigation">
+            <a href="../../index.html" class="nav-link">Home</a>
+            <a href="about.html" class="nav-link">About</a>
+            <a href="theme.html" class="nav-link active">Theme</a>
+            <a href="invitation.html" class="nav-link active">E-Invitation</a>
+            <a href="track.html" class="nav-link">Track</a>
+          </nav>
+
+          <div class="header-right">
+            <a href="login.html" class="login-btn" aria-label="Login">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+              <span>Login</span>
+            </a>
+
+            <button
+              class="mobile-menu-btn"
+              id="mobileMenuBtn"
+              aria-label="Menu"
+            >
+              <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <div class="nav-overlay" id="navOverlay"></div>
+
+      <nav
+        class="header-nav-mobile"
+        id="mobileNav"
+        aria-label="Mobile navigation"
+      >
+        <button
+          class="mobile-close-btn"
+          id="mobileCloseBtn"
+          aria-label="Close menu"
+        >
+          ✕
+        </button>
+        <a href="../../index.html" class="nav-link">Home</a>
+        <a href="about.html" class="nav-link">About</a>
+        <a href="theme.html" class="nav-link">Theme</a>
+        <a href="invitation.html" class="nav-link">E-Invitation</a>
+        <a href="track.html" class="nav-link">Track</a>
+        <a href="login.html" class="nav-link mobile-login-link">Login</a>
+      </nav>
+
+      <main>
+        <div class="page-wrapper">
+          <h1 class="page-title">E-Invitation Designer</h1>
+          <p class="page-subtitle">
+            Create elegant digital invitations and manage RSVPs
+          </p>
+
+          <div class="invitation-grid">
+            <!-- LEFT COLUMN - Guest Management -->
+            <div>
+              <div class="guest-section">
+                <div class="section-header">
+                  <h3><i class="material-icons">people</i> Guest Management</h3>
+                </div>
+                <div style="padding: 1.5rem">
+                  <!-- CSV Upload -->
+                  <div class="form-group">
+                    <label>Upload Guest List (CSV)</label>
+                    <input
+                      type="file"
+                      id="csvUpload"
+                      accept=".csv"
+                      class="inv-input"
+                    />
+                    <small
+                      style="
+                        display: block;
+                        margin-top: 0.4rem;
+                        color: var(--wed-text);
+                      "
+                      >Format: Name, Email, Phone</small
+                    >
+                  </div>
+
+                  <hr />
+
+                  <!-- Manual Add Guest -->
+                  <div>
+                    <label
+                      style="
+                        display: block;
+                        color: var(--wed-primary);
+                        font-weight: 600;
+                        margin-bottom: 0.75rem;
+                      "
+                      >Add Guest Manually</label
+                    >
+                    <div class="form-group">
+                      <input
+                        type="text"
+                        id="guestName"
+                        class="inv-input"
+                        placeholder="Full Name *"
+                      />
+                    </div>
+                    <div class="form-group">
+                      <input
+                        type="email"
+                        id="guestEmail"
+                        class="inv-input"
+                        placeholder="Email Address *"
+                      />
+                    </div>
+                    <div class="form-group">
+                      <input
+                        type="tel"
+                        id="guestPhone"
+                        class="inv-input"
+                        placeholder="Phone Number"
+                      />
+                    </div>
+                    <button
+                      class="btn-custom btn-success"
+                      style="width: 100%"
+                      onclick="addGuest()"
+                    >
+                      <i class="material-icons">person_add</i> Add Guest
+                    </button>
+                  </div>
+
+                  <hr />
+
+                  <!-- Guest List Table -->
+                  <div>
+                    <h4
+                      style="color: var(--wed-primary); margin-bottom: 0.5rem"
+                    >
+                      Guest List (<span id="guestCount">0</span>)
+                    </h4>
+                    <div class="guest-table-wrapper">
+                      <table class="guest-table">
+                        <thead>
+                          <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Link</th>
+                            <th>Status</th>
+                          </tr>
+                        </thead>
+                        <tbody id="guestListBody">
+                          <tr>
+                            <td
+                              colspan="5"
+                              style="text-align: center; padding: 2rem"
+                            >
+                              No guests added yet
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  <!-- Action Buttons -->
+                  <div class="action-buttons">
+                    <button
+                      class="btn-custom btn-danger"
+                      onclick="clearAllGuests()"
+                    >
+                      <i class="material-icons">delete</i> Clear All
+                    </button>
+                    <button
+                      class="btn-custom btn-amber"
+                      onclick="exportGuestList()"
+                    >
+                      <i class="material-icons">file_download</i> Export CSV
+                    </button>
+                    <button class="btn-custom" onclick="sendAllInvitations()">
+                      <i class="material-icons">send</i> Send Invitations
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- RSVP Statistics -->
+              <div id="statsSection" style="display: none">
+                <div class="guest-section">
+                  <div class="section-header">
+                    <h3>
+                      <i class="material-icons">analytics</i> RSVP Statistics
+                    </h3>
+                  </div>
+                  <div style="padding: 1.5rem">
+                    <div class="stats-grid">
+                      <div class="stat-item">
+                        <div class="stat-number" id="statTotal">0</div>
+                        <div class="stat-label">Total Sent</div>
+                      </div>
+                      <div class="stat-item">
+                        <div
+                          class="stat-number"
+                          id="statConfirmed"
+                          style="color: #28a745"
+                        >
+                          0
+                        </div>
+                        <div class="stat-label">Confirmed</div>
+                      </div>
+                      <div class="stat-item">
+                        <div
+                          class="stat-number"
+                          id="statPending"
+                          style="color: #e0a800"
+                        >
+                          0
+                        </div>
+                        <div class="stat-label">Pending</div>
+                      </div>
+                      <div class="stat-item">
+                        <div
+                          class="stat-number"
+                          id="statDeclined"
+                          style="color: #dc3545"
+                        >
+                          0
+                        </div>
+                        <div class="stat-label">Declined</div>
+                      </div>
+                    </div>
+                    <div class="progress-bar-custom">
+                      <div class="progress-fill" id="rsvpProgress"></div>
+                    </div>
+                    <p
+                      style="text-align: center; margin-top: 0.75rem"
+                      id="progressText"
+                    >
+                      0% response rate
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- RIGHT COLUMN - Invitation Designer & Preview -->
+            <div>
+              <div class="guest-section" style="margin-bottom: 1.5rem">
+                <div class="section-header">
+                  <h3>
+                    <i class="material-icons">palette</i> Invitation Designer
+                  </h3>
+                </div>
+                <div style="padding: 1.5rem">
+                  <div class="form-group">
+                    <label>Wedding Theme</label>
+                    <select
+                      id="themeSelect"
+                      class="inv-input"
+                      onchange="updatePreview()"
+                    >
+                      <option value="classic">✨ Classic Elegance</option>
+                      <option value="rustic">🌿 Rustic Charm</option>
+                      <option value="modern">🎨 Modern Minimalist</option>
+                      <option value="beach">🏖️ Beach Paradise</option>
+                      <option value="garden">🌷 Garden Romance</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Couple's Names</label>
+                    <input
+                      type="text"
+                      id="coupleNames"
+                      class="inv-input"
+                      value="John & Jane"
+                      oninput="updatePreview()"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label>Wedding Date</label>
+                    <input
+                      type="date"
+                      id="weddingDate"
+                      class="inv-input"
+                      onchange="updatePreview()"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label>Venue</label>
+                    <input
+                      type="text"
+                      id="venue"
+                      class="inv-input"
+                      placeholder="Wedding Venue"
+                      oninput="updatePreview()"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label>Personal Message</label>
+                    <textarea
+                      id="personalMessage"
+                      class="inv-input"
+                      rows="3"
+                      placeholder="Dear Guest, we would be honored by your presence..."
+                      oninput="updatePreview()"
+                    ></textarea>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Live Preview -->
+              <div class="invitation-card-preview">
+                <div class="preview-header"><h3>Live Preview</h3></div>
+                <div class="invitation-display">
+                  <div class="invitation-card classic" id="previewCard">
+                    <div class="couple-names" id="previewCouple">
+                      John &amp; Jane
+                    </div>
+                    <div class="invitation-details">
+                      <div>cordially invite you to celebrate their wedding</div>
+                      <div style="margin-top: 0.4rem">
+                        <strong id="previewDate">Date TBD</strong>
+                      </div>
+                      <div id="previewVenue">Venue TBD</div>
+                    </div>
+                    <div class="personal-message" id="previewMessage">
+                      Join us as we begin our new journey together
+                    </div>
+                    <div class="rsvp-text">✦ RSVP at wedease.com/rsvp ✦</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <footer class="footer">
+        <div class="footer-container">
+          <div class="footer-section">
+            <h4>WedEASE</h4>
+            <p>Making wedding planning beautiful and stress-free.</p>
+          </div>
+          <div class="footer-section">
+            <h4>Quick Links</h4>
+            <ul>
+              <li><a href="../../index.html">Home</a></li>
+              <li><a href="about.html">About</a></li>
+              <li><a href="theme.html">Theme</a></li>
+              <li><a href="invitation.html">E-Invitation</a></li>
+              <li><a href="track.html">Track</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h4>Resources</h4>
+            <ul>
+              <li><a href="#">Blog</a></li>
+              <li><a href="#">Help Center</a></li>
+              <li><a href="#">Contact Us</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h4>Legal</h4>
+            <ul>
+              <li><a href="#">Privacy Policy</a></li>
+              <li><a href="#">Terms of Service</a></li>
+              <li><a href="#">Cookie Policy</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2025 WedEASE. All rights reserved.</p>
+        </div>
+      </footer>
+    </div>
+    <script src="../../js/app.js"></script>
+    <script src="../../js/nav.js"></script>
+    <script src="../../js/chatbot.js"></script>
+    <script src="../../js/invitation.js"></script>
+  </body>
+</html>
