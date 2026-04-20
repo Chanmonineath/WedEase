@@ -4,162 +4,219 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Wedding Themes - WedEASE</title>
-
-  <!-- Styles -->
   <link rel="stylesheet" href="../../css/base.css" />
   <link rel="stylesheet" href="../../css/theme.css" />
   <link rel="stylesheet" href="../../css/chatbot.css" />
-
-  <!-- Favicon -->
   <link rel="icon" type="image/png" href="../../assets/img/pink-purpleish logo.png" />
-
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Caveat:wght@400;700&family=Cedarville+Cursive&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Caveat:wght@400;700&family=Cedarville+Cursive&family=Great+Vibes&display=swap" rel="stylesheet" />
+  <style>
+    /* Favourites nav button */
+    .fav-nav-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      padding: .48rem 1rem;
+      background: linear-gradient(135deg, #a2437c, #c76bab);
+      color: #fff !important;
+      border-radius: 50px;
+      font-size: .85rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all .22s ease;
+      box-shadow: 0 3px 10px rgba(162,67,124,.3);
+      white-space: nowrap;
+      position: relative;
+    }
+    .fav-nav-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 16px rgba(162,67,124,.45);
+    }
+    .fav-nav-btn .fav-nav-count {
+      background: #fff;
+      color: #a2437c;
+      border-radius: 50px;
+      padding: .05rem .45rem;
+      font-size: .72rem;
+      font-weight: 800;
+      min-width: 18px;
+      text-align: center;
+      display: none;
+    }
+    .fav-nav-btn .fav-nav-count.show { display: inline-block; }
+
+    /* save btn + styles injected here so they load before JS */
+    .theme-actions {
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+      gap: .6rem;
+      margin-top: auto;
+      flex-wrap: wrap;
+    }
+    .save-theme-btn {
+      display: inline-flex; align-items: center; gap: .35rem;
+      padding: .65rem 1.1rem; background: #fff; color: #a2437c;
+      border: 2px solid #a2437c; border-radius: 10px;
+      font-size: .85rem; font-weight: 600; font-family: inherit;
+      cursor: pointer; transition: all .22s ease; white-space: nowrap;
+    }
+    .save-theme-btn:hover:not(:disabled) {
+      background: #fdf0f8; transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(162,67,124,.18);
+    }
+    .save-theme-btn.saved {
+      background: linear-gradient(135deg,#a2437c,#c76bab);
+      color:#fff; border-color:transparent;
+      box-shadow: 0 4px 14px rgba(162,67,124,.35);
+    }
+    .save-theme-btn:disabled { opacity:.55; cursor:wait; }
+
+    /* toast */
+    .theme-toast {
+      position:fixed; bottom:1.75rem; left:50%;
+      transform:translateX(-50%) translateY(16px);
+      background:linear-gradient(135deg,#a2437c,#c76bab);
+      color:#fff; padding:.75rem 1.5rem; border-radius:50px;
+      font-size:.92rem; font-weight:600;
+      box-shadow:0 8px 24px rgba(162,67,124,.35);
+      z-index:100000; opacity:0; pointer-events:none;
+      transition:opacity .3s ease,transform .3s ease; white-space:nowrap;
+    }
+    .theme-toast.visible { opacity:1; transform:translateX(-50%) translateY(0); }
+
+    @keyframes wedSpin { to { transform: rotate(360deg); } }
+    .theme-loading { text-align:center; padding:3rem; color:#a2437c; }
+    .theme-loading .spinner {
+      width:48px; height:48px; border-radius:50%;
+      border:3px solid #f3e6f0; border-top-color:#a2437c;
+      animation:wedSpin .9s linear infinite; margin:0 auto 1rem;
+    }
+    .theme-error {
+      text-align:center; padding:1rem; color:#c53030;
+      background:#fff5f5; border:1px solid #feb2b2;
+      border-radius:8px; margin:1rem 0;
+    }
+  </style>
 </head>
 <body>
+<div id="app">
 
-  <div id="app">
-
-    <!-- HEADER -->
-    <header class="header" id="header">
-      <div class="header-container">
-        <div class="header-left">
-          <a href="../../index.html" class="logo">
-            <img src="../../assets/img/pink-purpleish logo.png" alt="WedEASE" class="logo-image" />
-          </a>
-        </div>
-        
-        <nav class="header-nav" aria-label="Main navigation">
-          <a href="../../index.html" class="nav-link">Home</a>
-          <a href="about.html" class="nav-link">About</a>
-          <a href="theme.html" class="nav-link active">Theme</a>
-          <a href="track.html" class="nav-link">Track</a>
-        </nav>
-        
-        <div class="header-right">
-          <a href="login.html" class="login-btn" aria-label="Login">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-              <circle cx="12" cy="7" r="4" />
-            </svg>
-            <span>Login</span>
-          </a>
-          
-          <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">
-            <div class="hamburger" id="hamburger">
-              <span></span>
-              <span></span>
-              <span></span>
-            </div>
-          </button>
-        </div>
+  <!-- HEADER -->
+  <header class="header" id="header">
+    <div class="header-container">
+      <div class="header-left">
+        <a href="../../index.html" class="logo">
+          <img src="../../assets/img/pink-purpleish logo.png" alt="WedEASE" class="logo-image" />
+        </a>
       </div>
-    </header>
 
-    <div class="nav-overlay" id="navOverlay"></div>
-    
-    <nav class="header-nav-mobile" id="mobileNav" aria-label="Mobile navigation">
-      <button class="mobile-close-btn" id="mobileCloseBtn" aria-label="Close menu">✕</button>
-      <a href="../../index.html" class="nav-link">Home</a>
-      <a href="about.html" class="nav-link">About</a>
-      <a href="theme.html" class="nav-link">Theme</a>
-      <a href="track.html" class="nav-link">Track</a>
-      <a href="login.html" class="nav-link mobile-login-link">Login</a>
-    </nav>
+      <!-- Desktop nav -->
+      <nav class="header-nav" aria-label="Main navigation">
+        <a href="../../index.html" class="nav-link">Home</a>
+        <a href="about.html" class="nav-link">About</a>
+        <a href="theme.html" class="nav-link active">Theme</a>
+        <a href="invitation.html" class="nav-link">E-Invitation</a>
+        <a href="track.html" class="nav-link">Track</a>
+      </nav>
 
-    <!-- MAIN -->
-    <main>
-      <div class="page-wrapper">
-        <h1 class="page-title">Choose Your Wedding Theme</h1>
-        <p class="page-subtitle">Select a style that matches your vision</p>
+      <div class="header-right">
+        <!-- ♡ Favourites button — lives in header-right, always visible -->
+        <a href="favourites.html" class="fav-nav-btn" id="fav-nav-btn" aria-label="My saved themes">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+          Favourites
+          <span class="fav-nav-count" id="fav-nav-count">0</span>
+        </a>
 
-        <input type="text" id="theme-search" placeholder="Search wedding themes..." />
+        <a href="login.html" class="login-btn" aria-label="Login">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+          <span>Login</span>
+        </a>
 
-        <div class="theme-grid">
-          <!-- Themes populate dynamically -->
-        </div>
+        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">
+          <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
+        </button>
       </div>
-    </main>
-
-    <!-- FOOTER -->
-    <footer class="footer">
-      <div class="footer-container">
-        <div class="footer-section">
-          <h4>WedEASE</h4>
-          <p>Making wedding planning beautiful and stress-free.</p>
-        </div>
-        <div class="footer-section">
-          <h4>Quick Links</h4>
-          <ul>
-            <li><a href="../../index.html">Home</a></li>
-            <li><a href="about.html">About</a></li>
-            <li><a href="theme.html">Theme</a></li>
-            <li><a href="track.html">Track</a></li>
-          </ul>
-        </div>
-        <div class="footer-section">
-          <h4>Resources</h4>
-          <ul>
-            <li><a href="#">Blog</a></li>
-            <li><a href="#">Help Center</a></li>
-            <li><a href="#">Contact Us</a></li>
-          </ul>
-        </div>
-        <div class="footer-section">
-          <h4>Legal</h4>
-          <ul>
-            <li><a href="#">Privacy Policy</a></li>
-            <li><a href="#">Terms of Service</a></li>
-            <li><a href="#">Cookie Policy</a></li>
-          </ul>
-        </div>
-      </div>
-      <div class="footer-bottom">
-        <p>&copy; 2025 WedEASE. All rights reserved.</p>
-      </div>
-    </footer>
-
-  </div>
-
-  <!-- CHATBOT WIDGET -->
-  <button id="wedease-chat-btn" aria-label="Open wedding assistant">
-    <svg viewBox="0 0 24 24" fill="white">
-      <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
-    </svg>
-  </button>
-
-  <div id="wedease-chat-panel" role="dialog" aria-label="Wedding planning assistant">
-    <div id="wedease-chat-header">
-      <div id="wedease-chat-header-left">
-        <span id="wedease-chat-title">Wedding Assistant</span>
-        <span id="wedease-chat-subtitle">Ask me anything about your big day</span>
-      </div>
-      <button id="wedease-chat-close" aria-label="Close chat">
-        <svg viewBox="0 0 24 24" stroke="white" stroke-width="2" fill="none">
-          <line x1="18" y1="6" x2="6" y2="18"/>
-          <line x1="6" y1="6" x2="18" y2="18"/>
-        </svg>
-      </button>
     </div>
-    <div id="wedease-chat-messages" role="log" aria-live="polite"></div>
-    <div id="wedease-suggestions"></div>
-    <div id="wedease-chat-input-area">
-      <textarea id="wedease-chat-input" rows="1" placeholder="Ask about venues, themes, budgets..."></textarea>
-      <button id="wedease-chat-send" aria-label="Send message">
-        <svg viewBox="0 0 24 24" fill="white">
-          <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
-        </svg>
-      </button>
+  </header>
+
+  <div class="nav-overlay" id="navOverlay"></div>
+  <nav class="header-nav-mobile" id="mobileNav" aria-label="Mobile navigation">
+    <button class="mobile-close-btn" id="mobileCloseBtn" aria-label="Close menu">✕</button>
+    <a href="../../index.html" class="nav-link">Home</a>
+    <a href="about.html" class="nav-link">About</a>
+    <a href="theme.html" class="nav-link">Theme</a>
+    <a href="favourites.html" class="nav-link">♡ Favourites</a>
+    <a href="track.html" class="nav-link">Track</a>
+    <a href="login.html" class="nav-link mobile-login-link">Login</a>
+  </nav>
+
+  <!-- MAIN -->
+  <main>
+    <div class="page-wrapper">
+      <h1 class="page-title">Choose Your Wedding Theme</h1>
+      <p class="page-subtitle">Select a style that matches your vision</p>
+      <input type="text" id="theme-search" placeholder="Search wedding themes..." />
+      <div class="theme-grid" id="main-theme-grid"></div>
     </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-section"><h4>WedEASE</h4><p>Making wedding planning beautiful and stress-free.</p></div>
+      <div class="footer-section">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="../../index.html">Home</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="theme.html">Theme</a></li>
+          <li><a href="favourites.html">Favourites</a></li>
+          <li><a href="track.html">Track</a></li>
+        </ul>
+      </div>
+      <div class="footer-section"><h4>Resources</h4><ul><li><a href="#">Blog</a></li><li><a href="#">Help Center</a></li><li><a href="#">Contact Us</a></li></ul></div>
+      <div class="footer-section"><h4>Legal</h4><ul><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms of Service</a></li><li><a href="#">Cookie Policy</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><p>&copy; 2025 WedEASE. All rights reserved.</p></div>
+  </footer>
+</div>
+
+<!-- CHATBOT -->
+<button id="wedease-chat-btn" aria-label="Open wedding assistant">
+  <svg viewBox="0 0 24 24" fill="white"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
+</button>
+<div id="wedease-chat-panel" role="dialog" aria-label="Wedding planning assistant">
+  <div id="wedease-chat-header">
+    <div id="wedease-chat-header-left">
+      <span id="wedease-chat-title">Wedding Assistant</span>
+      <span id="wedease-chat-subtitle">Ask me anything about your big day</span>
+    </div>
+    <button id="wedease-chat-close" aria-label="Close chat">
+      <svg viewBox="0 0 24 24" stroke="white" stroke-width="2" fill="none">
+        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
   </div>
+  <div id="wedease-chat-messages" role="log" aria-live="polite"></div>
+  <div id="wedease-suggestions"></div>
+  <div id="wedease-chat-input-area">
+    <textarea id="wedease-chat-input" rows="1" placeholder="Ask about venues, themes, budgets..."></textarea>
+    <button id="wedease-chat-send" aria-label="Send message">
+      <svg viewBox="0 0 24 24" fill="white"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+    </button>
+  </div>
+</div>
 
-  <!-- SCRIPTS -->
-  <script src="../../js/app.js"></script>
-  <script src="../../js/nav.js"></script>
-  <script src="../../js/theme.js"></script>
-  <script src="../../js/chatbot.js"></script>
-
+<script src="../../js/app.js"></script>
+<script src="../../js/nav.js"></script>
+<script src="../../js/theme.js"></script>
+<script src="../../js/chatbot.js"></script>
 </body>
 </html>

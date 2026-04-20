@@ -1,380 +1,502 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Track & Manage - WedEASE</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Track & Manage - WedEASE</title>
 
-  <!-- Styles -->
-  <link rel="stylesheet" href="../../css/base.css" />
-  <link rel="stylesheet" href="../../css/track.css" />
-  <link rel="stylesheet" href="../../css/chatbot.css" />
+    <!-- Styles -->
+    <link rel="stylesheet" href="../../css/base.css" />
+    <link rel="stylesheet" href="../../css/track.css" />
+    <link rel="stylesheet" href="../../css/chatbot.css" />
 
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="../../assets/img/pink-purpleish logo.png" />
+    <!-- Favicon -->
+    <link
+      rel="icon"
+      type="image/png"
+      href="../../assets/img/pink-purpleish logo.png"
+    />
 
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Caveat:wght@400;700&family=Cedarville+Cursive&display=swap" rel="stylesheet" />
-</head>
-<body>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Caveat:wght@400;700&family=Cedarville+Cursive&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="app">
+      <!-- HEADER WITH MOBILE NAVIGATION -->
+      <header class="header" id="header">
+        <div class="header-container">
+          <div class="header-left">
+            <a href="../../index.html" class="logo">
+              <img
+                src="../../assets/img/pink-purpleish logo.png"
+                alt="WedEASE"
+                class="logo-image"
+              />
+            </a>
+          </div>
 
-  <div id="app">
+          <!-- Desktop Navigation -->
+          <nav class="header-nav" aria-label="Main navigation">
+            <a href="../../index.html" class="nav-link">Home</a>
+            <a href="about.html" class="nav-link">About</a>
+            <a href="theme.html" class="nav-link">Theme</a>
+            <a href="invitation.html" class="nav-link">E-Invitation</a>
+            <a href="track.html" class="nav-link active">Track</a>
+          </nav>
 
-    <!-- HEADER WITH MOBILE NAVIGATION -->
-    <header class="header" id="header">
-      <div class="header-container">
-        <div class="header-left">
-          <a href="../../index.html" class="logo">
-            <img src="../../assets/img/pink-purpleish logo.png" alt="WedEASE" class="logo-image" />
-          </a>
+          <div class="header-right">
+            <a href="login.html" class="login-btn" aria-label="Login">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+              <span>Login</span>
+            </a>
+
+            <button
+              class="mobile-menu-btn"
+              id="mobileMenuBtn"
+              aria-label="Menu"
+            >
+              <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            </button>
+          </div>
         </div>
-        
-        <!-- Desktop Navigation -->
-        <nav class="header-nav" aria-label="Main navigation">
-          <a href="../../index.html" class="nav-link">Home</a>
-          <a href="about.html" class="nav-link">About</a>
-          <a href="theme.html" class="nav-link">Theme</a>
-          <a href="track.html" class="nav-link active">Track</a>
-        </nav>
-        
-        <div class="header-right">
-          <a href="login.html" class="login-btn" aria-label="Login">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-              <circle cx="12" cy="7" r="4" />
-            </svg>
-            <span>Login</span>
-          </a>
-          
-          <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">
-            <div class="hamburger" id="hamburger">
-              <span></span>
-              <span></span>
-              <span></span>
+      </header>
+
+      <!-- Mobile Navigation Overlay -->
+      <div class="nav-overlay" id="navOverlay"></div>
+
+      <!-- Mobile Navigation Menu -->
+      <nav
+        class="header-nav-mobile"
+        id="mobileNav"
+        aria-label="Mobile navigation"
+      >
+        <button
+          class="mobile-close-btn"
+          id="mobileCloseBtn"
+          aria-label="Close menu"
+        >
+          ✕
+        </button>
+        <a href="../../index.html" class="nav-link">Home</a>
+        <a href="about.html" class="nav-link">About</a>
+        <a href="theme.html" class="nav-link">Theme</a>
+        <a href="invitation.html" class="nav-link">E-Invitation</a>
+        <a href="track.html" class="nav-link">Track</a>
+        <a href="login.html" class="nav-link mobile-login-link">Login</a>
+      </nav>
+
+      <!-- MAIN -->
+      <main>
+        <div class="page-wrapper">
+          <h1 class="page-title">Track & Manage</h1>
+          <p class="page-subtitle">
+            Behind every table, every seat, every name lies a story, a
+            connection, a cherished memory. We bring those stories together
+            smoothly and beautifully, ensuring your celebration reflects not
+            just order, but the love that brought it all to life.
+          </p>
+
+          <!-- Toast Messages -->
+          <div id="successMessage" class="success-message"></div>
+          <div id="errorMessage" class="error-message"></div>
+
+          <!-- STATS -->
+          <div class="track-stats">
+            <div class="stat-card">
+              <span class="stat-number" id="statGuests">0</span>
+              <span class="stat-label">Guests</span>
             </div>
+            <div class="stat-card">
+              <span class="stat-number" id="statConfirmed">0</span>
+              <span class="stat-label">Confirmed</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-number" id="statGifts">0</span>
+              <span class="stat-label">Gifts Tracked</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-number" id="statBudget">$0</span>
+              <span class="stat-label">Gift Value</span>
+            </div>
+          </div>
+
+          <!-- FEATURES -->
+          <div class="track-features">
+            <!-- Guest List -->
+            <div class="feature-box">
+              <h3 class="head-title">
+                <img
+                  src="../../assets/img/track/guestlist.png"
+                  class="head-icon"
+                  alt=""
+                />
+                <span>Guest List</span>
+              </h3>
+              <p>
+                Manage and organize every special person who will be part of
+                your celebration. Use search and filters to keep track of names,
+                groups, and RSVP status with ease.
+                <b>Importing guests file?</b>
+                <i>Make sure your CSV file follows this layout:</i>
+              </p>
+              <p class="csv-hint">
+                Name | Group | RSVP status &nbsp;(e.g., Anna Lim, Bride's
+                Family, Yes)
+              </p>
+
+              <div class="btn-row">
+                <button onclick="openGuestModal()" class="form-btn">
+                  Add Guest
+                </button>
+                <button id="btnImportCsv" class="form-btn btn-outline">
+                  Import CSV
+                </button>
+                <button onclick="deleteAllGuests()" class="form-btn btn-danger">
+                  Delete All Guests
+                </button>
+                <input
+                  id="guestCsvInput"
+                  type="file"
+                  accept=".csv"
+                  style="display: none"
+                />
+              </div>
+
+              <div class="rsvp-summary">
+                Total: <strong id="rsvpTotal">0</strong> | Confirmed:
+                <strong id="rsvpYes">0</strong> | Pending:
+                <strong id="rsvpPending">0</strong> | Declined:
+                <strong id="rsvpNo">0</strong>
+              </div>
+
+              <div class="search-filter-bar">
+                <div class="search-box">
+                  <input
+                    type="text"
+                    id="guestSearch"
+                    placeholder="Search by guest name..."
+                  />
+                </div>
+                <select id="guestGroupFilter" class="filter-select">
+                  <option value="">All groups</option>
+                </select>
+                <select id="guestRsvpFilter" class="filter-select">
+                  <option value="">All RSVP</option>
+                  <option value="yes">Confirmed</option>
+                  <option value="pending">Pending</option>
+                  <option value="no">Declined</option>
+                </select>
+              </div>
+
+              <div class="guest-table-wrapper">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Group</th>
+                      <th>RSVP</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody id="guestTable"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Gift Registry -->
+            <div class="feature-box">
+              <h3 class="head-title">
+                <img
+                  class="head-icon"
+                  src="../../assets/img/track/giftregistry.png"
+                  alt=""
+                />
+                <span>Gift Registry</span>
+              </h3>
+              <p>
+                Cherish every heartfelt gesture. Keep track of gifts with ease
+                and automatically see the total value —
+                <i
+                  >a gentle way to honor the love and generosity shared by your
+                  guests.</i
+                >
+              </p>
+
+              <div class="btn-row">
+                <button onclick="openGiftModal()" class="form-btn">
+                  Add Gift
+                </button>
+                <button id="btnImportGiftCsv" class="form-btn btn-outline">
+                  Import CSV
+                </button>
+                <button id="btnDeleteAllGifts" class="form-btn btn-danger">
+                  Delete All Gifts
+                </button>
+                <input
+                  id="giftCsvInput"
+                  type="file"
+                  accept=".csv"
+                  style="display: none"
+                />
+              </div>
+
+              <div class="rsvp-summary">
+                Total Gifts: <strong id="giftCount">0</strong> | Total Value:
+                <strong id="giftTotalAmount">$0</strong>
+              </div>
+
+              <div class="guest-table-wrapper">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>From</th>
+                      <th>Gift Type</th>
+                      <th>Value</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody id="giftTable"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <!-- /.track-features -->
+        </div>
+        <!-- /.page-wrapper -->
+      </main>
+
+      <!-- FOOTER -->
+      <footer class="footer">
+        <div class="footer-container">
+          <div class="footer-section">
+            <h4>WedEASE</h4>
+            <p>Making wedding planning beautiful and stress-free.</p>
+          </div>
+          <div class="footer-section">
+            <h4>Quick Links</h4>
+            <ul>
+              <li><a href="../../index.html">Home</a></li>
+              <li><a href="about.html">About</a></li>
+              <li><a href="theme.html">Theme</a></li>
+              <li><a href="invitation.html">E-Invitation</a></li>
+              <li><a href="track.html">Track</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h4>Resources</h4>
+            <ul>
+              <li><a href="#">Blog</a></li>
+              <li><a href="#">Help Center</a></li>
+              <li><a href="#">Contact Us</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h4>Legal</h4>
+            <ul>
+              <li><a href="#">Privacy Policy</a></li>
+              <li><a href="#">Terms of Service</a></li>
+              <li><a href="#">Cookie Policy</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2025 WedEASE. All rights reserved.</p>
+        </div>
+      </footer>
+    </div>
+    <!-- /#app -->
+
+    <!-- ═══════════════════════════════════════
+       GUEST MODAL — no auth-card class
+  ═══════════════════════════════════════ -->
+    <div id="guestModal" class="modal hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3>Guest</h3>
+        </div>
+        <div class="modal-body">
+          <div class="modal-field">
+            <label for="guestName">Name <span class="required">*</span></label>
+            <input id="guestName" type="text" placeholder="Enter guest name" />
+          </div>
+          <div class="modal-field">
+            <label for="guestGroupSelect">Group</label>
+            <select id="guestGroupSelect">
+              <option value="">Select group</option>
+              <option value="Bride's Family">Bride's Family</option>
+              <option value="Classmates">Classmates</option>
+              <option value="Co-workers">Co-workers</option>
+              <option value="VIP">VIP</option>
+              <option value="__other">Other</option>
+            </select>
+          </div>
+          <div id="guestGroupCustomWrapper" class="modal-field hidden">
+            <label for="guestGroupCustom">Custom Group</label>
+            <input
+              id="guestGroupCustom"
+              type="text"
+              placeholder="Enter group or family name"
+            />
+          </div>
+          <div class="modal-field">
+            <label for="guestRSVP">RSVP Status</label>
+            <select id="guestRSVP">
+              <option value="pending">Pending</option>
+              <option value="yes">Confirmed</option>
+              <option value="no">Declined</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button
+            onclick="closeGuestModal()"
+            class="modal-btn modal-btn-cancel"
+          >
+            Cancel
+          </button>
+          <button onclick="saveGuest()" class="modal-btn modal-btn-save">
+            Save
           </button>
         </div>
       </div>
-    </header>
-
-    <!-- Mobile Navigation Overlay -->
-    <div class="nav-overlay" id="navOverlay"></div>
-
-    <!-- Mobile Navigation Menu -->
-    <nav class="header-nav-mobile" id="mobileNav" aria-label="Mobile navigation">
-      <button class="mobile-close-btn" id="mobileCloseBtn" aria-label="Close menu">✕</button>
-      <a href="../../index.html" class="nav-link">Home</a>
-      <a href="about.html" class="nav-link">About</a>
-      <a href="theme.html" class="nav-link">Theme</a>
-      <a href="track.html" class="nav-link">Track</a>
-      <a href="login.html" class="nav-link mobile-login-link">Login</a>
-    </nav>
-
-    <!-- MAIN -->
-    <main>
-      <div class="page-wrapper">
-        <h1 class="page-title">Track & Manage</h1>
-        <p class="page-subtitle">
-          Behind every table, every seat, every name lies a story, a connection, a cherished memory.
-          We bring those stories together smoothly and beautifully, ensuring your celebration reflects
-          not just order, but the love that brought it all to life.
-        </p>
-
-        <!-- Toast Messages -->
-        <div id="successMessage" class="success-message"></div>
-        <div id="errorMessage" class="error-message"></div>
-
-        <!-- STATS -->
-        <div class="track-stats">
-          <div class="stat-card">
-            <span class="stat-number" id="statGuests">0</span>
-            <span class="stat-label">Guests</span>
-          </div>
-          <div class="stat-card">
-            <span class="stat-number" id="statConfirmed">0</span>
-            <span class="stat-label">Confirmed</span>
-          </div>
-          <div class="stat-card">
-            <span class="stat-number" id="statGifts">0</span>
-            <span class="stat-label">Gifts Tracked</span>
-          </div>
-          <div class="stat-card">
-            <span class="stat-number" id="statBudget">$0</span>
-            <span class="stat-label">Gift Value</span>
-          </div>
-        </div>
-
-        <!-- FEATURES -->
-        <div class="track-features">
-
-          <!-- Guest List -->
-          <div class="feature-box">
-            <h3 class="head-title">
-              <img src="../../assets/img/track/guestlist.png" class="head-icon" alt="" />
-              <span>Guest List</span>
-            </h3>
-            <p>
-              Manage and organize every special person who will be part of your celebration.
-              Use search and filters to keep track of names, groups, and RSVP status with ease.
-              <b>Importing guests file?</b> <i>Make sure your CSV file follows this layout:</i>
-            </p>
-            <p class="csv-hint">Name | Group | RSVP status &nbsp;(e.g., Anna Lim, Bride's Family, Yes)</p>
-
-            <div class="btn-row">
-              <button onclick="openGuestModal()" class="form-btn">Add Guest</button>
-              <button id="btnImportCsv" class="form-btn btn-outline">Import CSV</button>
-              <button onclick="deleteAllGuests()" class="form-btn btn-danger">Delete All Guests</button>
-              <input id="guestCsvInput" type="file" accept=".csv" style="display:none;" />
-            </div>
-
-            <div class="rsvp-summary">
-              Total: <strong id="rsvpTotal">0</strong> |
-              Confirmed: <strong id="rsvpYes">0</strong> |
-              Pending: <strong id="rsvpPending">0</strong> |
-              Declined: <strong id="rsvpNo">0</strong>
-            </div>
-
-            <div class="search-filter-bar">
-              <div class="search-box">
-                <input type="text" id="guestSearch" placeholder="Search by guest name..." />
-              </div>
-              <select id="guestGroupFilter" class="filter-select">
-                <option value="">All groups</option>
-              </select>
-              <select id="guestRsvpFilter" class="filter-select">
-                <option value="">All RSVP</option>
-                <option value="yes">Confirmed</option>
-                <option value="pending">Pending</option>
-                <option value="no">Declined</option>
-              </select>
-            </div>
-
-            <div class="guest-table-wrapper">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Group</th>
-                    <th>RSVP</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody id="guestTable"></tbody>
-              </table>
-            </div>
-          </div>
-
-          <!-- Gift Registry -->
-          <div class="feature-box">
-            <h3 class="head-title">
-              <img class="head-icon" src="../../assets/img/track/giftregistry.png" alt="" />
-              <span>Gift Registry</span>
-            </h3>
-            <p>
-              Cherish every heartfelt gesture. Keep track of gifts with ease and automatically
-              see the total value — <i>a gentle way to honor the love and generosity shared by your guests.</i>
-            </p>
-
-            <div class="btn-row">
-              <button onclick="openGiftModal()" class="form-btn">Add Gift</button>
-              <button id="btnImportGiftCsv" class="form-btn btn-outline">Import CSV</button>
-              <button id="btnDeleteAllGifts" class="form-btn btn-danger">Delete All Gifts</button>
-              <input id="giftCsvInput" type="file" accept=".csv" style="display:none;" />
-            </div>
-
-            <div class="rsvp-summary">
-              Total Gifts: <strong id="giftCount">0</strong> |
-              Total Value: <strong id="giftTotalAmount">$0</strong>
-            </div>
-
-            <div class="guest-table-wrapper">
-              <table>
-                <thead>
-                  <tr>
-                    <th>From</th>
-                    <th>Gift Type</th>
-                    <th>Value</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody id="giftTable"></tbody>
-              </table>
-            </div>
-          </div>
-
-        </div><!-- /.track-features -->
-      </div><!-- /.page-wrapper -->
-    </main>
-
-    <!-- FOOTER -->
-    <footer class="footer">
-      <div class="footer-container">
-        <div class="footer-section">
-          <h4>WedEASE</h4>
-          <p>Making wedding planning beautiful and stress-free.</p>
-        </div>
-        <div class="footer-section">
-          <h4>Quick Links</h4>
-          <ul>
-            <li><a href="../../index.html">Home</a></li>
-            <li><a href="about.html">About</a></li>
-            <li><a href="theme.html">Theme</a></li>
-            <li><a href="track.html">Track</a></li>
-          </ul>
-        </div>
-        <div class="footer-section">
-          <h4>Resources</h4>
-          <ul>
-            <li><a href="#">Blog</a></li>
-            <li><a href="#">Help Center</a></li>
-            <li><a href="#">Contact Us</a></li>
-          </ul>
-        </div>
-        <div class="footer-section">
-          <h4>Legal</h4>
-          <ul>
-            <li><a href="#">Privacy Policy</a></li>
-            <li><a href="#">Terms of Service</a></li>
-            <li><a href="#">Cookie Policy</a></li>
-          </ul>
-        </div>
-      </div>
-      <div class="footer-bottom">
-        <p>&copy; 2025 WedEASE. All rights reserved.</p>
-      </div>
-    </footer>
-
-  </div><!-- /#app -->
-
-  <!-- ═══════════════════════════════════════
-       GUEST MODAL — no auth-card class
-  ═══════════════════════════════════════ -->
-  <div id="guestModal" class="modal hidden">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h3>Guest</h3>
-      </div>
-      <div class="modal-body">
-        <div class="modal-field">
-          <label for="guestName">Name <span class="required">*</span></label>
-          <input id="guestName" type="text" placeholder="Enter guest name" />
-        </div>
-        <div class="modal-field">
-          <label for="guestGroupSelect">Group</label>
-          <select id="guestGroupSelect">
-            <option value="">Select group</option>
-            <option value="Bride's Family">Bride's Family</option>
-            <option value="Classmates">Classmates</option>
-            <option value="Co-workers">Co-workers</option>
-            <option value="VIP">VIP</option>
-            <option value="__other">Other</option>
-          </select>
-        </div>
-        <div id="guestGroupCustomWrapper" class="modal-field hidden">
-          <label for="guestGroupCustom">Custom Group</label>
-          <input id="guestGroupCustom" type="text" placeholder="Enter group or family name" />
-        </div>
-        <div class="modal-field">
-          <label for="guestRSVP">RSVP Status</label>
-          <select id="guestRSVP">
-            <option value="pending">Pending</option>
-            <option value="yes">Confirmed</option>
-            <option value="no">Declined</option>
-          </select>
-        </div>
-      </div>
-      <div class="modal-actions">
-        <button onclick="closeGuestModal()" class="modal-btn modal-btn-cancel">Cancel</button>
-        <button onclick="saveGuest()" class="modal-btn modal-btn-save">Save</button>
-      </div>
     </div>
-  </div>
 
-  <!-- ═══════════════════════════════════════
+    <!-- ═══════════════════════════════════════
        GIFT MODAL — no auth-card class
   ═══════════════════════════════════════ -->
-  <div id="giftModal" class="modal hidden">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h3>Gift</h3>
-      </div>
-      <div class="modal-body">
-        <div class="modal-field">
-          <label for="giftType">Gift Type <span class="required">*</span></label>
-          <select id="giftType">
-            <option value="money">Money</option>
-            <option value="jewelry">Jewelry</option>
-            <option value="household">Household Items</option>
-            <option value="experience">Experience</option>
-            <option value="other">Other</option>
-          </select>
+    <div id="giftModal" class="modal hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3>Gift</h3>
         </div>
-        <div id="giftTypeCustomWrapper" class="modal-field gift-type-custom hidden">
-          <label for="giftTypeCustom">Custom Gift Type</label>
-          <input id="giftTypeCustom" type="text" placeholder="e.g. Gold bracelet, Artwork" />
+        <div class="modal-body">
+          <div class="modal-field">
+            <label for="giftType"
+              >Gift Type <span class="required">*</span></label
+            >
+            <select id="giftType">
+              <option value="money">Money</option>
+              <option value="jewelry">Jewelry</option>
+              <option value="household">Household Items</option>
+              <option value="experience">Experience</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div
+            id="giftTypeCustomWrapper"
+            class="modal-field gift-type-custom hidden"
+          >
+            <label for="giftTypeCustom">Custom Gift Type</label>
+            <input
+              id="giftTypeCustom"
+              type="text"
+              placeholder="e.g. Gold bracelet, Artwork"
+            />
+          </div>
+          <div class="modal-field">
+            <label for="giftGuest">From (Guest)</label>
+            <select id="giftGuest">
+              <option value="">Select guest (optional)</option>
+            </select>
+          </div>
+          <div class="modal-field">
+            <label for="giftBudget"
+              >Value ($) <span class="required">*</span></label
+            >
+            <input
+              id="giftBudget"
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="e.g. 50.00"
+            />
+          </div>
         </div>
-        <div class="modal-field">
-          <label for="giftGuest">From (Guest)</label>
-          <select id="giftGuest">
-            <option value="">Select guest (optional)</option>
-          </select>
+        <div class="modal-actions">
+          <button onclick="closeGiftModal()" class="modal-btn modal-btn-cancel">
+            Cancel
+          </button>
+          <button onclick="saveGift()" class="modal-btn modal-btn-save">
+            Save
+          </button>
         </div>
-        <div class="modal-field">
-          <label for="giftBudget">Value ($) <span class="required">*</span></label>
-          <input id="giftBudget" type="number" min="0" step="0.01" placeholder="e.g. 50.00" />
-        </div>
-      </div>
-      <div class="modal-actions">
-        <button onclick="closeGiftModal()" class="modal-btn modal-btn-cancel">Cancel</button>
-        <button onclick="saveGift()" class="modal-btn modal-btn-save">Save</button>
       </div>
     </div>
-  </div>
 
-  <!-- CHATBOT WIDGET -->
-  <button id="wedease-chat-btn" aria-label="Open wedding assistant">
-    <svg viewBox="0 0 24 24" fill="white">
-      <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
-    </svg>
-  </button>
+    <!-- CHATBOT WIDGET -->
+    <button id="wedease-chat-btn" aria-label="Open wedding assistant">
+      <svg viewBox="0 0 24 24" fill="white">
+        <path
+          d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"
+        />
+      </svg>
+    </button>
 
-  <div id="wedease-chat-panel" role="dialog" aria-label="Wedding planning assistant">
-    <div id="wedease-chat-header">
-      <div id="wedease-chat-header-left">
-        <span id="wedease-chat-title">Wedding Assistant</span>
-        <span id="wedease-chat-subtitle">Ask me anything about your big day</span>
+    <div
+      id="wedease-chat-panel"
+      role="dialog"
+      aria-label="Wedding planning assistant"
+    >
+      <div id="wedease-chat-header">
+        <div id="wedease-chat-header-left">
+          <span id="wedease-chat-title">Wedding Assistant</span>
+          <span id="wedease-chat-subtitle"
+            >Ask me anything about your big day</span
+          >
+        </div>
+        <button id="wedease-chat-close" aria-label="Close chat">
+          <svg
+            viewBox="0 0 24 24"
+            stroke="white"
+            stroke-width="2"
+            fill="none"
+            stroke-linecap="round"
+          >
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
       </div>
-      <button id="wedease-chat-close" aria-label="Close chat">
-        <svg viewBox="0 0 24 24" stroke="white" stroke-width="2" fill="none" stroke-linecap="round">
-          <line x1="18" y1="6" x2="6" y2="18"/>
-          <line x1="6" y1="6" x2="18" y2="18"/>
-        </svg>
-      </button>
+      <div id="wedease-chat-messages" role="log" aria-live="polite"></div>
+      <div id="wedease-suggestions"></div>
+      <div id="wedease-chat-input-area">
+        <textarea
+          id="wedease-chat-input"
+          rows="1"
+          placeholder="Ask about venues, themes, budgets..."
+          aria-label="Message input"
+        ></textarea>
+        <button id="wedease-chat-send" aria-label="Send message">
+          <svg viewBox="0 0 24 24" fill="white">
+            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+          </svg>
+        </button>
+      </div>
     </div>
-    <div id="wedease-chat-messages" role="log" aria-live="polite"></div>
-    <div id="wedease-suggestions"></div>
-    <div id="wedease-chat-input-area">
-      <textarea
-        id="wedease-chat-input"
-        rows="1"
-        placeholder="Ask about venues, themes, budgets..."
-        aria-label="Message input"
-      ></textarea>
-      <button id="wedease-chat-send" aria-label="Send message">
-        <svg viewBox="0 0 24 24" fill="white">
-          <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
-        </svg>
-      </button>
-    </div>
-  </div>
 
-  <!-- SCRIPTS -->
-  <script src="../../js/app.js"></script>
-  <script src="../../js/nav.js"></script>
-  <script src="../../js/track.js"></script>
-  <script src="../../js/chatbot.js"></script>
-
-</body>
+    <!-- SCRIPTS -->
+    <script src="../../js/app.js"></script>
+    <script src="../../js/nav.js"></script>
+    <script src="../../js/track.js"></script>
+    <script src="../../js/chatbot.js"></script>
+  </body>
 </html>
