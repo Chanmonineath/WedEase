@@ -59,7 +59,11 @@
               <span>Login</span>
             </a>
 
-            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">
+            <button
+              class="mobile-menu-btn"
+              id="mobileMenuBtn"
+              aria-label="Menu"
+            >
               <div class="hamburger" id="hamburger">
                 <span></span>
                 <span></span>
@@ -72,8 +76,16 @@
 
       <div class="nav-overlay" id="navOverlay"></div>
 
-      <nav class="header-nav-mobile" id="mobileNav" aria-label="Mobile navigation">
-        <button class="mobile-close-btn" id="mobileCloseBtn" aria-label="Close menu">
+      <nav
+        class="header-nav-mobile"
+        id="mobileNav"
+        aria-label="Mobile navigation"
+      >
+        <button
+          class="mobile-close-btn"
+          id="mobileCloseBtn"
+          aria-label="Close menu"
+        >
           x
         </button>
         <a href="../../index.html" class="nav-link">Home</a>
@@ -88,7 +100,7 @@
           <div class="settings-hero-shell">
             <div class="settings-hero-copy">
               <p class="settings-eyebrow">Account Center</p>
-              <h1 class="settings-title">Keep your WedEASE profile secure</h1>
+
               <p class="settings-description">
                 Update your password, review the email connected to your
                 account, and manage permanent account actions in one place.
@@ -136,7 +148,12 @@
                       placeholder="Enter current password"
                       required
                     />
-                    <button type="button" class="eye-toggle" data-target="currentPassword" aria-label="Toggle password visibility">
+                    <button
+                      type="button"
+                      class="eye-toggle"
+                      data-target="currentPassword"
+                      aria-label="Toggle password visibility"
+                    >
                       Show
                     </button>
                   </div>
@@ -153,7 +170,12 @@
                         placeholder="Minimum 8 characters"
                         required
                       />
-                      <button type="button" class="eye-toggle" data-target="newPassword" aria-label="Toggle password visibility">
+                      <button
+                        type="button"
+                        class="eye-toggle"
+                        data-target="newPassword"
+                        aria-label="Toggle password visibility"
+                      >
                         Show
                       </button>
                     </div>
@@ -169,7 +191,12 @@
                         placeholder="Repeat your new password"
                         required
                       />
-                      <button type="button" class="eye-toggle" data-target="confirmNewPassword" aria-label="Toggle password visibility">
+                      <button
+                        type="button"
+                        class="eye-toggle"
+                        data-target="confirmNewPassword"
+                        aria-label="Toggle password visibility"
+                      >
                         Show
                       </button>
                     </div>
@@ -200,7 +227,12 @@
                       class="settings-input danger-input"
                       placeholder="Enter your password"
                     />
-                    <button type="button" class="eye-toggle" data-target="deleteConfirm" aria-label="Toggle password visibility">
+                    <button
+                      type="button"
+                      class="eye-toggle"
+                      data-target="deleteConfirm"
+                      aria-label="Toggle password visibility"
+                    >
                       Show
                     </button>
                   </div>
@@ -213,7 +245,11 @@
             </aside>
           </div>
 
-          <div id="settingsStatus" class="settings-status" aria-live="polite"></div>
+          <div
+            id="settingsStatus"
+            class="settings-status"
+            aria-live="polite"
+          ></div>
         </section>
       </main>
 
@@ -257,20 +293,28 @@
 
     <button id="wedease-chat-btn" aria-label="Open wedding assistant">
       <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+        <path
+          d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"
+        />
       </svg>
     </button>
 
-    <div id="wedease-chat-panel" role="dialog" aria-label="Wedding planning assistant">
+    <div
+      id="wedease-chat-panel"
+      role="dialog"
+      aria-label="Wedding planning assistant"
+    >
       <div id="wedease-chat-header">
         <div id="wedease-chat-header-left">
           <span id="wedease-chat-title">Wedding Assistant</span>
-          <span id="wedease-chat-subtitle">Ask me anything about your big day</span>
+          <span id="wedease-chat-subtitle"
+            >Ask me anything about your big day</span
+          >
         </div>
         <button id="wedease-chat-close" aria-label="Close chat">
           <svg viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round">
-            <line x1="18" y1="6" x2="6" y2="18"/>
-            <line x1="6" y1="6" x2="18" y2="18"/>
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
           </svg>
         </button>
       </div>
@@ -285,7 +329,7 @@
         ></textarea>
         <button id="wedease-chat-send" aria-label="Send message">
           <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
           </svg>
         </button>
       </div>
@@ -323,7 +367,8 @@
 
       function updateProfileCard() {
         const user = getCurrentUser();
-        const name = user?.name || (user?.email || "").split("@")[0] || "Your account";
+        const name =
+          user?.name || (user?.email || "").split("@")[0] || "Your account";
         const email = user?.email || "you@example.com";
         const initials = (name || "U")
           .split(" ")
@@ -351,7 +396,10 @@
           return;
         }
 
-        if (!getCurrentUser() && typeof window.authManager.fetchCurrentUser === "function") {
+        if (
+          !getCurrentUser() &&
+          typeof window.authManager.fetchCurrentUser === "function"
+        ) {
           await window.authManager.fetchCurrentUser();
         }
 
@@ -365,9 +413,11 @@
       passwordForm.addEventListener("submit", async (event) => {
         event.preventDefault();
 
-        const currentPassword = document.getElementById("currentPassword").value;
+        const currentPassword =
+          document.getElementById("currentPassword").value;
         const newPassword = document.getElementById("newPassword").value;
-        const confirmNewPassword = document.getElementById("confirmNewPassword").value;
+        const confirmNewPassword =
+          document.getElementById("confirmNewPassword").value;
         const token = getToken();
 
         if (!token) {
@@ -405,7 +455,10 @@
           showStatus("Password updated successfully. Please sign in again.");
           passwordForm.reset();
           setTimeout(async () => {
-            if (window.authManager && typeof window.authManager.logout === "function") {
+            if (
+              window.authManager &&
+              typeof window.authManager.logout === "function"
+            ) {
               await window.authManager.logout();
             }
           }, 1200);
@@ -415,11 +468,16 @@
       });
 
       deleteAccountBtn.addEventListener("click", async () => {
-        const currentPassword = document.getElementById("deleteConfirm").value.trim();
+        const currentPassword = document
+          .getElementById("deleteConfirm")
+          .value.trim();
         const token = getToken();
 
         if (!currentPassword) {
-          showStatus("Please enter your password to delete your account.", true);
+          showStatus(
+            "Please enter your password to delete your account.",
+            true,
+          );
           return;
         }
 

@@ -1,9 +1,6 @@
 .settings-hero {
   padding: 3rem 2rem 2rem;
-  background:
-    radial-gradient(circle at top left, rgba(255, 214, 234, 0.95), transparent 32%),
-    radial-gradient(circle at bottom right, rgba(241, 228, 255, 0.9), transparent 30%),
-    linear-gradient(135deg, #fff9fc 0%, #fcf4fb 42%, #f8f3ff 100%);
+  background: white;
 }
 
 .settings-hero-shell {
@@ -51,7 +48,9 @@
   font-weight: 700;
   background: linear-gradient(45deg, var(--wed-primary), var(--wed-secondary));
   box-shadow: 0 10px 22px rgba(162, 67, 124, 0.28);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .settings-back-link:hover {
@@ -146,7 +145,7 @@
 
 .settings-section {
   padding: 2.5rem 2rem 4rem;
-  background: linear-gradient(180deg, #fff 0%, #fcf7fb 100%);
+  background: white;
 }
 
 .settings-layout {
@@ -217,7 +216,9 @@
   background: linear-gradient(180deg, #fff, #fff9fc);
   color: var(--wed-secondary);
   font-size: 0.98rem;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .settings-input:focus {
@@ -243,7 +244,9 @@
   border: 0;
   cursor: pointer;
   font-weight: 700;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .settings-primary-btn {
@@ -338,5 +341,29 @@
 
   .settings-title {
     font-size: 2.5rem;
+  }
+
+  /* Tighter button spacing for mobile */
+  .settings-back-link {
+    margin-top: 1rem;
+    padding: 0.65rem 1rem;
+    font-size: 0.95rem;
+  }
+
+  .settings-primary-btn {
+    width: 100%;
+    padding: 0.95rem 1rem;
+    border-radius: 0.9rem;
+  }
+}
+
+/* On the settings page, hide the mobile account block so only hamburger menu remains */
+@media (max-width: 900px) {
+  .header-nav-mobile .mobile-account-section {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 }
