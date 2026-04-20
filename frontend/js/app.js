@@ -749,8 +749,12 @@ class AuthManager {
       this.showStatus("Username must be at least 3 characters", true);
       return;
     }
-    if (pw.length < 8) {
-      this.showStatus("Password must be at least 8 characters", true);
+    const strongPw = /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}/;
+    if (!strongPw.test(pw)) {
+      this.showStatus(
+        "Password must be at least 8 characters and include uppercase, lowercase, number, and symbol",
+        true,
+      );
       return;
     }
     if (pw !== pw2) {
@@ -1002,7 +1006,10 @@ AuthManager.prototype.logout = async function () {
 
 AuthManager.prototype.handleSignup = async function () {
   const username = document.getElementById("signup-username").value.trim();
-  const email = document.getElementById("signup-email").value.trim().toLowerCase();
+  const email = document
+    .getElementById("signup-email")
+    .value.trim()
+    .toLowerCase();
   const pw = document.getElementById("signup-password").value;
   const pw2 = document.getElementById("signup-password2").value;
   const rememberCheckbox = document.getElementById("signup-remember");
@@ -1016,8 +1023,12 @@ AuthManager.prototype.handleSignup = async function () {
     this.showStatus("Username must be at least 3 characters", true);
     return;
   }
-  if (pw.length < 8) {
-    this.showStatus("Password must be at least 8 characters", true);
+  const strongPw = /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}/;
+  if (!strongPw.test(pw)) {
+    this.showStatus(
+      "Password must be at least 8 characters and include uppercase, lowercase, number, and symbol",
+      true,
+    );
     return;
   }
   if (pw !== pw2) {
@@ -1070,7 +1081,10 @@ AuthManager.prototype.handleSignup = async function () {
 };
 
 AuthManager.prototype.handleSignin = async function () {
-  const email = document.getElementById("signin-email").value.trim().toLowerCase();
+  const email = document
+    .getElementById("signin-email")
+    .value.trim()
+    .toLowerCase();
   const pw = document.getElementById("signin-password").value;
   const rememberCheckbox = document.getElementById("signin-remember");
   const remember = rememberCheckbox ? rememberCheckbox.checked : false;
