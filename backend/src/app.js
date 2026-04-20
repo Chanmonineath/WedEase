@@ -18,6 +18,7 @@ const { connectToDatabase, closeDatabase } = require("./config/db");
 
 // Routes - ONLY invitationGuest routes (no guest routes)
 const authRoutes = require("./routes/auth.routes");
+const guestRoutes = require("./routes/guest.routes");
 const invitationGuestRoutes = require("./routes/invitationGuest.routes");  // MAIN ROUTE
 const giftRoutes = require("./routes/gift.routes");
 const chatbotRoutes = require("./routes/chatbot.routes");
@@ -82,6 +83,7 @@ app.get("/api/health", (req, res) => {
 // API Routes - Using invitationGuest routes for guest management
 app.use("/api/themes", themeRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/guests", guestRoutes);
 app.use("/api/invitation-guests", invitationGuestRoutes);  // This handles all guest operations
 app.use("/api/gifts", giftRoutes);
 app.use("/api/chatbot", chatbotRoutes);
