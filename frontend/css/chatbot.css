@@ -1,0 +1,546 @@
+/* ===============================================
+   WEDEASE CHATBOT — MODERN MINIMAL UI
+   =============================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&display=swap');
+
+/* ── Chat Button ─────────────────────────────── */
+#wedease-chat-btn {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #a2437c;
+  border: none;
+  cursor: pointer;
+  z-index: 9000;
+  box-shadow: 0 2px 16px rgba(162, 67, 124, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+#wedease-chat-btn:hover {
+  transform: scale(1.06);
+  background: #8e3a6d;
+  box-shadow: 0 4px 20px rgba(162, 67, 124, 0.45);
+}
+
+#wedease-chat-btn svg {
+  width: 22px;
+  height: 22px;
+  stroke: white;
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ── Chat Panel ──────────────────────────────── */
+#wedease-chat-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  background: #fafafa;
+  display: none;
+  flex-direction: column;
+  z-index: 9001;
+  overflow: hidden;
+  font-family: 'DM Sans', system-ui, sans-serif;
+}
+
+#wedease-chat-panel.open {
+  display: flex;
+}
+
+/* ── Header ──────────────────────────────────── */
+#wedease-chat-header {
+  background: #fff;
+  padding: 13px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+#wedease-chat-header-left {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.header-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #a2437c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.header-avatar svg {
+  width: 16px;
+  height: 16px;
+  stroke: white;
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.header-text-wrap {
+  display: flex;
+  flex-direction: column;
+}
+
+#wedease-chat-title {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #111;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+#wedease-chat-subtitle {
+  font-size: 0.7rem;
+  color: #aaa;
+  font-weight: 400;
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #4caf50;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.header-buttons {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.history-btn {
+  background: transparent;
+  border: 1px solid #ebebeb;
+  padding: 5px 12px;
+  border-radius: 20px;
+  color: #888;
+  cursor: pointer;
+  font-size: 0.7rem;
+  font-weight: 400;
+  font-family: inherit;
+  transition: all 0.15s ease;
+}
+
+.history-btn:hover {
+  border-color: #a2437c;
+  color: #a2437c;
+  background: #fdf5f9;
+}
+
+#wedease-chat-close {
+  background: transparent;
+  border: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease;
+  flex-shrink: 0;
+}
+
+#wedease-chat-close:hover {
+  background: #f4f4f4;
+}
+
+#wedease-chat-close svg {
+  width: 14px;
+  height: 14px;
+  stroke: #999;
+  stroke-width: 2.5;
+  fill: none;
+}
+
+/* ── Date Separator ──────────────────────────── */
+.date-separator {
+  display: flex;
+  justify-content: center;
+  margin: 4px 0;
+}
+
+.date-separator span {
+  font-size: 0.65rem;
+  color: #bbb;
+  background: #f0f0f0;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+/* ── Messages Area ───────────────────────────── */
+#wedease-chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: #f6f6f7;
+}
+
+#wedease-chat-messages::-webkit-scrollbar {
+  width: 3px;
+}
+
+#wedease-chat-messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#wedease-chat-messages::-webkit-scrollbar-thumb {
+  background: #ddd;
+  border-radius: 4px;
+}
+
+/* ── Message Styles ──────────────────────────── */
+.message {
+  display: flex;
+  max-width: 82%;
+}
+
+.message.user {
+  justify-content: flex-end;
+  align-self: flex-end;
+}
+
+.message.assistant {
+  justify-content: flex-start;
+  align-self: flex-start;
+}
+
+.message-bubble {
+  padding: 10px 13px;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  border-radius: 16px;
+  word-wrap: break-word;
+  font-family: inherit;
+}
+
+.message.user .message-bubble {
+  background: #a2437c;
+  color: white;
+  border-radius: 16px 16px 4px 16px;
+}
+
+.message.assistant .message-bubble {
+  background: #fff;
+  color: #1a1a1a;
+  border-radius: 16px 16px 16px 4px;
+  border: 1px solid #efefef;
+}
+
+/* ── Typing Indicator ────────────────────────── */
+.typing-dots {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 13px;
+  background: #fff;
+  border-radius: 16px 16px 16px 4px;
+  border: 1px solid #efefef;
+  width: fit-content;
+}
+
+.typing-dots span {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #a2437c;
+  animation: typing 1.4s infinite;
+}
+
+.typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+.typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typing {
+  0%, 60%, 100% {
+    transform: translateY(0);
+    opacity: 0.3;
+  }
+  30% {
+    transform: translateY(-5px);
+    opacity: 1;
+  }
+}
+
+/* ── Suggestions ─────────────────────────────── */
+#wedease-suggestions {
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: #fff;
+  border-top: 1px solid #f0f0f0;
+  flex-shrink: 0;
+}
+
+.suggestion-chip {
+  background: transparent;
+  border: 1px solid #e8e8e8;
+  border-radius: 20px;
+  padding: 8px 14px;
+  font-size: 0.75rem;
+  color: #a2437c;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+  text-align: left;
+  width: 100%;
+}
+
+.suggestion-chip:hover {
+  background: #a2437c;
+  border-color: #a2437c;
+  color: white;
+}
+
+/* ── Input Area ──────────────────────────────── */
+#wedease-chat-input-area {
+  padding: 10px 12px;
+  border-top: 1px solid #f0f0f0;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
+  background: #fff;
+}
+
+#wedease-chat-input {
+  flex: 1;
+  border: 1px solid #ebebeb;
+  border-radius: 22px;
+  padding: 9px 15px;
+  font-size: 0.8rem;
+  resize: none;
+  outline: none;
+  max-height: 90px;
+  font-family: inherit;
+  background: #f6f6f7;
+  color: #111;
+  line-height: 1.4;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+#wedease-chat-input::placeholder {
+  color: #bbb;
+}
+
+#wedease-chat-input:focus {
+  border-color: #d4aac4;
+  background: #fff;
+}
+
+#wedease-chat-send {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #a2437c;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+#wedease-chat-send:hover:not(:disabled) {
+  background: #8e3a6d;
+  transform: scale(1.04);
+}
+
+#wedease-chat-send:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+#wedease-chat-send svg {
+  width: 14px;
+  height: 14px;
+  fill: white;
+  transform: translateX(1px);
+}
+
+/* ── History Panel ───────────────────────────── */
+.history-panel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #fafafa;
+  z-index: 10;
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: inherit;
+}
+
+.history-header {
+  background: #fff;
+  padding: 13px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.history-header span {
+  font-weight: 500;
+  font-size: 0.85rem;
+  color: #111;
+}
+
+.history-header button {
+  background: transparent;
+  border: none;
+  padding: 5px 12px;
+  border-radius: 20px;
+  color: #999;
+  cursor: pointer;
+  font-size: 0.7rem;
+  font-family: inherit;
+  transition: all 0.15s ease;
+}
+
+.history-header button:hover {
+  background: #f4f4f4;
+  color: #a2437c;
+}
+
+.history-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+  background: #f6f6f7;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.history-list::-webkit-scrollbar {
+  width: 3px;
+}
+
+.history-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.history-list::-webkit-scrollbar-thumb {
+  background: #ddd;
+  border-radius: 4px;
+}
+
+.history-item {
+  background: #fff;
+  border-radius: 12px;
+  padding: 11px 13px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.15s ease;
+  border: 1px solid #efefef;
+}
+
+.history-item:hover {
+  border-color: #d4aac4;
+  background: #fdf5f9;
+}
+
+.history-item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.history-item-title {
+  font-weight: 500;
+  font-size: 0.78rem;
+  color: #222;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.history-item-date {
+  font-size: 0.65rem;
+  color: #bbb;
+}
+
+.history-delete {
+  background: none;
+  border: none;
+  color: #e0a0a0;
+  cursor: pointer;
+  font-size: 0.65rem;
+  padding: 4px 7px;
+  border-radius: 6px;
+  font-family: inherit;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.history-delete:hover {
+  background: #fff0f0;
+  color: #c53030;
+}
+
+.history-empty {
+  text-align: center;
+  padding: 48px 24px;
+  color: #ccc;
+  font-size: 0.78rem;
+  line-height: 1.6;
+}
+
+/* ── Desktop ─────────────────────────────────── */
+@media (min-width: 560px) {
+  #wedease-chat-panel {
+    position: fixed;
+    top: auto;
+    left: auto;
+    bottom: 92px;
+    right: 28px;
+    width: 375px;
+    height: 560px;
+    border-radius: 20px;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.06);
+    background: #fafafa;
+  }
+
+  #wedease-chat-header {
+    border-radius: 20px 20px 0 0;
+  }
+}

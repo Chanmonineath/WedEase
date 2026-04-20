@@ -19,11 +19,11 @@ class BudgetManager {
         this.editingCategoryIndex = null;
         
         // Currency settings with API integration
-        this.selectedCurrency = 'USD';
+        this.selectedCurrency = 'KHR';
         this.apiKey = 'd78fa077cf41fe15f31b2333'; 
         this.baseCurrency = 'KHR';
         this.exchangeRates = {};
-        this.availableCurrencies = ['KHR','USD'];
+        this.availableCurrencies = ['KHR', 'USD'];
         
         this.init();
     }
@@ -52,7 +52,7 @@ class BudgetManager {
             }
 
             // Fetch fresh rates from API
-            const response = await fetch(`https://v6.exchangerate-api.com/v6/d78fa077cf41fe15f31b2333/latest/USD`);
+            const response = await fetch(`https://v6.exchangerate-api.com/v6/${this.apiKey}/latest/USD`);
             
             if (!response.ok) {
                 throw new Error(`API error: ${response.status}`);
@@ -1227,12 +1227,7 @@ class BudgetManager {
 // INITIALIZE BUDGET MANAGER
 // ===============================================
 
-let budgetManager;
-
 document.addEventListener("DOMContentLoaded", () => {
-    budgetManager = new BudgetManager();
+    window.budgetManager = new BudgetManager();
     console.log("Budget page fully loaded and initialized");
 });
-
-// Make budgetManager available globally
-window.budgetManager = budgetManager;
