@@ -27,7 +27,7 @@ const createInvitationGuest = async (guestData) => {
     status: "pending",
     rsvpStatus: "pending",
     rsvpData: null,
-    type: "guest_invitation", // Distinguish from invitation templates
+    type: "guest_invitation",
     createdAt: now,
     updatedAt: now,
   };
