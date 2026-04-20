@@ -28,7 +28,7 @@ class SavedThemesManager {
     await this.loadSavedThemes();
     this.render();
 
-    // 🔥 sync with global UI (header, count, etc.)
+    // Listen for updates to saved themes from other parts of the app
     window.dispatchEvent(new Event('savedThemesUpdated'));
   }
 

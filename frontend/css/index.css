@@ -440,11 +440,6 @@
   100% { transform: translateY(-120px) rotate(540deg) scale(0); opacity: 0; }
 }
 
-/* ── Theme Actions ── */
-.hidden {
-  display: none !important;
-}
-
 /* ── Responsive ── */
 @media (min-width: 768px) {
   .hero-container { grid-template-columns: 1fr 1fr; gap: 5rem; }
@@ -463,4 +458,3 @@
   .wedding-date-input { min-width: 250px; }
   .countdown-number { font-size: 2.5rem; }
 }
-

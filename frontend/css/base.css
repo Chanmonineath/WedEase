@@ -74,22 +74,21 @@ body {
   align-items: center;
   justify-content: space-between;
   max-width: 100%;
+  width: 100%;
   height: 5rem;
   padding: 0 2rem;
   margin: 0 auto;
 }
 
-.header-left { 
+.header-left {
   flex: 0;
-  min-width: 100px;
 }
+
 .header-right {
   display: flex;
   align-items: center;
   gap: 1rem;
   flex: 0;
-  min-width: 100px;
-  justify-content: flex-end;
 }
 
 .header-nav {
@@ -128,7 +127,7 @@ body {
   color: var(--wed-primary);
   font-family: var(--font-sans);
   font-weight: 600;
-  transition: all 0.3s ease;
+  transition: color 0.3s ease;
   padding: 0.5rem 1rem;
   border-radius: 6px;
   text-decoration: none;
@@ -137,29 +136,203 @@ body {
 .login-btn:hover,
 .login-btn.active {
   color: var(--wed-secondary);
-  background: rgba(162, 67, 124, 0.1);
 }
 
-/* ── User Label (Account Name when logged in) ── */
-#user-label {
-  background: white;
+.account-menu {
+  position: relative;
+}
+
+.account-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
+  padding: 0.34rem 0.34rem 0.34rem 0.95rem;
+  border: 1px solid rgba(162, 67, 124, 0.12);
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(162, 67, 124, 0.08);
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.account-trigger:hover,
+.account-menu.is-open .account-trigger {
+  transform: translateY(-1px);
+  border-color: rgba(162, 67, 124, 0.22);
+  box-shadow: 0 12px 28px rgba(162, 67, 124, 0.12);
+}
+
+.account-name {
+  max-width: 9rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #4b5563;
+}
+
+.account-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  background: #f3e8f4;
+  border: 1px solid #e9d4e8;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.account-avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.account-avatar-fallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
   color: var(--wed-primary);
-  border: 2px solid var(--wed-primary);
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
+}
+
+.account-avatar-fallback svg {
+  width: 0.95rem;
+  height: 0.95rem;
+}
+
+.account-dropdown {
+  position: absolute;
+  top: calc(100% + 0.85rem);
+  right: 0;
+  width: min(18rem, calc(100vw - 2rem));
+  opacity: 0;
+  transform: translateY(-8px) scale(0.98);
+  pointer-events: none;
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s ease;
+}
+
+.account-menu.is-open .account-dropdown {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.account-dropdown-card {
+  padding: 0.8rem;
+  border: 1px solid rgba(162, 67, 124, 0.12);
+  border-radius: 1.25rem;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(252, 246, 250, 0.98));
+  box-shadow: 0 24px 50px rgba(111, 48, 84, 0.16);
+}
+
+.account-dropdown-copy {
+  padding: 0.35rem 0.25rem 0.8rem;
+}
+
+.account-dropdown-eyebrow {
+  margin: 0 0 0.35rem;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(111, 48, 84, 0.6);
+}
+
+.account-dropdown-name {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--wed-secondary);
+}
+
+.account-dropdown-email {
+  margin: 0.2rem 0 0;
+  font-size: 0.88rem;
+  color: var(--wed-text);
+  overflow-wrap: anywhere;
+}
+
+.account-dropdown-actions {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.account-menu-item,
+.mobile-account-action {
+  width: 100%;
+  padding: 0.85rem 0.95rem;
+  border: 0;
+  border-radius: 0.95rem;
+  background: rgba(162, 67, 124, 0.06);
+  color: var(--wed-secondary);
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.account-menu-item:hover,
+.mobile-account-action:hover {
+  background: rgba(162, 67, 124, 0.12);
+  transform: translateX(2px);
+}
+
+.account-menu-item-danger,
+.mobile-account-logout {
+  background: rgba(194, 24, 91, 0.08);
+  color: #b4235a;
+}
+
+.account-menu-item-danger:hover,
+.mobile-account-logout:hover {
+  background: rgba(194, 24, 91, 0.14);
+}
+
+.mobile-account-section {
+  margin-top: 0.75rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid rgba(162, 67, 124, 0.12);
+}
+
+.mobile-account-summary {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-family: var(--font-sans);
-  font-weight: 600;
+  gap: 0.85rem;
+  margin-bottom: 0.9rem;
+  padding: 0.2rem 0.1rem 0.5rem;
 }
 
-#user-label:hover {
-  background: linear-gradient(45deg, var(--wed-primary), var(--wed-secondary));
-  color: white;
-  border-color: transparent;
+.mobile-account-copy {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
 
+.mobile-account-name {
+  font-weight: 700;
+  color: var(--wed-secondary);
+}
+
+.mobile-account-email {
+  font-size: 0.85rem;
+  color: var(--wed-text);
+  overflow-wrap: anywhere;
+}
 /* ── Saved Button ── */
 .saved-btn {
   background: white;
@@ -194,22 +367,24 @@ body {
   font-size: 0.9rem;
 }
 
+
 /* ===============================================
-   RESPONSIVE NAVIGATION - IMPROVED MOBILE MENU
+   MOBILE NAVIGATION
    =============================================== */
 
-/* Mobile Menu Button - Modern Design */
+/* Mobile Menu Button */
 .mobile-menu-btn {
   display: none;
   background: linear-gradient(135deg, var(--wed-primary), var(--wed-secondary));
   border: none;
   cursor: pointer;
   padding: 0;
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   border-radius: 12px;
   z-index: 1001;
-  position: relative;
+  align-items: center;
+  justify-content: center;
   transition: all 0.3s ease;
   box-shadow: 0 2px 8px rgba(162, 67, 124, 0.3);
 }
@@ -223,6 +398,7 @@ body {
   transform: scale(0.95);
 }
 
+/* Hamburger Icon */
 .hamburger {
   width: 24px;
   height: 18px;
@@ -255,41 +431,39 @@ body {
   transform: rotate(-45deg) translate(5px, -6px);
 }
 
-/* Mobile Navigation Overlay - Smooth fade */
+/* Overlay */
 .nav-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(4px);
   z-index: 998;
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.3s ease;
+  display: none;
 }
 
 .nav-overlay.open {
-  opacity: 1;
-  visibility: visible;
+  display: block;
 }
 
-/* Mobile Navigation Menu - Modern Slide Panel */
+/* Mobile Navigation Menu */
 .header-nav-mobile {
   position: fixed;
   top: 0;
-  right: -320px;
-  width: 320px;
+  right: -100%;
+  width: 85%;
+  max-width: 350px;
   height: 100vh;
   background: linear-gradient(180deg, #ffffff 0%, #fef9fc 100%);
   z-index: 999;
-  padding: 90px 25px 30px;
-  transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 80px 25px 30px;
+  transition: right 0.3s ease;
   box-shadow: -5px 0 25px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
 }
 
 .header-nav-mobile.open {
@@ -298,7 +472,7 @@ body {
 
 .header-nav-mobile .nav-link {
   display: block;
-  padding: 14px 16px;
+  padding: 14px 18px;
   font-size: 1.2rem;
   color: var(--wed-primary);
   text-decoration: none;
@@ -306,60 +480,16 @@ body {
   font-weight: 700;
   border-radius: 12px;
   transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-.header-nav-mobile .nav-link::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(162, 67, 124, 0.1), transparent);
-  transition: left 0.5s ease;
-}
-
-.header-nav-mobile .nav-link:hover::before {
-  left: 100%;
 }
 
 .header-nav-mobile .nav-link:hover,
 .header-nav-mobile .nav-link.active {
-  background: linear-gradient(135deg, rgba(162, 67, 124, 0.1), rgba(111, 48, 84, 0.1));
-}
-
-.header-nav-mobile .mobile-user-btn {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 14px 16px;
-  color: var(--wed-primary);
-  background: linear-gradient(135deg, rgba(162, 67, 124, 0.1), rgba(111, 48, 84, 0.1));
-  border: none;
-  border-radius: 12px;
-  font-family: var(--font-sans);
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  margin-top: 10px;
-  width: 100%;
-}
-
-.header-nav-mobile .mobile-user-btn:hover {
-  background: linear-gradient(135deg, rgba(162, 67, 124, 0.2), rgba(111, 48, 84, 0.2));
-}
-
-.header-nav-mobile .mobile-user-btn svg {
-  width: 20px;
-  height: 20px;
+  background: rgba(162, 67, 124, 0.1);
   color: var(--wed-secondary);
   transform: translateX(5px);
 }
 
-/* Mobile Close Button - Elegant Circle */
+/* Mobile Close Button */
 .mobile-close-btn {
   position: absolute;
   top: 20px;
@@ -381,37 +511,18 @@ body {
 }
 
 .mobile-close-btn:hover {
-  transform: rotate(90deg) scale(1.1);
-  box-shadow: 0 4px 12px rgba(162, 67, 124, 0.4);
+  transform: rotate(90deg) scale(1.05);
 }
 
 .mobile-close-btn:active {
   transform: rotate(90deg) scale(0.95);
 }
 
-/* Mobile Menu Header */
-.mobile-menu-header {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
+/* ===============================================
+   RESPONSIVE BREAKPOINTS
+   =============================================== */
 
-.mobile-menu-logo {
-  height: 40px;
-  width: auto;
-}
-
-.mobile-menu-title {
-  font-family: var(--font-script);
-  font-size: 1.2rem;
-  color: var(--wed-primary);
-  font-weight: 700;
-}
-
-/* Responsive Breakpoints */
+/* Tablet and Mobile */
 @media (max-width: 768px) {
   .header-nav {
     display: none !important;
@@ -419,12 +530,17 @@ body {
   
   .mobile-menu-btn {
     display: flex !important;
-    align-items: center;
-    justify-content: center;
   }
   
-  .login-btn, #user-label {
-    display: none !important;
+  /* Hide account name text on mobile - show only icon */
+  .login-btn span,
+  .account-name {
+    display: none;
+  }
+  
+  .login-btn,
+  .account-trigger {
+    padding: 8px;
   }
   
   .logo-image {
@@ -434,9 +550,16 @@ body {
   .header-container {
     padding: 0 1rem;
     height: 4rem;
+    width: 100%;
+  }
+  
+  /* Swap positions - menu button on left, account icon on right */
+  .header-right {
+    flex-direction: row-reverse;
   }
 }
 
+/* Desktop */
 @media (min-width: 769px) {
   .mobile-menu-btn,
   .header-nav-mobile,
@@ -448,8 +571,9 @@ body {
 /* Small Mobile Devices */
 @media (max-width: 480px) {
   .header-nav-mobile {
-    width: 100%;
-    right: -100%;
+    width: 85%;
+    max-width: 300px;
+    padding: 70px 20px 30px;
   }
   
   .mobile-menu-btn {
@@ -463,8 +587,16 @@ body {
   }
   
   .header-nav-mobile .nav-link {
-    padding: 12px 14px;
+    padding: 12px 16px;
     font-size: 1.1rem;
+  }
+  
+  .mobile-close-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+    top: 16px;
+    right: 16px;
   }
 }
 
@@ -565,7 +697,9 @@ main {
   font-size: 0.95rem;
 }
 
-.footer-section ul { list-style: none; }
+.footer-section ul {
+  list-style: none;
+}
 
 .footer-section a {
   color: white;
@@ -577,7 +711,9 @@ main {
   font-size: 0.95rem;
 }
 
-.footer-section a:hover { opacity: 1; }
+.footer-section a:hover {
+  opacity: 1;
+}
 
 .footer-bottom {
   text-align: center;
@@ -589,140 +725,37 @@ main {
 
 /* ── Responsive ── */
 @media (min-width: 640px) {
-  .hero-description { font-size: 1.25rem; }
+  .hero-description {
+    font-size: 1.25rem;
+  }
 }
 
 @media (max-width: 767px) {
-  .header-container { padding: 0 1rem; }
-  .page-wrapper { padding: 2rem 1rem; }
-  .page-title { font-size: 2rem; }
-  .page-subtitle { font-size: 1rem; }
-  .footer-container { grid-template-columns: 1fr; }
+  .header-container {
+    padding: 0 1rem;
+  }
+  .page-wrapper {
+    padding: 2rem 1rem;
+  }
+  .page-title {
+    font-size: 2rem;
+  }
+  .page-subtitle {
+    font-size: 1rem;
+  }
+  .footer-container {
+    grid-template-columns: 1fr;
+  }
 }
 
-/* Mobile Navigation - Must have these */
-.header-nav-mobile {
-  position: fixed;
-  top: 0;
-  right: -280px;
-  width: 280px;
-  height: 100vh;
-  background: white;
-  z-index: 999;
-  padding: 80px 20px 30px;
-  transition: right 0.3s ease;
-  box-shadow: -2px 0 10px rgba(0,0,0,0.1);
-}
-
-.header-nav-mobile.open {
-  right: 0;
-}
-
-.nav-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0,0,0,0.5);
-  z-index: 998;
-  display: none;
-}
-
-.nav-overlay.open {
-  display: block;
-}
-
-.mobile-close-btn {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background: #a2437c;
-  border: none;
-  color: white;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  font-size: 20px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-@media (max-width: 768px) {
+@media (max-width: 480px) {
   .mobile-menu-btn {
-    display: flex !important;
+    width: 35px;
+    height: 35px;
   }
-  .header-nav {
-    display: none !important;
+  
+  .hamburger {
+    width: 16px;
+    height: 12px;
   }
-}
-
-@media (min-width: 769px) {
-  .mobile-menu-btn,
-  .header-nav-mobile,
-  .nav-overlay {
-    display: none !important;
-  }
-}
-
-/* Mobile Close Button - Ensure it's clickable and visible */
-.mobile-close-btn {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background: linear-gradient(135deg, var(--wed-primary), var(--wed-secondary));
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
-  color: white;
-  width: 42px;
-  height: 42px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  transition: all 0.3s ease;
-  z-index: 1001;
-  box-shadow: 0 2px 8px rgba(162, 67, 124, 0.3);
-}
-
-.mobile-close-btn:hover {
-  transform: rotate(90deg) scale(1.1);
-  box-shadow: 0 4px 12px rgba(162, 67, 124, 0.4);
-}
-
-.mobile-close-btn:active {
-  transform: rotate(90deg) scale(0.95);
-}
-
-/* Make sure the button is above other elements */
-.header-nav-mobile {
-  position: fixed;
-  top: 0;
-  right: -320px;
-  width: 320px;
-  height: 100vh;
-  background: linear-gradient(180deg, #ffffff 0%, #fef9fc 100%);
-  z-index: 999;
-  padding: 80px 25px 30px;
-  transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: -5px 0 25px rgba(0, 0, 0, 0.15);
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.header-nav-mobile.open {
-  right: 0;
-}
-
-/* Ensure close button is on top */
-#mobileCloseBtn {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  z-index: 1001;
 }

@@ -20,7 +20,7 @@ const guestRoutes = require("./routes/guest.routes");
 const invitationRoutes = require("./routes/invitation.routes");
 const giftRoutes = require("./routes/gift.routes");
 const chatbotRoutes = require("./routes/chatbot.routes");
-const themeRoutes = require("./routes/theme.routes");
+const themeRoutes = require("./routes/theme.routes"); 
 const savedThemeRoutes = require("./routes/savedTheme.routes");
 const notFound = require("./middleware/notFound");
 const errorHandler = require("./middleware/errorHandler");
@@ -30,7 +30,7 @@ const app = express();
 app.disable("x-powered-by");
 
 // ============================================
-// COMPLETE CORS CONFIGURATION - FIXED
+// COMPLETE CORS CONFIGURATION 
 // ============================================
 app.use(helmet());
 app.use(cors({
@@ -66,6 +66,19 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
 
+// Theme routes - ADD THESE LINES
+app.use("/api/themes", themeRoutes);
+app.use("/api/saved-themes", savedThemeRoutes);
+
+// Other routes
+app.use("/api/auth", authRoutes);
+app.use("/api/guests", guestRoutes);
+app.use("/api/invitations", invitationRoutes);
+app.use("/api/gifts", giftRoutes);
+app.use("/api/chatbot", chatbotRoutes);
+
+
+
 // ============================================
 // ROUTES
 // ============================================
@@ -85,7 +98,6 @@ app.get("/api/health", (req, res) => {
 
 // Theme routes - ADD THESE LINES
 app.use("/api/themes", themeRoutes);
-app.use("/api/saved-themes", savedThemeRoutes);
 
 // Other routes
 app.use("/api/auth", authRoutes);

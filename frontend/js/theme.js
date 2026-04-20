@@ -335,11 +335,10 @@ class ThemeManager {
   updateSavedButton() {
     try {
       const isLoggedIn = this.isUserLoggedIn();
-      const saved = this.savedThemesCache || [];
       const savedBtn = document.getElementById('savedBtn');
       if (savedBtn) {
-        // Only show saved button if user is logged in AND has saved themes
-        if (isLoggedIn && saved.length > 0) {
+        // Show saved button if user is logged in
+        if (isLoggedIn) {
           savedBtn.classList.remove('hidden');
         } else {
           savedBtn.classList.add('hidden');

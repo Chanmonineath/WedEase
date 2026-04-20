@@ -135,10 +135,18 @@
 <script src="../../js/saved.js"></script>
 
 <script>
+  // Sync authentication from sessionStorage to localStorage for saved page compatibility
+  const wedeaseCurrent = sessionStorage.getItem('wedease_current');
+  if (wedeaseCurrent && !localStorage.getItem('wedease_token')) {
+    localStorage.setItem('wedease_token', wedeaseCurrent);
+  }
+</script>
+
+<script>
   // Protect saved page - redirect to login if not authenticated
   document.addEventListener('DOMContentLoaded', () => {
-    const user = sessionStorage.getItem('wedease_current');
-    if (!user) {
+    const token = localStorage.getItem('wedease_token');
+    if (!token) {
       window.location.href = 'login.html';
     }
   });

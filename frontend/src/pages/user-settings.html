@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Account Settings - WedEASE</title>
+
+    <link rel="stylesheet" href="../../css/base.css" />
+    <link rel="stylesheet" href="../../css/chatbot.css" />
+    <link rel="stylesheet" href="../../css/user-settings.css" />
+
+    <link
+      rel="icon"
+      type="image/png"
+      href="../../assets/img/pink-purpleish logo.png"
+    />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Caveat:wght@400;700&family=Cedarville+Cursive&family=Great+Vibes&family=Cormorant:wght@300;400&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="app">
+      <header class="header" id="header">
+        <div class="header-container">
+          <div class="header-left">
+            <a href="../../index.html" class="logo">
+              <img
+                src="../../assets/img/pink-purpleish logo.png"
+                alt="WedEASE"
+                class="logo-image"
+              />
+            </a>
+          </div>
+
+          <nav class="header-nav" aria-label="Main navigation">
+            <a href="../../index.html" class="nav-link">Home</a>
+            <a href="about.html" class="nav-link">About</a>
+            <a href="theme.html" class="nav-link">Theme</a>
+            <a href="track.html" class="nav-link">Track</a>
+          </nav>
+
+          <div class="header-right">
+            <a href="login.html" class="login-btn" aria-label="Login">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+              <span>Login</span>
+            </a>
+
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">
+              <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <div class="nav-overlay" id="navOverlay"></div>
+
+      <nav class="header-nav-mobile" id="mobileNav" aria-label="Mobile navigation">
+        <button class="mobile-close-btn" id="mobileCloseBtn" aria-label="Close menu">
+          x
+        </button>
+        <a href="../../index.html" class="nav-link">Home</a>
+        <a href="about.html" class="nav-link">About</a>
+        <a href="theme.html" class="nav-link">Theme</a>
+        <a href="track.html" class="nav-link">Track</a>
+        <a href="login.html" class="nav-link mobile-login-link">Login</a>
+      </nav>
+
+      <main>
+        <section class="settings-hero">
+          <div class="settings-hero-shell">
+            <div class="settings-hero-copy">
+              <p class="settings-eyebrow">Account Center</p>
+              <h1 class="settings-title">Keep your WedEASE profile secure</h1>
+              <p class="settings-description">
+                Update your password, review the email connected to your
+                account, and manage permanent account actions in one place.
+              </p>
+              <a href="../../index.html" class="settings-back-link">
+                <span>Back to Home</span>
+              </a>
+            </div>
+
+            <div class="settings-hero-visual" aria-hidden="true">
+              <div class="settings-bloom bloom-one"></div>
+              <div class="settings-bloom bloom-two"></div>
+              <div class="settings-card-preview">
+                <div class="preview-avatar" id="profileAvatarPreview">U</div>
+                <div class="preview-copy">
+                  <span class="preview-label">Signed in as</span>
+                  <strong id="profileNameText">Your account</strong>
+                  <span id="profileEmailText">you@example.com</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="settings-section">
+          <div class="settings-layout">
+            <article class="settings-panel">
+              <div class="settings-panel-head">
+                <p class="settings-panel-kicker">Security</p>
+                <h2>Password Settings</h2>
+                <p>
+                  Change your password to keep your wedding planning workspace
+                  protected.
+                </p>
+              </div>
+
+              <form id="passwordForm" class="settings-form">
+                <label class="settings-field">
+                  <span>Current Password</span>
+                  <div class="password-field">
+                    <input
+                      type="password"
+                      id="currentPassword"
+                      class="settings-input"
+                      placeholder="Enter current password"
+                      required
+                    />
+                    <button type="button" class="eye-toggle" data-target="currentPassword" aria-label="Toggle password visibility">
+                      Show
+                    </button>
+                  </div>
+                </label>
+
+                <div class="settings-grid">
+                  <label class="settings-field">
+                    <span>New Password</span>
+                    <div class="password-field">
+                      <input
+                        type="password"
+                        id="newPassword"
+                        class="settings-input"
+                        placeholder="Minimum 8 characters"
+                        required
+                      />
+                      <button type="button" class="eye-toggle" data-target="newPassword" aria-label="Toggle password visibility">
+                        Show
+                      </button>
+                    </div>
+                  </label>
+
+                  <label class="settings-field">
+                    <span>Confirm New Password</span>
+                    <div class="password-field">
+                      <input
+                        type="password"
+                        id="confirmNewPassword"
+                        class="settings-input"
+                        placeholder="Repeat your new password"
+                        required
+                      />
+                      <button type="button" class="eye-toggle" data-target="confirmNewPassword" aria-label="Toggle password visibility">
+                        Show
+                      </button>
+                    </div>
+                  </label>
+                </div>
+
+                <button type="submit" class="settings-primary-btn">
+                  Save Changes
+                </button>
+              </form>
+            </article>
+
+            <aside class="settings-side">
+              <article class="danger-card">
+                <p class="settings-panel-kicker danger-kicker">Danger Zone</p>
+                <h3>Delete Account</h3>
+                <p class="danger-text">
+                  This permanently removes your account and connected planning
+                  data. This action cannot be undone.
+                </p>
+
+                <label class="settings-field">
+                  <span>Confirm with Password</span>
+                  <div class="password-field">
+                    <input
+                      type="password"
+                      id="deleteConfirm"
+                      class="settings-input danger-input"
+                      placeholder="Enter your password"
+                    />
+                    <button type="button" class="eye-toggle" data-target="deleteConfirm" aria-label="Toggle password visibility">
+                      Show
+                    </button>
+                  </div>
+                </label>
+
+                <button id="deleteAccountBtn" class="danger-btn">
+                  Delete Account Permanently
+                </button>
+              </article>
+            </aside>
+          </div>
+
+          <div id="settingsStatus" class="settings-status" aria-live="polite"></div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <div class="footer-container">
+          <div class="footer-section">
+            <h4>WedEASE</h4>
+            <p>Making wedding planning beautiful and stress-free.</p>
+          </div>
+          <div class="footer-section">
+            <h4>Quick Links</h4>
+            <ul>
+              <li><a href="../../index.html">Home</a></li>
+              <li><a href="about.html">About</a></li>
+              <li><a href="theme.html">Theme</a></li>
+              <li><a href="track.html">Track</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h4>Resources</h4>
+            <ul>
+              <li><a href="#">Blog</a></li>
+              <li><a href="#">Help Center</a></li>
+              <li><a href="#">Contact Us</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h4>Legal</h4>
+            <ul>
+              <li><a href="#">Privacy Policy</a></li>
+              <li><a href="#">Terms of Service</a></li>
+              <li><a href="#">Cookie Policy</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2025 WedEASE. All rights reserved.</p>
+        </div>
+      </footer>
+    </div>
+
+    <button id="wedease-chat-btn" aria-label="Open wedding assistant">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+      </svg>
+    </button>
+
+    <div id="wedease-chat-panel" role="dialog" aria-label="Wedding planning assistant">
+      <div id="wedease-chat-header">
+        <div id="wedease-chat-header-left">
+          <span id="wedease-chat-title">Wedding Assistant</span>
+          <span id="wedease-chat-subtitle">Ask me anything about your big day</span>
+        </div>
+        <button id="wedease-chat-close" aria-label="Close chat">
+          <svg viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div id="wedease-chat-messages" role="log" aria-live="polite"></div>
+      <div id="wedease-suggestions"></div>
+      <div id="wedease-chat-input-area">
+        <textarea
+          id="wedease-chat-input"
+          rows="1"
+          placeholder="Ask about venues, themes, budgets..."
+          aria-label="Message input"
+        ></textarea>
+        <button id="wedease-chat-send" aria-label="Send message">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <script src="../../js/app.js"></script>
+    <script src="../../js/nav.js"></script>
+    <script src="../../js/chatbot.js"></script>
+    <script>
+      const API_BASE = "http://127.0.0.1:5000";
+      const passwordForm = document.getElementById("passwordForm");
+      const deleteAccountBtn = document.getElementById("deleteAccountBtn");
+      const settingsStatus = document.getElementById("settingsStatus");
+
+      function showStatus(message, isError = false) {
+        settingsStatus.textContent = message;
+        settingsStatus.className = isError
+          ? "settings-status is-error"
+          : "settings-status is-success";
+      }
+
+      function getToken() {
+        return window.authManager &&
+          typeof window.authManager.getAuthToken === "function"
+          ? window.authManager.getAuthToken()
+          : null;
+      }
+
+      function getCurrentUser() {
+        return window.authManager &&
+          typeof window.authManager.getCurrentUser === "function"
+          ? window.authManager.getCurrentUser()
+          : null;
+      }
+
+      function updateProfileCard() {
+        const user = getCurrentUser();
+        const name = user?.name || (user?.email || "").split("@")[0] || "Your account";
+        const email = user?.email || "you@example.com";
+        const initials = (name || "U")
+          .split(" ")
+          .map((part) => part[0])
+          .slice(0, 2)
+          .join("")
+          .toUpperCase();
+
+        document.getElementById("profileNameText").textContent = name;
+        document.getElementById("profileEmailText").textContent = email;
+        document.getElementById("profileAvatarPreview").textContent = initials;
+      }
+
+      function togglePassword(button) {
+        const input = document.getElementById(button.dataset.target);
+        if (!input) return;
+        const isPassword = input.type === "password";
+        input.type = isPassword ? "text" : "password";
+        button.textContent = isPassword ? "Hide" : "Show";
+      }
+
+      async function ensureAuthReady() {
+        if (!window.authManager) {
+          setTimeout(ensureAuthReady, 200);
+          return;
+        }
+
+        if (!getCurrentUser() && typeof window.authManager.fetchCurrentUser === "function") {
+          await window.authManager.fetchCurrentUser();
+        }
+
+        updateProfileCard();
+      }
+
+      document.querySelectorAll(".eye-toggle").forEach((button) => {
+        button.addEventListener("click", () => togglePassword(button));
+      });
+
+      passwordForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const currentPassword = document.getElementById("currentPassword").value;
+        const newPassword = document.getElementById("newPassword").value;
+        const confirmNewPassword = document.getElementById("confirmNewPassword").value;
+        const token = getToken();
+
+        if (!token) {
+          showStatus("Please sign in again to update your password.", true);
+          return;
+        }
+
+        if (newPassword.length < 8) {
+          showStatus("New password must be at least 8 characters.", true);
+          return;
+        }
+
+        if (newPassword !== confirmNewPassword) {
+          showStatus("New passwords do not match.", true);
+          return;
+        }
+
+        try {
+          const response = await fetch(`${API_BASE}/api/auth/password`, {
+            method: "PATCH",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ currentPassword, newPassword }),
+          });
+
+          const data = await response.json().catch(() => ({}));
+          if (!response.ok) {
+            showStatus(data.message || "Failed to update password.", true);
+            return;
+          }
+
+          showStatus("Password updated successfully. Please sign in again.");
+          passwordForm.reset();
+          setTimeout(async () => {
+            if (window.authManager && typeof window.authManager.logout === "function") {
+              await window.authManager.logout();
+            }
+          }, 1200);
+        } catch (error) {
+          showStatus("Network error while updating password.", true);
+        }
+      });
+
+      deleteAccountBtn.addEventListener("click", async () => {
+        const currentPassword = document.getElementById("deleteConfirm").value.trim();
+        const token = getToken();
+
+        if (!currentPassword) {
+          showStatus("Please enter your password to delete your account.", true);
+          return;
+        }
+
+        if (!token) {
+          showStatus("Please sign in again to delete your account.", true);
+          return;
+        }
+
+        try {
+          const response = await fetch(`${API_BASE}/api/auth/account`, {
+            method: "DELETE",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ currentPassword }),
+          });
+
+          const data = await response.json().catch(() => ({}));
+          if (!response.ok) {
+            showStatus(data.message || "Failed to delete account.", true);
+            return;
+          }
+
+          showStatus("Account deleted successfully.");
+          if (
+            window.authManager &&
+            typeof window.authManager.clearCurrentUser === "function"
+          ) {
+            window.authManager.clearCurrentUser();
+          }
+          setTimeout(() => {
+            window.location.href = "../../index.html";
+          }, 1000);
+        } catch (error) {
+          showStatus("Network error while deleting account.", true);
+        }
+      });
+
+      ensureAuthReady();
+    </script>
+  </body>
+</html>
