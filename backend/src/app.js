@@ -6,6 +6,7 @@ const compression = require("compression");
 const cookieParser = require("cookie-parser");
 const dotenv = require("dotenv");
 const path = require("node:path");
+const invitationGuestRoutes = require("./routes/invitationGuest.routes");
 
 dotenv.config({
   path: path.resolve(__dirname, "../.env"),
@@ -25,45 +26,64 @@ const notFound = require("./middleware/notFound");
 const errorHandler = require("./middleware/errorHandler");
 
 const app = express();
-
+app.get("/api/test-db", async (req, res) => {
+  try {
+    const { getDatabase } = require("./config/db");
+    const db = getDatabase();
+    const collections = await db.listCollections().toArray();
+    res.json({
+      success: true,
+      message: "Database connected",
+      collections: collections.map((c) => c.name),
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+});
 app.disable("x-powered-by");
 
 // ============================================
 // COMPLETE CORS CONFIGURATION - FIXED
 // ============================================
 app.use(helmet());
-app.use(cors({
-  origin: [
-    'http://localhost:3000',
-    'http://127.0.0.1:3000',
-    'http://localhost:5500',
-    'http://127.0.0.1:5500',
-    'http://localhost:5503',
-    'http://127.0.0.1:5503',
-    'http://localhost:8080',
-    'http://127.0.0.1:8080',
-    'http://localhost:5000',
-    'http://127.0.0.1:5000',
-  ],
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: [
-    'Content-Type',
-    'Authorization',
-    'X-Requested-With',
-    'Accept',
-    'Origin',
-    'Access-Control-Allow-Origin'
-  ],
-  exposedHeaders: ['Content-Length', 'X-Requested-With'],
-  optionsSuccessStatus: 200
-}));
+app.use(
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "http://127.0.0.1:3000",
+      "http://localhost:5500",
+      "http://127.0.0.1:5500",
+      "http://localhost:5503",
+      "http://127.0.0.1:5503",
+      "http://localhost:8080",
+      "http://127.0.0.1:8080",
+      "http://localhost:5000",
+      "http://127.0.0.1:5000",
+    ],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "X-Requested-With",
+      "Accept",
+      "Origin",
+      "Access-Control-Allow-Origin",
+    ],
+    exposedHeaders: ["Content-Length", "X-Requested-With"],
+    optionsSuccessStatus: 200,
+  }),
+);
 
 app.use(compression());
 app.use(morgan("dev"));
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(cookieParser());
+
 
 // ============================================
 // ROUTES
@@ -91,7 +111,7 @@ app.use("/api/guests", guestRoutes);
 app.use("/api/invitations", invitationRoutes);
 app.use("/api/gifts", giftRoutes);
 app.use("/api/chatbot", chatbotRoutes);
-
+app.use("/api/invitation-guests", invitationGuestRoutes);
 // ============================================
 // ERROR HANDLING
 // ============================================

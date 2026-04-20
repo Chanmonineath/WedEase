@@ -4,7 +4,7 @@
 let budgetManager;
 let heroManager;
 let themeManager;
-let countdownManager; 
+let countdownManager;
 
 class WedEASEUtils {
   static formatCurrency(amount) {
@@ -781,9 +781,87 @@ class AuthManager {
   }
 
   // --- LOGIN SESSION ---
-  setCurrentUser(email) {
-    sessionStorage.setItem("wedease_current", email);
-    this.updateHeaderUser(email);
+  setCurrentUser(user, remember = false, token = null) {
+    const userData = {
+      id: user._id || user.id || user.email,
+      name: user.name || user.email.split("@")[0],
+      email: user.email,
+      role: user.role || "user",
+    };
+
+    if (remember) {
+      localStorage.setItem("wedease_current_user", JSON.stringify(userData));
+    } else {
+      sessionStorage.setItem("wedease_current_user", JSON.stringify(userData));
+    }
+
+    // Store token if provided
+    if (token) {
+      if (remember) {
+        localStorage.setItem("wedease_auth_token", token);
+      } else {
+        sessionStorage.setItem("wedease_auth_token", token);
+      }
+    }
+
+    // Also keep the old key for backward compatibility
+    sessionStorage.setItem("wedease_current", user.email);
+
+    this.updateHeaderUser(userData);
+  }
+
+  async handleSignin() {
+    const email = document
+      .getElementById("signin-email")
+      ?.value.trim()
+      .toLowerCase();
+    const pw = document.getElementById("signin-password")?.value;
+    const rememberCheckbox = document.getElementById("signin-remember");
+    const remember = rememberCheckbox ? rememberCheckbox.checked : false;
+
+    if (!email || !pw) {
+      this.showStatus("Please enter email and password", true);
+      return;
+    }
+
+    try {
+      console.log("Attempting login for:", email);
+
+      const response = await fetch(`${this.API_BASE}/api/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password: pw }),
+      });
+
+      const data = await response.json();
+      console.log("Login response:", data);
+
+      if (data.success) {
+        if (data.token) {
+          // Store token
+          if (remember) {
+            localStorage.setItem("wedease_auth_token", data.token);
+          } else {
+            sessionStorage.setItem("wedease_auth_token", data.token);
+          }
+        }
+        if (data.user) {
+          this.setCurrentUser(data.user, remember, data.token);
+        }
+        this.showStatus("Login successful!");
+        setTimeout(() => {
+          window.location.href = "../../index.html";
+        }, 1500);
+      } else {
+        this.showStatus(data.message || "Login failed", true);
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      this.showStatus(
+        "Connection error. Make sure backend is running on port 5000.",
+        true,
+      );
+    }
   }
 
   clearCurrentUser() {
@@ -1003,8 +1081,6 @@ class WedEASEApp {
     });
   }
 }
-
-
 
 document.addEventListener("DOMContentLoaded", () => {
   console.log("WedEASE Starting...");

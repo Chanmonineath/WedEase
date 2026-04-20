@@ -624,16 +624,79 @@
     let token = null;
     let invitationData = null;
 
-    // Apply saved theme immediately
-    (function applyThemeEarly() {
-      const saved = localStorage.getItem('wedease_invitation_theme') || 'classic';
-      const card = document.getElementById('mainCard');
-      if (THEME_CLASS[saved]) {
-        document.body.className = BODY_CLASS[saved];
-        card.className = 'invitation-card ' + THEME_CLASS[saved];
+    function getTokenFromUrl() {
+      return new URLSearchParams(window.location.search).get('token');
+    }
+
+    // Load invitation from API using the correct endpoint
+    async function loadInvitationFromAPI() {
+      try {
+        console.log('Loading invitation with token:', token);
+        const response = await fetch(`${API_URL}/invitation-guests/public/${token}`);
+        
+        if (response.ok) {
+          const result = await response.json();
+          console.log('Invitation data from API:', result);
+          
+          if (result.success && result.data) {
+            // Get invitation details from the guest record
+            const invitationDetails = result.data.invitationDetails || {};
+            const theme = invitationDetails.theme || localStorage.getItem('wedease_invitation_theme') || 'classic';
+            
+            invitationData = {
+              guestName: result.data.name,
+              coupleNames: invitationDetails.coupleNames || localStorage.getItem('wedease_couple_names') || 'John & Jane',
+              message: invitationDetails.message || localStorage.getItem('wedease_invitation_message') || 'You are cordially invited to celebrate our wedding',
+              weddingDate: invitationDetails.weddingDate || localStorage.getItem('wedease_wedding_date') || '',
+              venue: invitationDetails.venue || localStorage.getItem('wedease_venue') || '',
+              theme: theme
+            };
+            
+            // Apply the theme from invitation
+            applyTheme(theme);
+            displayInvitation();
+            return true;
+          }
+        }
+        return false;
+      } catch (error) {
+        console.log('API error:', error);
+        return false;
       }
-      buildDivider(saved);
-    })();
+    }
+
+    // Fallback to localStorage if API fails
+    function loadInvitationFromLocalStorage() {
+      const storedGuests = localStorage.getItem('wedease_invitation_guests');
+      if (token && storedGuests) {
+        const guests = JSON.parse(storedGuests);
+        const guest = guests.find(g => g.invitationLink && g.invitationLink.includes(token));
+        if (guest) {
+          const theme = localStorage.getItem('wedease_invitation_theme') || 'classic';
+          invitationData = {
+            guestName: guest.name,
+            coupleNames: localStorage.getItem('wedease_couple_names') || 'John & Jane',
+            message: localStorage.getItem('wedease_invitation_message') || 'You are cordially invited to celebrate our wedding',
+            weddingDate: localStorage.getItem('wedease_wedding_date') || '',
+            venue: localStorage.getItem('wedease_venue') || '',
+            theme: theme
+          };
+          applyTheme(theme);
+          displayInvitation();
+          return true;
+        }
+      }
+      return false;
+    }
+
+    function applyTheme(theme) {
+      const card = document.getElementById('mainCard');
+      if (THEME_CLASS[theme]) {
+        document.body.className = BODY_CLASS[theme];
+        card.className = 'invitation-card ' + THEME_CLASS[theme];
+      }
+      buildDivider(theme);
+    }
 
     function buildDivider(theme) {
       const div = document.getElementById('cardDivider');
@@ -648,56 +711,9 @@
       }
     }
 
-    function getTokenFromUrl() {
-      return new URLSearchParams(window.location.search).get('token');
-    }
-
-    async function loadInvitationFromAPI() {
-      try {
-        const response = await fetch(`${API_URL}/guests/public/${token}`);
-        if (response.ok) {
-          const result = await response.json();
-          if (result.success) {
-            invitationData = {
-              guestName: result.data.name,
-              coupleNames: localStorage.getItem('wedease_couple_names') || 'John & Jane',
-              message: localStorage.getItem('wedease_invitation_message') || 'You are cordially invited to celebrate our wedding',
-              weddingDate: localStorage.getItem('wedease_wedding_date') || '',
-              venue: localStorage.getItem('wedease_venue') || ''
-            };
-            displayInvitation();
-            return true;
-          }
-        }
-        return false;
-      } catch (error) {
-        console.log('API error, falling back to localStorage:', error);
-        return false;
-      }
-    }
-
-    function loadInvitationFromLocalStorage() {
-      const storedGuests = localStorage.getItem('wedease_invitation_guests');
-      if (token && storedGuests) {
-        const guests = JSON.parse(storedGuests);
-        const guest = guests.find(g => g.trackingLink && g.trackingLink.includes(token));
-        if (guest) {
-          invitationData = {
-            guestName: guest.name,
-            coupleNames: localStorage.getItem('wedease_couple_names') || 'John & Jane',
-            message: localStorage.getItem('wedease_invitation_message') || '',
-            weddingDate: localStorage.getItem('wedease_wedding_date') || '',
-            venue: localStorage.getItem('wedease_venue') || ''
-          };
-          displayInvitation();
-          return true;
-        }
-      }
-      return false;
-    }
-
     async function loadInvitation() {
       token = getTokenFromUrl();
+      console.log('Token from URL:', token);
       
       if (!token) {
         document.getElementById('loadingState').innerHTML = '<p style="color: #dc3545;">❌ Invalid invitation link. Please check your invitation email.</p>';
@@ -709,13 +725,17 @@
       if (!apiSuccess) {
         const localSuccess = loadInvitationFromLocalStorage();
         if (!localSuccess) {
+          // Ultimate fallback - use default values
+          const defaultTheme = localStorage.getItem('wedease_invitation_theme') || 'classic';
           invitationData = {
             guestName: 'Guest',
             coupleNames: localStorage.getItem('wedease_couple_names') || 'John & Jane',
             message: localStorage.getItem('wedease_invitation_message') || 'You are cordially invited to celebrate our wedding',
             weddingDate: localStorage.getItem('wedease_wedding_date') || '',
-            venue: localStorage.getItem('wedease_venue') || ''
+            venue: localStorage.getItem('wedease_venue') || '',
+            theme: defaultTheme
           };
+          applyTheme(defaultTheme);
           displayInvitation();
         }
       }
@@ -762,8 +782,8 @@
       };
 
       try {
-        // Try API first
-        const response = await fetch(`${API_URL}/guests/public/rsvp/${token}`, {
+        // Use the correct API endpoint
+        const response = await fetch(`${API_URL}/invitation-guests/public/rsvp/${token}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(rsvpData)
@@ -771,10 +791,14 @@
 
         if (response.ok) {
           const result = await response.json();
-          console.log('RSVP saved to Firebase:', result);
+          console.log('RSVP saved to database:', result);
+          showFeedback('Your response has been recorded! Thank you.', 'success');
         } else {
+          const error = await response.json();
+          console.error('RSVP save error:', error);
           // Fallback to localStorage
           await saveToLocalStorage(rsvpData);
+          showFeedback('Response recorded locally! Thank you.', 'success');
         }
 
         const msg = status === 'confirmed'
@@ -814,7 +838,7 @@
       const storedGuests = localStorage.getItem('wedease_invitation_guests');
       if (storedGuests) {
         const guests = JSON.parse(storedGuests);
-        const guestIndex = guests.findIndex(g => g.trackingLink && g.trackingLink.includes(token));
+        const guestIndex = guests.findIndex(g => g.invitationLink && g.invitationLink.includes(token));
         if (guestIndex !== -1) {
           guests[guestIndex].status = 'responded';
           guests[guestIndex].rsvpStatus = rsvpData.rsvpStatus;

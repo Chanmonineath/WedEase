@@ -1,20 +1,14 @@
-// backend/src/controllers/guest.controller.js
-const Guest = require("../models/Guest");
+// backend/src/controllers/invitationGuest.controller.js
+const InvitationGuest = require("../models/InvitationGuest");
 
-// Helper function to get userId from request
 const getUserId = (req) => {
-  // Try to get from authenticated user (authMiddleware)
   if (req.user && req.user.userId) {
     return req.user.userId;
-  }
-  // Fallback for testing - remove in production
-  if (req.headers['x-user-id']) {
-    return req.headers['x-user-id'];
   }
   return null;
 };
 
-const listGuests = async (req, res, next) => {
+const listInvitationGuests = async (req, res, next) => {
   try {
     const userId = getUserId(req);
     if (!userId) {
@@ -23,8 +17,9 @@ const listGuests = async (req, res, next) => {
         message: "Authentication required",
       });
     }
-    const guests = await Guest.getGuestsByUserId(userId);
-
+    
+    const guests = await InvitationGuest.getInvitationGuestsByUserId(userId);
+    
     return res.status(200).json({
       success: true,
       data: guests,
@@ -34,7 +29,7 @@ const listGuests = async (req, res, next) => {
   }
 };
 
-const createGuest = async (req, res, next) => {
+const createInvitationGuest = async (req, res, next) => {
   try {
     const userId = getUserId(req);
     if (!userId) {
@@ -44,7 +39,7 @@ const createGuest = async (req, res, next) => {
       });
     }
 
-    const { name, email, phone, status } = req.body;
+    const { name, email, phone } = req.body;
 
     if (!name || !email) {
       return res.status(400).json({
@@ -53,11 +48,10 @@ const createGuest = async (req, res, next) => {
       });
     }
 
-    const guest = await Guest.createGuest({
+    const guest = await InvitationGuest.createInvitationGuest({
       name,
       email,
       phone,
-      status,
       userId: userId,
     });
 
@@ -70,12 +64,12 @@ const createGuest = async (req, res, next) => {
   }
 };
 
-const bulkCreateGuests = async (req, res, next) => {
+const bulkCreateInvitationGuests = async (req, res, next) => {
   try {
     const { guests } = req.body;
     const userId = getUserId(req);
     
-    console.log("📥 Bulk create request:", guests?.length, "guests for user:", userId);
+    console.log("📥 Bulk create invitation guests:", guests?.length, "for user:", userId);
     
     if (!userId) {
       return res.status(401).json({
@@ -91,15 +85,16 @@ const bulkCreateGuests = async (req, res, next) => {
       });
     }
 
-    const result = await Guest.bulkCreateGuests(guests, userId);
+    const result = await InvitationGuest.bulkCreateInvitationGuests(guests, userId);
     
-    console.log("✅ Bulk create success:", result.insertedCount, "guests added");
+    console.log("✅ Bulk create success:", result.insertedCount, "invitation guests added");
     
     return res.status(201).json({
       success: true,
       data: { insertedCount: result.insertedCount },
     });
   } catch (error) {
+    console.error("Bulk create error:", error);
     return next(error);
   }
 };
@@ -123,8 +118,11 @@ const sendInvitations = async (req, res, next) => {
       });
     }
     
-    const baseUrl = process.env.BASE_URL || 'http://localhost:5500';
-    const updatedGuests = await Guest.sendInvitations(
+    // Use BASE_URL from env, with fallback
+    const baseUrl = process.env.BASE_URL || 'http://127.0.0.1:5503/frontend';
+    console.log("📧 Sending invitations with base URL:", baseUrl);
+    
+    const updatedGuests = await InvitationGuest.sendInvitationLinks(
       guestIds, 
       userId, 
       invitationDetails, 
@@ -138,7 +136,7 @@ const sendInvitations = async (req, res, next) => {
   }
 };
 
-const deleteGuest = async (req, res, next) => {
+const deleteInvitationGuest = async (req, res, next) => {
   try {
     const { id } = req.params;
     const userId = getUserId(req);
@@ -150,7 +148,7 @@ const deleteGuest = async (req, res, next) => {
       });
     }
     
-    const result = await Guest.deleteGuest(id, userId);
+    const result = await InvitationGuest.deleteInvitationGuest(id, userId);
     
     if (result.deletedCount === 0) {
       return res.status(404).json({
@@ -168,7 +166,7 @@ const deleteGuest = async (req, res, next) => {
   }
 };
 
-const deleteAllGuests = async (req, res, next) => {
+const deleteAllInvitationGuests = async (req, res, next) => {
   try {
     const userId = getUserId(req);
     
@@ -179,7 +177,7 @@ const deleteAllGuests = async (req, res, next) => {
       });
     }
     
-    const result = await Guest.deleteAllGuests(userId);
+    const result = await InvitationGuest.deleteAllInvitationGuests(userId);
     
     return res.status(200).json({
       success: true,
@@ -201,7 +199,7 @@ const getRSVPStats = async (req, res, next) => {
       });
     }
     
-    const stats = await Guest.getRSVPStats(userId);
+    const stats = await InvitationGuest.getInvitationRSVPStats(userId);
     
     return res.status(200).json({
       success: true,
@@ -216,7 +214,7 @@ const getRSVPStats = async (req, res, next) => {
 const getGuestByTokenPublic = async (req, res, next) => {
   try {
     const { token } = req.params;
-    const guest = await Guest.getGuestByToken(token);
+    const guest = await InvitationGuest.getInvitationGuestByToken(token);
     
     if (!guest) {
       return res.status(404).json({
@@ -253,7 +251,7 @@ const submitRSVP = async (req, res, next) => {
       });
     }
     
-    const result = await Guest.updateRSVP(token, {
+    const result = await InvitationGuest.updateInvitationGuestRSVP(token, {
       rsvpStatus,
       guestCount,
       dietaryRestrictions,
@@ -277,12 +275,12 @@ const submitRSVP = async (req, res, next) => {
 };
 
 module.exports = {
-  listGuests,
-  createGuest,
-  bulkCreateGuests,
+  listInvitationGuests,
+  createInvitationGuest,
+  bulkCreateInvitationGuests,
   sendInvitations,
-  deleteGuest,
-  deleteAllGuests,
+  deleteInvitationGuest,
+  deleteAllInvitationGuests,
   getRSVPStats,
   getGuestByTokenPublic,
   submitRSVP,

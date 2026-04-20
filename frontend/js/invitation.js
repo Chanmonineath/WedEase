@@ -1,30 +1,44 @@
-// frontend/js/invitation.js - Unified MongoDB + localStorage fallback
+// frontend/js/invitation.js - Fixed version
 const API_URL = "http://localhost:5000/api";
 let guests = [];
+let currentUserId = null;
 
 // ============================================
 // API Helper Functions
 // ============================================
 function getAuthToken() {
-  // First check AuthManager's sessionStorage
-  const currentUser = sessionStorage.getItem("wedease_current");
-  if (currentUser) {
-    // Create a simple token from the user email
-    return btoa(
-      JSON.stringify({
-        userId: currentUser,
-        email: currentUser,
-        timestamp: Date.now(),
-      }),
-    );
+  // Check localStorage first (from login)
+  const token = localStorage.getItem("wedease_auth_token");
+  if (token) return token;
+
+  // Check sessionStorage
+  const sessionToken = sessionStorage.getItem("wedease_auth_token");
+  if (sessionToken) return sessionToken;
+
+  // Fallback for demo mode
+  const demoUser = localStorage.getItem("wedease_current_user");
+  if (demoUser) {
+    try {
+      const user = JSON.parse(demoUser);
+      if (user && user.email) {
+        // Create a simple demo token
+        return btoa(JSON.stringify({ userId: user.email, email: user.email }));
+      }
+    } catch (e) {}
   }
 
-  // Then check localStorage
-  const token = localStorage.getItem("token");
-  if (token) {
-    return token;
-  }
+  return null;
+}
 
+function getCurrentUser() {
+  try {
+    const userStr =
+      localStorage.getItem("wedease_current_user") ||
+      sessionStorage.getItem("wedease_current_user");
+    if (userStr) {
+      return JSON.parse(userStr);
+    }
+  } catch (e) {}
   return null;
 }
 
@@ -57,22 +71,39 @@ async function apiRequest(endpoint, options = {}) {
 async function loadGuestsFromMongoDB() {
   try {
     const token = getAuthToken();
+    console.log("Auth token present?", !!token);
+
     if (!token) {
       console.log("No auth token, using localStorage");
       loadGuestsFromStorage();
       return;
     }
 
-    const result = await apiRequest("/guests");
-    guests = result.data;
-    saveGuestsToStorage();
+    console.log("Fetching guests from MongoDB...");
+    const result = await apiRequest("/invitation-guests");
+    console.log("API response:", result);
+
+    if (result.data && result.data.length > 0) {
+      guests = result.data;
+      console.log(`Loaded ${guests.length} guests from MongoDB`);
+    } else {
+      console.log("No guests found in MongoDB, checking localStorage");
+      loadGuestsFromStorage();
+    }
+
+    saveGuestsToStorage(); // Cache to localStorage
     renderGuestList();
 
-    const stats = await apiRequest("/guests/stats");
-    if (stats.data.total > 0) {
-      const statsSection = document.getElementById("statsSection");
-      if (statsSection) statsSection.style.display = "block";
-      updateStatsFromAPI(stats.data);
+    // Load stats
+    try {
+      const stats = await apiRequest("/invitation-guests/stats");
+      if (stats.data && stats.data.total > 0) {
+        const statsSection = document.getElementById("statsSection");
+        if (statsSection) statsSection.style.display = "block";
+        updateStatsFromAPI(stats.data);
+      }
+    } catch (statsError) {
+      console.log("Stats not available yet");
     }
   } catch (error) {
     console.error("Error loading from MongoDB:", error);
@@ -81,38 +112,47 @@ async function loadGuestsFromMongoDB() {
 }
 
 // ============================================
-// Add guest to MongoDB
+// Add guest to MongoDB (Single function - removed duplicate)
 // ============================================
 async function addGuestToMongoDB(guestData) {
   try {
     const token = getAuthToken();
+    console.log("Adding guest to MongoDB, token present?", !!token);
+
     if (!token) {
+      console.log("No auth token, using localStorage fallback");
       // Fallback to localStorage
       const newGuest = {
         id: Date.now().toString(),
         ...guestData,
         status: "pending",
-        trackingLink: null,
+        invitationLink: null,
       };
       guests.push(newGuest);
       saveGuestsToStorage();
       renderGuestList();
-      showNotification("Guest added (local mode)", "success");
+      showNotification(
+        "Guest added (local mode - login to save to database)",
+        "success",
+      );
       return;
     }
 
-    const result = await apiRequest("/guests", {
+    console.log("Sending guest to MongoDB:", guestData);
+    // FIXED: Use /invitation-guests instead of /guests
+    const result = await apiRequest("/invitation-guests", {
       method: "POST",
       body: JSON.stringify(guestData),
     });
 
+    console.log("Guest added to MongoDB:", result);
     guests.push(result.data);
     saveGuestsToStorage();
     renderGuestList();
     showNotification("Guest added to database!", "success");
   } catch (error) {
     console.error("Error adding to MongoDB:", error);
-    showNotification("Failed to add guest", "error");
+    showNotification("Failed to add guest: " + error.message, "error");
   }
 }
 
@@ -122,6 +162,16 @@ async function addGuestToMongoDB(guestData) {
 async function sendInvitationsToMongoDB() {
   if (guests.length === 0) {
     showNotification("No guests to send invitations to", "error");
+    return;
+  }
+
+  // Get guests that haven't been sent invitations yet
+  const unsentGuests = guests.filter(
+    (g) => g.status !== "sent" && !g.invitationLink,
+  );
+
+  if (unsentGuests.length === 0) {
+    showNotification("All guests already have invitations", "info");
     return;
   }
 
@@ -147,28 +197,64 @@ async function sendInvitationsToMongoDB() {
       return;
     }
 
-    const guestIds = guests.map((g) => g._id || g.id);
-    const result = await apiRequest("/guests/send-invitations", {
+    const guestIds = unsentGuests.map((g) => g._id || g.id);
+    console.log("Sending invitations to guest IDs:", guestIds);
+
+    // Send to backend
+    const result = await apiRequest("/invitation-guests/send-invitations", {
       method: "POST",
       body: JSON.stringify({ guestIds, invitationDetails }),
     });
 
-    guests = result.data;
+    // Update local guests with new data
+    if (result.data && result.data.length) {
+      result.data.forEach((updatedGuest) => {
+        const index = guests.findIndex(
+          (g) => (g._id || g.id) === (updatedGuest._id || updatedGuest.id),
+        );
+        if (index !== -1) {
+          guests[index] = updatedGuest;
+        }
+      });
+    }
+
     saveGuestsToStorage();
     renderGuestList();
 
     const statsSection = document.getElementById("statsSection");
     if (statsSection) statsSection.style.display = "block";
 
-    let message = `✅ Invitations sent to ${guests.length} guests!\n\n`;
-    guests.slice(0, 5).forEach((g) => {
-      message += `📧 ${g.name}: ${g.invitationLink}\n`;
+    // Build message with correct RSVP URL
+    const baseUrl = window.location.protocol + "//" + window.location.host;
+    const rsvpUrl = `${baseUrl}/frontend/rsvp.html`;
+
+    let message = `✅ Invitations sent to ${unsentGuests.length} guests!\n\n`;
+    unsentGuests.slice(0, 5).forEach((g) => {
+      const updatedGuest = guests.find(
+        (u) => (u._id || u.id) === (g._id || g.id),
+      );
+      const link = updatedGuest?.invitationLink || `${rsvpUrl}?token=demo`;
+      message += `📧 ${g.name}: ${link.substring(0, 70)}...\n`;
     });
-    if (guests.length > 5) message += `\n... and ${guests.length - 5} more.`;
+    if (unsentGuests.length > 5) {
+      message += `\n... and ${unsentGuests.length - 5} more.`;
+    }
     alert(message);
-    showNotification(`Invitations sent to ${guests.length} guests!`, "success");
+    showNotification(
+      `Invitations sent to ${unsentGuests.length} guests!`,
+      "success",
+    );
+
+    // Refresh stats
+    try {
+      const stats = await apiRequest("/invitation-guests/stats");
+      if (stats.data) updateStatsFromAPI(stats.data);
+    } catch (e) {
+      console.log("Stats refresh error:", e);
+    }
   } catch (error) {
     console.error("Error sending invitations:", error);
+    showNotification("Failed to send invitations: " + error.message, "error");
     generateLocalInvitations();
   }
 }
@@ -177,32 +263,47 @@ async function sendInvitationsToMongoDB() {
 // Local fallback for invitations
 // ============================================
 function generateLocalInvitations() {
+  // For your setup: http://127.0.0.1:5503/frontend/rsvp.html
   const baseUrl = window.location.protocol + "//" + window.location.host;
-  const rsvpPath = window.location.pathname.includes("/src/pages/")
-    ? "../frontend/rsvp.html"
-    : "rsvp.html";
-  const rsvpUrl = `${baseUrl}/${rsvpPath}`;
+  const rsvpUrl = `${baseUrl}/frontend/rsvp.html`;
+
+  console.log("RSVP URL:", rsvpUrl);
+  console.log("Current path:", window.location.pathname);
+
+  let sentCount = 0;
 
   guests.forEach((guest) => {
-    const token = btoa(guest.email + Date.now() + Math.random())
-      .replace(/=/g, "")
-      .substring(0, 32);
-    guest.trackingLink = `${rsvpUrl}?token=${encodeURIComponent(token)}`;
-    guest.status = "sent";
+    if (!guest.invitationLink) {
+      // Create a simple URL-safe token
+      const timestamp = Date.now();
+      const random = Math.random().toString(36).substring(2, 15);
+      const emailPrefix = guest.email.split("@")[0].substring(0, 8);
+      const token = `${emailPrefix}-${timestamp}-${random}`;
+
+      guest.invitationLink = `${rsvpUrl}?token=${encodeURIComponent(token)}`;
+      guest.status = "sent";
+      sentCount++;
+      console.log(`Generated link for ${guest.name}: ${guest.invitationLink}`);
+    }
   });
 
   saveGuestsToStorage();
   renderGuestList();
+
   const statsSection = document.getElementById("statsSection");
   if (statsSection) statsSection.style.display = "block";
   updateStats();
 
-  let message = `✅ Invitations ready for ${guests.length} guests!\n\n`;
+  let message = `✅ Invitations ready for ${sentCount} guests!\n\n`;
   guests.slice(0, 5).forEach((g) => {
-    message += `📧 ${g.name}: ${g.trackingLink}\n`;
+    if (g.invitationLink) {
+      message += `📧 ${g.name}: ${g.invitationLink}\n`;
+    }
   });
   if (guests.length > 5) message += `\n... and ${guests.length - 5} more.`;
   alert(message);
+
+  showNotification(`${sentCount} invitation links generated!`, "success");
 }
 
 // ============================================
@@ -241,10 +342,27 @@ function clearGuestForm() {
 
 function removeGuest(id) {
   if (!confirm("Remove this guest?")) return;
-  guests = guests.filter((g) => g.id !== id && g._id !== id);
-  saveGuestsToStorage();
-  renderGuestList();
-  showNotification("Guest removed", "success");
+
+  // FIXED: Delete from API first if logged in
+  const token = getAuthToken();
+  if (token) {
+    apiRequest(`/invitation-guests/${id}`, { method: "DELETE" })
+      .then(() => {
+        guests = guests.filter((g) => g._id !== id && g.id !== id);
+        saveGuestsToStorage();
+        renderGuestList();
+        showNotification("Guest removed", "success");
+      })
+      .catch((err) => {
+        console.error("Error deleting guest:", err);
+        showNotification("Failed to delete guest", "error");
+      });
+  } else {
+    guests = guests.filter((g) => g.id !== id && g._id !== id);
+    saveGuestsToStorage();
+    renderGuestList();
+    showNotification("Guest removed", "success");
+  }
 }
 
 function copyTrackingLink(link) {
@@ -257,17 +375,26 @@ function renderGuestList() {
   const guestCountSpan = document.getElementById("guestCount");
 
   if (!tbody) return;
-  guestCountSpan.textContent = guests.length;
+
+  console.log("Rendering guest list, count:", guests.length);
+
+  if (guestCountSpan) guestCountSpan.textContent = guests.length;
 
   if (guests.length === 0) {
-    tbody.innerHTML =
-      '<tr><td colspan="5" style="text-align:center; padding:2rem;">No guests added yet</td></tr>';
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="5" style="text-align:center; padding:2rem;">
+          No guests added yet
+        </td>
+      </tr>
+    `;
     return;
   }
 
   tbody.innerHTML = guests
     .map((guest) => {
-      const trackingLink = guest.invitationLink || guest.trackingLink;
+      const trackingLink = guest.invitationLink;
+      const guestId = guest._id || guest.id;
       return `
       <tr>
         <td title="${escapeHtml(guest.name)}">${escapeHtml(guest.name)}</td>
@@ -277,12 +404,16 @@ function renderGuestList() {
           ${
             trackingLink
               ? `<span class="tracking-link-cell" onclick="copyTrackingLink('${trackingLink}')" style="cursor:pointer;color:var(--wed-primary);">
-                ${trackingLink.substring(0, 40)}...
-               </span>`
+              ${trackingLink.substring(0, 40)}...
+            </span>`
               : '<span style="color:var(--wed-text);">Not sent</span>'
           }
         </td>
-        <td><span class="status-badge status-${guest.status}">${guest.status}</span></td>
+        <td>
+          <span class="status-badge status-${guest.status || "pending"}">
+            ${guest.status || "pending"}
+          </span>
+        </td>
       </tr>
     `;
     })
@@ -290,6 +421,7 @@ function renderGuestList() {
 }
 
 function escapeHtml(text) {
+  if (!text) return "";
   const div = document.createElement("div");
   div.textContent = text;
   return div.innerHTML;
@@ -333,7 +465,7 @@ function parseCSVLocally(file) {
         const name = parts[0].trim().replace(/^"|"$/g, "");
         const email = parts[1].trim().replace(/^"|"$/g, "");
 
-        if (name && email) {
+        if (name && email && email.includes("@")) {
           newGuests.push({
             name: name,
             email: email,
@@ -364,7 +496,7 @@ async function bulkAddGuestsToMongoDB(guestsArray) {
         id: Date.now() + Math.random(),
         ...g,
         status: "pending",
-        trackingLink: null,
+        invitationLink: null,
       }));
       guests.push(...newGuests);
       saveGuestsToStorage();
@@ -376,7 +508,8 @@ async function bulkAddGuestsToMongoDB(guestsArray) {
       return;
     }
 
-    const result = await apiRequest("/guests/bulk", {
+    // FIXED: Use /invitation-guests/bulk
+    const result = await apiRequest("/invitation-guests/bulk", {
       method: "POST",
       body: JSON.stringify({ guests: guestsArray }),
     });
@@ -388,7 +521,7 @@ async function bulkAddGuestsToMongoDB(guestsArray) {
     );
   } catch (error) {
     console.error("Error bulk adding guests:", error);
-    showNotification("Failed to add guests", "error");
+    showNotification("Failed to add guests: " + error.message, "error");
   }
 }
 
@@ -421,7 +554,14 @@ function exportGuestList() {
     return;
   }
 
-  const headers = ["Name", "Email", "Phone", "Status", "RSVP Status"];
+  const headers = [
+    "Name",
+    "Email",
+    "Phone",
+    "Status",
+    "RSVP Status",
+    "Invitation Link",
+  ];
   const csvRows = [headers.join(",")];
 
   guests.forEach((guest) => {
@@ -429,8 +569,9 @@ function exportGuestList() {
       `"${guest.name}"`,
       `"${guest.email}"`,
       `"${guest.phone || ""}"`,
-      guest.status,
+      guest.status || "pending",
       guest.rsvpStatus || "pending",
+      `"${guest.invitationLink || ""}"`,
     ];
     csvRows.push(row.join(","));
   });
@@ -446,7 +587,7 @@ function exportGuestList() {
 }
 
 // ============================================
-// Clear All Guests
+// Clear All Guests - FIXED
 // ============================================
 async function clearAllGuests() {
   if (guests.length === 0) {
@@ -454,24 +595,70 @@ async function clearAllGuests() {
     return;
   }
 
-  if (!confirm(`Delete all ${guests.length} guests?`)) return;
+  if (!confirm(`Delete all ${guests.length} guests? This cannot be undone.`))
+    return;
 
   try {
     const token = getAuthToken();
+
     if (token) {
-      await apiRequest("/guests", { method: "DELETE" });
-      await loadGuestsFromMongoDB();
-    } else {
+      // Delete from database
+      await apiRequest("/invitation-guests", { method: "DELETE" });
+      console.log("All guests deleted from database");
+
+      // Clear local array
       guests = [];
-      saveGuestsToStorage();
+
+      // Clear localStorage
+      localStorage.removeItem("wedease_invitation_guests");
+
+      // Re-render the empty guest list
       renderGuestList();
+
+      // Hide stats section
+      const statsSection = document.getElementById("statsSection");
+      if (statsSection) statsSection.style.display = "none";
+
+      // Reset all stats displays to 0
+      const statTotal = document.getElementById("statTotal");
+      const statConfirmed = document.getElementById("statConfirmed");
+      const statPending = document.getElementById("statPending");
+      const statDeclined = document.getElementById("statDeclined");
+      const rsvpProgress = document.getElementById("rsvpProgress");
+      const progressText = document.getElementById("progressText");
+      const guestCountSpan = document.getElementById("guestCount");
+
+      if (statTotal) statTotal.textContent = "0";
+      if (statConfirmed) statConfirmed.textContent = "0";
+      if (statPending) statPending.textContent = "0";
+      if (statDeclined) statDeclined.textContent = "0";
+      if (rsvpProgress) rsvpProgress.style.width = "0%";
+      if (progressText) progressText.textContent = "0% response rate";
+      if (guestCountSpan) guestCountSpan.textContent = "0";
+
+      showNotification("All guests cleared from database!", "success");
+
+      // Force a reload from database to ensure consistency
+      setTimeout(async () => {
+        await loadGuestsFromMongoDB();
+      }, 500);
+    } else {
+      // Local storage fallback
+      guests = [];
+      localStorage.removeItem("wedease_invitation_guests");
+      renderGuestList();
+
+      const statsSection = document.getElementById("statsSection");
+      if (statsSection) statsSection.style.display = "none";
+
+      const guestCountSpan = document.getElementById("guestCount");
+      if (guestCountSpan) guestCountSpan.textContent = "0";
+
+      showNotification("All guests cleared from local storage", "success");
     }
-    const statsSection = document.getElementById("statsSection");
-    if (statsSection) statsSection.style.display = "none";
-    showNotification("All guests cleared", "success");
   } catch (error) {
     console.error("Error clearing guests:", error);
-    showNotification("Failed to clear guests", "error");
+    showNotification("Failed to clear guests: " + error.message, "error");
   }
 }
 
@@ -488,7 +675,11 @@ function updatePreview() {
     "Join us as we begin our new journey together";
 
   const previewCard = document.getElementById("previewCard");
-  if (previewCard) previewCard.className = `invitation-card ${theme}`;
+  if (previewCard) {
+    // Remove existing theme classes
+    previewCard.className = "invitation-card";
+    previewCard.classList.add(theme);
+  }
 
   const previewCouple = document.getElementById("previewCouple");
   if (previewCouple) previewCouple.textContent = couple;
@@ -512,27 +703,20 @@ function updatePreview() {
       previewDate.textContent = "Date TBD";
     }
   }
-
-  const divider = document.getElementById("previewDivider");
-  if (divider) {
-    if (theme === "modern") {
-      divider.innerHTML = '<span class="divider-dot"></span>';
-    } else if (theme === "garden") {
-      divider.innerHTML = '<span class="divider-leaf">✦</span>';
-    } else {
-      divider.innerHTML = "";
-    }
-  }
 }
 
 // ============================================
 // Statistics
 // ============================================
 function updateStats() {
-  const total = guests.filter(
-    (g) => g.status === "sent" || g.status === "responded",
+  const total = guests.length;
+  const responded = guests.filter(
+    (g) => g.status === "responded" || g.rsvpStatus === "confirmed",
   ).length;
-  const responded = guests.filter((g) => g.status === "responded").length;
+  const pending = guests.filter(
+    (g) => g.status === "sent" && (!g.rsvpStatus || g.rsvpStatus === "pending"),
+  ).length;
+  const declined = guests.filter((g) => g.rsvpStatus === "declined").length;
 
   const statTotal = document.getElementById("statTotal");
   const statConfirmed = document.getElementById("statConfirmed");
@@ -543,8 +727,8 @@ function updateStats() {
 
   if (statTotal) statTotal.textContent = total;
   if (statConfirmed) statConfirmed.textContent = responded;
-  if (statPending) statPending.textContent = total - responded;
-  if (statDeclined) statDeclined.textContent = 0;
+  if (statPending) statPending.textContent = pending;
+  if (statDeclined) statDeclined.textContent = declined;
 
   const percentage = total > 0 ? (responded / total) * 100 : 0;
   if (rsvpProgress) rsvpProgress.style.width = `${percentage}%`;
@@ -643,51 +827,6 @@ style.textContent = `@keyframes slideIn{from{transform:translateX(100%);opacity:
 document.head.appendChild(style);
 
 // ============================================
-// Sync Header with Auth (like theme page)
-// ============================================
-function syncHeaderWithAuth() {
-  const currentUser = sessionStorage.getItem("wedease_current");
-  const headerRight = document.querySelector(".header-right");
-  
-  if (!headerRight) return;
-  
-  const loginBtn = headerRight.querySelector(".login-btn");
-  const existingUserLabel = document.getElementById("user-label");
-  
-  if (currentUser) {
-    // Hide login button
-    if (loginBtn) loginBtn.style.display = "none";
-    
-    // Add user label if not exists
-    if (!existingUserLabel) {
-      const userLabel = document.createElement("button");
-      userLabel.id = "user-label";
-      userLabel.className = "login-btn";
-      userLabel.innerHTML = `
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-          <circle cx="12" cy="7" r="4" />
-        </svg>
-        ${currentUser.split("@")[0]}
-      `;
-      userLabel.onclick = () => {
-        if (confirm("Sign out?")) {
-          sessionStorage.removeItem("wedease_current");
-          localStorage.removeItem("token");
-          localStorage.removeItem("user");
-          window.location.href = "login.html";
-        }
-      };
-      headerRight.appendChild(userLabel);
-    }
-  } else {
-    // Show login button
-    if (loginBtn) loginBtn.style.display = "flex";
-    if (existingUserLabel) existingUserLabel.remove();
-  }
-}
-
-// ============================================
 // Make functions global for HTML onclick
 // ============================================
 window.addGuest = addGuest;
@@ -699,35 +838,18 @@ window.copyTrackingLink = copyTrackingLink;
 window.removeGuest = removeGuest;
 
 // ============================================
-// SINGLE Initialize - FIXED (no duplicate)
+// Initialize
 // ============================================
 document.addEventListener("DOMContentLoaded", () => {
   console.log("🚀 Invitation page loaded");
 
-  // Sync header with auth
-  syncHeaderWithAuth();
-  
   setupCSVUpload();
 
-  // Check AuthManager's sessionStorage (same as theme page)
-  const currentUser = sessionStorage.getItem("wedease_current");
-
-  console.log("Current user from sessionStorage:", currentUser);
+  const currentUser = getCurrentUser();
+  console.log("Current user:", currentUser);
 
   if (currentUser) {
-    console.log("✅ User logged in via AuthManager:", currentUser);
-    // Also set localStorage for API compatibility
-    if (!localStorage.getItem("token")) {
-      localStorage.setItem("token", "auth-token-" + Date.now());
-      localStorage.setItem(
-        "user",
-        JSON.stringify({
-          id: currentUser,
-          email: currentUser,
-          name: currentUser.split("@")[0],
-        }),
-      );
-    }
+    console.log("✅ User logged in:", currentUser.email);
     loadGuestsFromMongoDB();
   } else {
     console.log("🔓 No user logged in, using localStorage mode");
