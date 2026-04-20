@@ -33,30 +33,48 @@ const validateLoginPassword = (password) => {
 
 const validateUserLogin = (req, res, next) => {
   const { email, password } = req.body;
+  const normalizedEmail = typeof email === "string" ? email.trim() : "";
 
-  if (!email) return res.status(400).json({ message: "Email is required" });
-  if (!validator.isEmail(email))
+  if (!normalizedEmail)
+    return res.status(400).json({ message: "Email is required" });
+  if (!validator.isEmail(normalizedEmail))
     return res.status(400).json({ message: "Invalid email format" });
 
   const passwordError = validateLoginPassword(password);
   if (passwordError) return res.status(400).json({ message: passwordError });
 
+  req.body.email = normalizedEmail;
   next();
 };
 
 const validateUserRegistration = (req, res, next) => {
   const { username, password, email } = req.body;
+  const normalizedUsername = typeof username === "string" ? username.trim() : "";
+  const normalizedEmail = typeof email === "string" ? email.trim() : "";
 
-  const usernameError = validateUsername(username);
+  if (!normalizedUsername) {
+    return res.status(400).json({ message: "Username is required" });
+  }
+
+  if (!normalizedEmail) {
+    return res.status(400).json({ message: "Email is required" });
+  }
+
+  if (typeof password !== "string" || !password.trim()) {
+    return res.status(400).json({ message: "Password is required" });
+  }
+
+  const usernameError = validateUsername(normalizedUsername);
   if (usernameError) return res.status(400).json({ message: usernameError });
 
   const passwordError = validatePassword(password);
   if (passwordError) return res.status(400).json({ message: passwordError });
 
-  if (!email) return res.status(400).json({ message: "Email is required" });
-  if (!validator.isEmail(email))
+  if (!validator.isEmail(normalizedEmail))
     return res.status(400).json({ message: "Invalid email format" });
 
+  req.body.username = normalizedUsername;
+  req.body.email = normalizedEmail;
   next();
 };
 
