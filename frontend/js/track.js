@@ -7,6 +7,22 @@
  *******************************************************/
 
 /* ==============================
+   API CONFIG
+============================== */
+const API_BASE = 'http://127.0.0.1:5000';
+
+function getAuthToken() {
+    return localStorage.getItem('wedease_auth_token') || sessionStorage.getItem('wedease_auth_token');
+}
+
+function authHeaders() {
+    return {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${getAuthToken()}`
+    };
+}
+
+/* ==============================
    DATA STORAGE
 ============================== */
 let guests = [];
@@ -16,11 +32,16 @@ let gifts = [];
 let editingGuestId = null;
 let editingGiftId = null;
 
-const STORAGE_KEYS = {
-    GUESTS: "wedease_guests",
-    GIFTS: "wedease_gifts",
-    SEATING: "wedease_seating"
-};
+// Seating stays in localStorage — it's a layout preference, not critical data
+const SEATING_KEY = "wedease_seating";
+
+function saveSeating() {
+    localStorage.setItem(SEATING_KEY, JSON.stringify(seatingTables));
+}
+
+function loadSeating() {
+    seatingTables = JSON.parse(localStorage.getItem(SEATING_KEY) || "[]");
+}
 
 /* ==============================
    UTILITIES
@@ -45,16 +66,47 @@ function showError(msg) {
     setTimeout(() => el.classList.remove("show"), 3000);
 }
 
-function saveState() {
-    localStorage.setItem(STORAGE_KEYS.GUESTS, JSON.stringify(guests));
-    localStorage.setItem(STORAGE_KEYS.GIFTS, JSON.stringify(gifts));
-    localStorage.setItem(STORAGE_KEYS.SEATING, JSON.stringify(seatingTables));
-}
+/* ==============================
+   LOAD STATE FROM DB
+============================== */
+async function loadState() {
+    loadSeating();
 
-function loadState() {
-    guests = JSON.parse(localStorage.getItem(STORAGE_KEYS.GUESTS) || "[]");
-    gifts = JSON.parse(localStorage.getItem(STORAGE_KEYS.GIFTS) || "[]");
-    seatingTables = JSON.parse(localStorage.getItem(STORAGE_KEYS.SEATING) || "[]");
+    const token = getAuthToken();
+    if (!token) {
+        // Not logged in — start with empty arrays
+        guests = [];
+        gifts = [];
+        return;
+    }
+
+    try {
+        const [gRes, gifRes] = await Promise.all([
+            fetch(`${API_BASE}/api/guests`, { headers: authHeaders() }),
+            fetch(`${API_BASE}/api/gifts`, { headers: authHeaders() })
+        ]);
+
+        const gData = await gRes.json();
+        const gifData = await gifRes.json();
+
+        if (gData.success) {
+            // Map _id -> id so all existing code works unchanged
+            guests = gData.data.map(g => ({ ...g, id: g._id.toString() }));
+        } else {
+            guests = [];
+        }
+
+        if (gifData.success) {
+            gifts = gifData.data.map(g => ({ ...g, id: g._id.toString() }));
+        } else {
+            gifts = [];
+        }
+    } catch (err) {
+        console.error("Failed to load from DB:", err);
+        guests = [];
+        gifts = [];
+        showError("Could not connect to server. Check your backend is running.");
+    }
 }
 
 /* ==============================
@@ -169,29 +221,50 @@ function getGuestGroupValue() {
     return selectVal || "";
 }
 
-function saveGuest() {
+async function saveGuest() {
     const name = $("guestName").value.trim();
     if (!name) return showError("Guest name is required");
 
     const group = getGuestGroupValue();
     const rsvp = $("guestRSVP").value || "pending";
 
-    const guestData = {
-        id: editingGuestId || ("g_" + Date.now()),
-        name,
-        group,
-        rsvp,
-        seatTableId: null,
-        seatZone: null
-    };
-
-    if (editingGuestId) {
-        const index = guests.findIndex(x => x.id === editingGuestId);
-        if (index !== -1) guests[index] = guestData;
-        showSuccess("Guest updated");
-    } else {
-        guests.push(guestData);
-        showSuccess("Guest added");
+    try {
+        if (editingGuestId) {
+            const res = await fetch(`${API_BASE}/api/guests/${editingGuestId}`, {
+                method: 'PUT',
+                headers: authHeaders(),
+                body: JSON.stringify({ name, group, rsvp })
+            });
+            const data = await res.json();
+            if (data.success) {
+                const index = guests.findIndex(x => x.id === editingGuestId);
+                if (index !== -1) {
+                    guests[index] = { ...data.data, id: data.data._id.toString() };
+                }
+                showSuccess("Guest updated");
+            } else {
+                showError(data.message || "Failed to update guest");
+                return;
+            }
+        } else {
+            const res = await fetch(`${API_BASE}/api/guests`, {
+                method: 'POST',
+                headers: authHeaders(),
+                body: JSON.stringify({ name, group, rsvp })
+            });
+            const data = await res.json();
+            if (data.success) {
+                guests.push({ ...data.data, id: data.data._id.toString() });
+                showSuccess("Guest added");
+            } else {
+                showError(data.message || "Failed to add guest");
+                return;
+            }
+        }
+    } catch (err) {
+        console.error("saveGuest error:", err);
+        showError("Could not save guest. Check your connection.");
+        return;
     }
 
     editingGuestId = null;
@@ -199,14 +272,25 @@ function saveGuest() {
     refresh();
 }
 
-function deleteGuest(id) {
+async function deleteGuest(id) {
     if (!confirm("Delete this guest?")) return;
+
+    try {
+        await fetch(`${API_BASE}/api/guests/${id}`, {
+            method: 'DELETE',
+            headers: authHeaders()
+        });
+    } catch (err) {
+        console.error("deleteGuest error:", err);
+    }
+
     guests = guests.filter(g => g.id !== id);
 
     // Remove from seating
     seatingTables.forEach(t => {
         t.guests = t.guests.filter(gid => gid !== id);
     });
+    saveSeating();
 
     refresh();
     showSuccess("Guest deleted");
@@ -317,11 +401,12 @@ function renderGuestList() {
 /* ==============================
    CSV IMPORT (Name, Group, RSVP)
 ============================== */
-function importGuestsCSV(file) {
+async function importGuestsCSV(file) {
     const reader = new FileReader();
-    reader.onload = function (e) {
+    reader.onload = async function (e) {
         const lines = e.target.result.split(/\r?\n/);
         let count = 0;
+        const promises = [];
 
         lines.forEach((line, i) => {
             if (!line.trim()) return;
@@ -339,19 +424,24 @@ function importGuestsCSV(file) {
             if (rsvpRaw.startsWith("y")) rsvp = "yes";
             else if (rsvpRaw.startsWith("n") || rsvpRaw.startsWith("d")) rsvp = "no";
 
-            const g = {
-                id: "g_" + Date.now() + "_" + Math.random(),
-                name,
-                group,
-                rsvp,
-                seatTableId: null,
-                seatZone: null
-            };
+            const p = fetch(`${API_BASE}/api/guests`, {
+                method: 'POST',
+                headers: authHeaders(),
+                body: JSON.stringify({ name, group, rsvp })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    guests.push({ ...data.data, id: data.data._id.toString() });
+                    count++;
+                }
+            })
+            .catch(err => console.error("CSV import row failed:", err));
 
-            guests.push(g);
-            count++;
+            promises.push(p);
         });
 
+        await Promise.all(promises);
         showSuccess(`Imported ${count} guests`);
         refresh();
     };
@@ -396,7 +486,7 @@ function parseCSV(line) {
 /* ==============================
    SEATING CHART – ZONES A / C / B
 ============================== */
-function deleteAllGuests() {
+async function deleteAllGuests() {
     if (!guests.length) {
         return showError("No guests to delete");
     }
@@ -405,9 +495,23 @@ function deleteAllGuests() {
         return;
     }
 
+    try {
+        await Promise.all(
+            guests.map(g =>
+                fetch(`${API_BASE}/api/guests/${g.id}`, {
+                    method: 'DELETE',
+                    headers: authHeaders()
+                })
+            )
+        );
+    } catch (err) {
+        console.error("deleteAllGuests error:", err);
+    }
+
     guests = [];
     seatingTables = [];
     gifts = gifts.filter(gift => !gift.guestId);
+    saveSeating();
 
     refresh();
     showSuccess("All guests have been deleted");
@@ -485,6 +589,7 @@ function generateSeating() {
     });
 
     updateGuestSeats();
+    saveSeating();
     renderSeating();
     showSuccess("Seating plan generated");
 }
@@ -541,17 +646,16 @@ function renderSeating() {
 
         // TABLE IMAGE INSTEAD OF CIRCLE
         const tableImg = document.createElement("img");
-        tableImg.src = "../../assets/img/track/table.png";   // your table image
+        tableImg.src = "../../assets/img/track/table.png";
         tableImg.className = "table-img";
         tableEl.appendChild(tableImg);
 
-
         const totalSeats = table.capacity || 10;
-        const centerX = 100; // half of 150
+        const centerX = 100;
         const centerY = 100;
         const radius = 60;
         for (let i = 0; i < totalSeats; i++) {
-            const angle = -Math.PI / 2 + (2 * Math.PI * i) / totalSeats; 
+            const angle = -Math.PI / 2 + (2 * Math.PI * i) / totalSeats;
             const seatX = centerX + radius * Math.cos(angle);
             const seatY = centerY + radius * Math.sin(angle);
             const chair = document.createElement("div");
@@ -569,7 +673,7 @@ function renderSeating() {
             }
             const img = document.createElement("img");
             img.className = "chair-img";
-            img.src = "../../assets/img/track/chair.png"; 
+            img.src = "../../assets/img/track/chair.png";
             chair.appendChild(nameSpan);
             chair.appendChild(img);
             tableEl.appendChild(chair);
@@ -603,15 +707,17 @@ function toggleGiftCustomInput() {
         wrapper.classList.add("hidden");
     }
 }
+
 /* ==============================
    IMPORT GIFTS CSV
    Format: GiftType, FromName, Value
 ============================== */
-function importGiftsCSV(file) {
+async function importGiftsCSV(file) {
     const reader = new FileReader();
-    reader.onload = function (e) {
+    reader.onload = async function (e) {
         const lines = e.target.result.split(/\r?\n/);
         let count = 0;
+        const promises = [];
 
         lines.forEach((line, i) => {
             if (!line.trim()) return;
@@ -625,29 +731,38 @@ function importGiftsCSV(file) {
             if (!type || isNaN(value)) return;
 
             // match guest by name (optional)
-            let guestId = "";
+            let guestId = null;
             if (fromName) {
                 const g = guests.find(gg => gg.name.toLowerCase() === fromName.toLowerCase());
                 if (g) guestId = g.id;
             }
 
-            gifts.push({
-                id: "gift_" + Date.now() + "_" + Math.random(),
-                type,
-                budget: value,
-                guestId
-            });
+            const p = fetch(`${API_BASE}/api/gifts`, {
+                method: 'POST',
+                headers: authHeaders(),
+                body: JSON.stringify({ type, budget: value, guestId })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    gifts.push({ ...data.data, id: data.data._id.toString() });
+                    count++;
+                }
+            })
+            .catch(err => console.error("Gift CSV import row failed:", err));
 
-            count++;
+            promises.push(p);
         });
 
+        await Promise.all(promises);
         showSuccess(`Imported ${count} gifts`);
         refresh();
     };
 
     reader.readAsText(file);
 }
-function deleteAllGifts() {
+
+async function deleteAllGifts() {
     if (!gifts.length) {
         return showError("No gifts to delete");
     }
@@ -656,38 +771,77 @@ function deleteAllGifts() {
         return;
     }
 
+    try {
+        await Promise.all(
+            gifts.map(g =>
+                fetch(`${API_BASE}/api/gifts/${g.id}`, {
+                    method: 'DELETE',
+                    headers: authHeaders()
+                })
+            )
+        );
+    } catch (err) {
+        console.error("deleteAllGifts error:", err);
+    }
+
     gifts = [];
-    saveState();
     refresh();
     showSuccess("All gifts have been deleted");
 }
 
-function saveGift() {
+async function saveGift() {
     const typeSelect = $("giftType");
     const customType = $("giftTypeCustom").value.trim();
     const budgetValue = $("giftBudget").value;
     const budget = parseFloat(budgetValue);
-    const guestId = $("giftGuest").value;
+    const guestId = $("giftGuest").value || null;
+
     if (isNaN(budget)) return showError("Please enter a valid amount");
+
     let type;
     if (typeSelect.value === "other") {
         type = customType || "Other";
     } else {
         type = typeSelect.value;
     }
-    const gift = {
-        id: editingGiftId || ("gift_" + Date.now()),
-        type,
-        budget,
-        guestId
-    };
-    if (editingGiftId) {
-        const index = gifts.findIndex(g => g.id === editingGiftId);
-        if (index !== -1) gifts[index] = gift;
-        showSuccess("Gift updated");
-    } else {
-        gifts.push(gift);
-        showSuccess("Gift added");
+
+    try {
+        if (editingGiftId) {
+            const res = await fetch(`${API_BASE}/api/gifts/${editingGiftId}`, {
+                method: 'PUT',
+                headers: authHeaders(),
+                body: JSON.stringify({ type, budget, guestId })
+            });
+            const data = await res.json();
+            if (data.success) {
+                const index = gifts.findIndex(g => g.id === editingGiftId);
+                if (index !== -1) {
+                    gifts[index] = { ...data.data, id: data.data._id.toString() };
+                }
+                showSuccess("Gift updated");
+            } else {
+                showError(data.message || "Failed to update gift");
+                return;
+            }
+        } else {
+            const res = await fetch(`${API_BASE}/api/gifts`, {
+                method: 'POST',
+                headers: authHeaders(),
+                body: JSON.stringify({ type, budget, guestId })
+            });
+            const data = await res.json();
+            if (data.success) {
+                gifts.push({ ...data.data, id: data.data._id.toString() });
+                showSuccess("Gift added");
+            } else {
+                showError(data.message || "Failed to add gift");
+                return;
+            }
+        }
+    } catch (err) {
+        console.error("saveGift error:", err);
+        showError("Could not save gift. Check your connection.");
+        return;
     }
 
     editingGiftId = null;
@@ -695,8 +849,18 @@ function saveGift() {
     refresh();
 }
 
-function deleteGift(id) {
+async function deleteGift(id) {
     if (!confirm("Delete this gift?")) return;
+
+    try {
+        await fetch(`${API_BASE}/api/gifts/${id}`, {
+            method: 'DELETE',
+            headers: authHeaders()
+        });
+    } catch (err) {
+        console.error("deleteGift error:", err);
+    }
+
     gifts = gifts.filter(g => g.id !== id);
     refresh();
     showSuccess("Gift deleted");
@@ -725,9 +889,9 @@ function renderGiftList() {
 
         const tr = document.createElement("tr");
         tr.innerHTML = `
-            <td>${gift.type}</td>
             <td>${from}</td>
-            <td>$${gift.budget.toFixed(2)}</td>
+            <td>${gift.type}</td>
+            <td>$${(gift.budget || 0).toFixed(2)}</td>
             <td>
                 <button class="icon-btn" title="Edit gift" onclick="openGiftModal('${gift.id}')"><img
                                         src="../../assets/img/track/edit.png" alt="" class="entrance-icon edit-icon"></button>
@@ -757,8 +921,8 @@ function updateStats() {
     $("rsvpNo").textContent = no;
 
     $("giftCount").textContent = gifts.length;
-     $("statGifts").textContent = gifts.length;
-    const totalValue = gifts.reduce((s, g) => s + g.budget, 0);
+    $("statGifts").textContent = gifts.length;
+    const totalValue = gifts.reduce((s, g) => s + (g.budget || 0), 0);
     $("giftTotalAmount").textContent = "$" + totalValue.toFixed(2);
     $("statBudget").textContent = "$" + totalValue.toFixed(2);
 }
@@ -783,14 +947,14 @@ function refresh() {
     renderGiftList();
     renderSeating();
     updateStats();
-    saveState();
+    // Note: seating is saved explicitly when changed, not on every refresh
 }
 
 /* ==============================
    INIT
 ============================== */
-document.addEventListener("DOMContentLoaded", () => {
-    loadState();
+document.addEventListener("DOMContentLoaded", async () => {
+    await loadState();
     refresh();
 
     // Import CSV
@@ -815,6 +979,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 g.seatTableId = null;
                 g.seatZone = null;
             });
+            saveSeating();
             refresh();
         }
     });
@@ -841,10 +1006,10 @@ document.addEventListener("DOMContentLoaded", () => {
             e.target.value = "";
         });
     }
-    // Delete All Gifts
+
+    // Delete All buttons
     $("btnDeleteAllGifts")?.addEventListener("click", deleteAllGifts);
-
-
+    $("btnDeleteAllGuests")?.addEventListener("click", deleteAllGuests);
 });
 
 /* ==============================

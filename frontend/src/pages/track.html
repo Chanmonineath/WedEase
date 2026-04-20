@@ -48,7 +48,6 @@
             <span>Login</span>
           </a>
           
-          <!-- Mobile Menu Button (Hamburger) -->
           <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">
             <div class="hamburger" id="hamburger">
               <span></span>
@@ -90,20 +89,20 @@
         <!-- STATS -->
         <div class="track-stats">
           <div class="stat-card">
-            <div class="curve-font stat-number" id="statGuests">0</div>
-            <div class="stat-label curve-font">Guests</div>
+            <span class="stat-number" id="statGuests">0</span>
+            <span class="stat-label">Guests</span>
           </div>
           <div class="stat-card">
-            <div class="stat-number curve-font" id="statConfirmed">0</div>
-            <div class="stat-label curve-font">Confirmed</div>
+            <span class="stat-number" id="statConfirmed">0</span>
+            <span class="stat-label">Confirmed</span>
           </div>
           <div class="stat-card">
-            <div class="stat-number curve-font" id="statGifts">0</div>
-            <div class="stat-label curve-font">Gifts Tracked</div>
+            <span class="stat-number" id="statGifts">0</span>
+            <span class="stat-label">Gifts Tracked</span>
           </div>
           <div class="stat-card">
-            <div class="stat-number curve-font" id="statBudget">$0</div>
-            <div class="stat-label curve-font">Gift Value</div>
+            <span class="stat-number" id="statBudget">$0</span>
+            <span class="stat-label">Gift Value</span>
           </div>
         </div>
 
@@ -167,89 +166,6 @@
             </div>
           </div>
 
-          <!-- Seating Chart -->
-          <div class="feature-box">
-            <h3 class="head-title">
-              <img class="head-icon" src="../../assets/img/track/seatingchart.png" alt="" />
-              <span>Seating Chart</span>
-            </h3>
-            <p>
-              Design a beautiful full-ballroom seating plan featuring three meaningful zones:
-              <b>Zone A</b> for guests on the left, VIP <b>Zone C</b> at the center for your
-              closest loved ones, and <b>Zone B</b> on the right.
-              <br /><i>Only confirmed guests are seated.</i>
-            </p>
-
-            <div class="seating-controls">
-              <label for="tableCapacity">Guests per table:</label>
-              <input id="tableCapacity" type="number" min="1" max="10" value="10" class="capacity-input" />
-            </div>
-
-            <div class="btn-row">
-              <button id="btnGenerateSeating" class="form-btn">Generate Seating Plan</button>
-              <button id="btnResetSeating" class="form-btn btn-danger">Delete all Seating Plan</button>
-            </div>
-
-            <div class="rsvp-summary">
-              Total Tables: <strong id="tableCount">0</strong> |
-              Total Seats: <strong id="seatedCount">0</strong>
-            </div>
-
-            <!-- Ballroom Layout -->
-            <div id="ballroomLayout" class="ballroom-layout">
-              <div class="ballroom-top">
-                <div class="ballroom-top-label entrance-label">
-                  <img src="../../assets/img/track/ballroom.png" alt="" class="entrance-icon" />
-                  <span>Ballroom Entrance</span>
-                </div>
-                <div class="ballroom-top-label entrance-label">
-                  <img src="../../assets/img/track/stage.png" alt="" class="entrance-icon" />
-                  <span>Stage</span>
-                </div>
-                <div class="ballroom-top-label entrance-label">
-                  <img src="../../assets/img/track/dj.png" alt="" class="entrance-icon" />
-                  <span>DJ</span>
-                </div>
-              </div>
-
-              <div class="ballroom-middle">
-                <div class="zone-column">
-                  <div class="zone-title">Zone A</div>
-                  <div id="zoneA" class="zone-grid"></div>
-                </div>
-                <div class="zone-column">
-                  <div class="center-column-inner">
-                    <div class="center-box entrance-label">
-                      <img src="../../assets/img/track/cake.png" alt="" class="entrance-icon" />
-                      <span>Cake Table</span>
-                    </div>
-                    <div class="center-box entrance-label">
-                      <img src="../../assets/img/track/dancefloor.png" alt="" class="entrance-icon" />
-                      <span>Dance Floor</span>
-                    </div>
-                    <div class="zone-title">Zone C – VIP</div>
-                    <div id="zoneC" class="zone-grid"></div>
-                  </div>
-                </div>
-                <div class="zone-column">
-                  <div class="zone-title">Zone B</div>
-                  <div id="zoneB" class="zone-grid"></div>
-                </div>
-              </div>
-
-              <div class="ballroom-bottom">
-                <div class="ballroom-bottom-label entrance-label">
-                  <img src="../../assets/img/track/gifttable.png" alt="" class="entrance-icon" />
-                  <span>Gift Table</span>
-                </div>
-                <div class="ballroom-bottom-label entrance-label">
-                  <img src="../../assets/img/track/exit.png" alt="" class="entrance-icon" />
-                  <span>Exit</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
           <!-- Gift Registry -->
           <div class="feature-box">
             <h3 class="head-title">
@@ -277,8 +193,8 @@
               <table>
                 <thead>
                   <tr>
-                    <th>Gift Type</th>
                     <th>From</th>
+                    <th>Gift Type</th>
                     <th>Value</th>
                     <th></th>
                   </tr>
@@ -304,7 +220,6 @@
           <ul>
             <li><a href="../../index.html">Home</a></li>
             <li><a href="about.html">About</a></li>
-            <!-- <li><a href="budget.html">Budget</a></li> -->
             <li><a href="theme.html">Theme</a></li>
             <li><a href="track.html">Track</a></li>
           </ul>
@@ -333,62 +248,87 @@
 
   </div><!-- /#app -->
 
-  <!-- GUEST MODAL -->
+  <!-- ═══════════════════════════════════════
+       GUEST MODAL — no auth-card class
+  ═══════════════════════════════════════ -->
   <div id="guestModal" class="modal hidden">
-    <div class="auth-card modal-card">
-      <h3>Guest</h3>
-      <label>Name *</label>
-      <input id="guestName" placeholder="Enter guest name" />
-      <label>Group</label>
-      <select id="guestGroupSelect" class="modal-select">
-        <option value="">Select group</option>
-        <option value="Bride's Family">Bride's Family</option>
-        <option value="Classmates">Classmates</option>
-        <option value="Co-workers">Co-workers</option>
-        <option value="VIP">VIP</option>
-        <option value="__other">Other</option>
-      </select>
-      <div id="guestGroupCustomWrapper" class="hidden">
-        <label>Custom Group</label>
-        <input id="guestGroupCustom" placeholder="Enter group or family name" />
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Guest</h3>
       </div>
-      <label>RSVP Status</label>
-      <select id="guestRSVP" class="modal-select">
-        <option value="pending">Pending</option>
-        <option value="yes">Confirmed</option>
-        <option value="no">Declined</option>
-      </select>
+      <div class="modal-body">
+        <div class="modal-field">
+          <label for="guestName">Name <span class="required">*</span></label>
+          <input id="guestName" type="text" placeholder="Enter guest name" />
+        </div>
+        <div class="modal-field">
+          <label for="guestGroupSelect">Group</label>
+          <select id="guestGroupSelect">
+            <option value="">Select group</option>
+            <option value="Bride's Family">Bride's Family</option>
+            <option value="Classmates">Classmates</option>
+            <option value="Co-workers">Co-workers</option>
+            <option value="VIP">VIP</option>
+            <option value="__other">Other</option>
+          </select>
+        </div>
+        <div id="guestGroupCustomWrapper" class="modal-field hidden">
+          <label for="guestGroupCustom">Custom Group</label>
+          <input id="guestGroupCustom" type="text" placeholder="Enter group or family name" />
+        </div>
+        <div class="modal-field">
+          <label for="guestRSVP">RSVP Status</label>
+          <select id="guestRSVP">
+            <option value="pending">Pending</option>
+            <option value="yes">Confirmed</option>
+            <option value="no">Declined</option>
+          </select>
+        </div>
+      </div>
       <div class="modal-actions">
-        <button onclick="closeGuestModal()" class="form-btn btn-cancel">Cancel</button>
-        <button onclick="saveGuest()" class="form-btn">Save</button>
+        <button onclick="closeGuestModal()" class="modal-btn modal-btn-cancel">Cancel</button>
+        <button onclick="saveGuest()" class="modal-btn modal-btn-save">Save</button>
       </div>
     </div>
   </div>
 
-  <!-- GIFT MODAL -->
+  <!-- ═══════════════════════════════════════
+       GIFT MODAL — no auth-card class
+  ═══════════════════════════════════════ -->
   <div id="giftModal" class="modal hidden">
-    <div class="auth-card modal-card">
-      <h3>Gift</h3>
-      <label>Gift Type *</label>
-      <select id="giftType" class="modal-select">
-        <option value="money">Money</option>
-        <option value="jewelry">Jewelry</option>
-        <option value="household">Household Items</option>
-        <option value="other">Other</option>
-      </select>
-      <div id="giftTypeCustomWrapper" class="gift-type-custom hidden">
-        <label>Custom Gift Type</label>
-        <input id="giftTypeCustom" placeholder="e.g. Gold bracelet, Artwork" />
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Gift</h3>
       </div>
-      <label>From (Guest)</label>
-      <select id="giftGuest" class="modal-select">
-        <option value="">Select guest (optional)</option>
-      </select>
-      <label>Value ($) *</label>
-      <input id="giftBudget" type="number" min="0" step="0.01" placeholder="e.g. 50.00" />
+      <div class="modal-body">
+        <div class="modal-field">
+          <label for="giftType">Gift Type <span class="required">*</span></label>
+          <select id="giftType">
+            <option value="money">Money</option>
+            <option value="jewelry">Jewelry</option>
+            <option value="household">Household Items</option>
+            <option value="experience">Experience</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div id="giftTypeCustomWrapper" class="modal-field gift-type-custom hidden">
+          <label for="giftTypeCustom">Custom Gift Type</label>
+          <input id="giftTypeCustom" type="text" placeholder="e.g. Gold bracelet, Artwork" />
+        </div>
+        <div class="modal-field">
+          <label for="giftGuest">From (Guest)</label>
+          <select id="giftGuest">
+            <option value="">Select guest (optional)</option>
+          </select>
+        </div>
+        <div class="modal-field">
+          <label for="giftBudget">Value ($) <span class="required">*</span></label>
+          <input id="giftBudget" type="number" min="0" step="0.01" placeholder="e.g. 50.00" />
+        </div>
+      </div>
       <div class="modal-actions">
-        <button onclick="closeGiftModal()" class="form-btn btn-cancel">Cancel</button>
-        <button onclick="saveGift()" class="form-btn">Save</button>
+        <button onclick="closeGiftModal()" class="modal-btn modal-btn-cancel">Cancel</button>
+        <button onclick="saveGift()" class="modal-btn modal-btn-save">Save</button>
       </div>
     </div>
   </div>
