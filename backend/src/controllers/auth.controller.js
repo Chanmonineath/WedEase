@@ -1,130 +1,275 @@
-const User = require("../models/User");
-const { generateToken } = require("../utils/generateToken");
+const userModel = require("../models/auth/userModel");
+const profileModel = require("../models/profile/profileModel");
+const revokedTokenModel = require("../models/auth/revokedTokenModel");
+const authService = require("../services/authService");
+const { normalizeEmail } = require("../utils/email");
+const { getClient } = require("../config/db");
 
-const isProduction = process.env.NODE_ENV === "production";
+const getAuthCookieOptions = () => ({
+  httpOnly: true,
+  sameSite: "lax",
+  secure: process.env.NODE_ENV === "production",
+  maxAge: 7 * 24 * 60 * 60 * 1000,
+  path: "/",
+});
 
-const register = async (req, res, next) => {
+const register = async (req, res) => {
+  const client = getClient();
+  const session = client.startSession();
+
   try {
-    const { name, email, password, role } = req.body;
+    const { username, email, password } = req.body;
+    const normalizedEmail = normalizeEmail(email);
 
-    if (!name || !email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: "Name, email, and password are required.",
-      });
-    }
+    const existingUser = await userModel.findUserByEmail(normalizedEmail);
+    if (existingUser)
+      return res.status(409).json({ message: "Email already exists" });
 
-    if (password.length < 8) {
-      return res.status(400).json({
-        success: false,
-        message: "Password must be at least 8 characters.",
-      });
-    }
+    const hashedPassword = await authService.hashPassword(password);
 
-    const existingUser = await User.findUserByEmail(email);
+    const userId = await session.withTransaction(async () => {
+      const createdUserId = await userModel.createUser(
+        { username, email: normalizedEmail, password: hashedPassword },
+        { session },
+      );
 
-    if (existingUser) {
-      return res.status(409).json({
-        success: false,
-        message: "An account with this email already exists.",
-      });
-    }
+      await profileModel.createProfile(
+        createdUserId.toString(),
+        { displayName: username },
+        { session },
+      );
 
-    const createdUser = await User.createUser({
-      name,
-      email,
-      password,
-      role: role || "user",
+      return createdUserId;
     });
 
-    const token = generateToken({
-      userId: createdUser._id.toString(),
-      email: createdUser.email,
-      role: createdUser.role,
-    });
-
-    return res.status(201).json({
-      success: true,
-      message: "Account created successfully.",
-      token,
-      user: createdUser,
-    });
+    res.status(201).json({ userId });
   } catch (error) {
+    if (error?.code === 11000)
+      return res.status(409).json({ message: "Email already exists" });
     console.error("Registration error:", error);
-    return next(error);
+    res.status(500).json({ message: "Registration failed" });
+  } finally {
+    await session.endSession();
   }
 };
 
-const login = async (req, res, next) => {
+const login = async (req, res) => {
   try {
     const { email, password } = req.body;
+    const normalizedEmail = normalizeEmail(email);
 
-    if (!email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: "Email and password are required.",
-      });
-    }
+    const user = await userModel.findUserByEmail(normalizedEmail);
+    if (!user) return res.status(401).json({ message: "Invalid credentials" });
 
-    const user = await User.validateUserCredentials(email, password);
+    const isMatch = await authService.comparePassword(password, user.password);
+    if (!isMatch)
+      return res.status(401).json({ message: "Invalid credentials" });
 
-    if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: "Invalid email or password.",
-      });
-    }
+    const token = authService.generateToken(user);
 
-    const token = generateToken({
-      userId: user._id.toString(),
-      email: user.email,
-      role: user.role,
+    res.cookie("wedease_token", token, getAuthCookieOptions());
+
+    res.json({
+      token,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+      },
     });
+  } catch {
+    res.status(500).json({ message: "Login failed" });
+  }
+};
+
+// account recovery removed: keep auth endpoints minimal for registration/login flows
+
+const logout = async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    const token = req.authToken || authHeader?.split(" ")[1];
+
+    if (!token)
+      return res.status(200).json({ message: "Logged out successfully" });
+
+    let decoded = req.user;
+    if (!decoded) {
+      try {
+        decoded = authService.verifyToken(token);
+      } catch {
+        return res.status(200).json({ message: "Logged out successfully" });
+      }
+    }
+
+    const tokenHash = authService.hashToken(token);
+    const expiresAt = decoded.exp
+      ? new Date(decoded.exp * 1000)
+      : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+    await revokedTokenModel.revokeToken({
+      tokenHash,
+      userId: decoded.userId,
+      expiresAt,
+    });
+
+    res.clearCookie("wedease_token", {
+      ...getAuthCookieOptions(),
+      expires: new Date(0),
+    });
+
+    return res.status(200).json({ message: "Logged out successfully" });
+  } catch {
+    return res.status(500).json({ message: "Logout failed" });
+  }
+};
+
+// update email flow removed to keep authentication surface minimal
+
+const updatePassword = async (req, res) => {
+  const client = getClient();
+  const session = client.startSession();
+
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    const user = await userModel.findActiveUserById(req.user.userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const isCurrentPasswordMatch = await authService.comparePassword(
+      currentPassword,
+      user.password,
+    );
+    if (!isCurrentPasswordMatch)
+      return res.status(401).json({ message: "Invalid credentials" });
+
+    const isSamePassword = await authService.comparePassword(
+      newPassword,
+      user.password,
+    );
+    if (isSamePassword)
+      return res
+        .status(400)
+        .json({ message: "New password must be different" });
+
+    const hashedPassword = await authService.hashPassword(newPassword);
+
+    const authHeader = req.headers.authorization;
+    const token = req.authToken || authHeader?.split(" ")[1];
+
+    if (!token)
+      throw new Error("Current auth token unavailable for revocation");
+
+    const decoded = req.user || authService.verifyToken(token);
+    const tokenHash = authService.hashToken(token);
+    const expiresAt = decoded.exp
+      ? new Date(decoded.exp * 1000)
+      : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+    await session.withTransaction(async () => {
+      await userModel.updateUserPasswordById(req.user.userId, hashedPassword, {
+        session,
+      });
+
+      await revokedTokenModel.revokeToken(
+        { tokenHash, userId: req.user.userId, expiresAt },
+        { session },
+      );
+    });
+
+    return res.status(200).json({ message: "Password updated successfully" });
+  } catch (error) {
+    console.error("Update password error:", error);
+    return res.status(500).json({ message: "Failed to update password" });
+  } finally {
+    await session.endSession();
+  }
+};
+
+const deleteAccount = async (req, res) => {
+  const client = getClient();
+  const session = client.startSession();
+
+  try {
+    const { currentPassword } = req.body;
+
+    const user = await userModel.findActiveUserById(req.user.userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const isMatch = await authService.comparePassword(
+      currentPassword,
+      user.password,
+    );
+    if (!isMatch)
+      return res.status(401).json({ message: "Invalid credentials" });
+
+    await session.withTransaction(async () => {
+      await userModel.softDeleteUserById(req.user.userId, { session });
+      await profileModel.softDeleteProfileByUserId(req.user.userId, {
+        session,
+      });
+    });
+
+    const token = req.authToken;
+    if (token) {
+      const tokenHash = authService.hashToken(token);
+      const expiresAt = req.user.exp
+        ? new Date(req.user.exp * 1000)
+        : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+      await revokedTokenModel.revokeToken({
+        tokenHash,
+        userId: req.user.userId,
+        expiresAt,
+      });
+    }
 
     return res.status(200).json({
-      success: true,
-      message: "Login successful.",
-      token,
-      user: user,
+      message: "Account deleted successfully",
+      recovery: "Account was soft-deleted and can be recovered later",
     });
   } catch (error) {
-    console.error("Login error:", error);
-    return next(error);
+    console.error("Delete account error:", error);
+    return res.status(500).json({ message: "Failed to delete account" });
+  } finally {
+    await session.endSession();
   }
 };
 
 const me = async (req, res) => {
   try {
-    const user = await User.findUserById(req.user.userId);
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found.",
-      });
-    }
-    res.status(200).json({
-      success: true,
-      user: user,
+    const user = await userModel.findActiveUserById(req.user.userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    // compute avatar (gravatar) from email for a lightweight profile image
+    const crypto = require("crypto");
+    const emailForHash = (user.email || "").trim().toLowerCase();
+    const hash = emailForHash
+      ? crypto.createHash("md5").update(emailForHash).digest("hex")
+      : null;
+    const avatarUrl = hash
+      ? `https://www.gravatar.com/avatar/${hash}?s=128&d=identicon`
+      : null;
+
+    return res.json({
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        avatarUrl,
+      },
     });
   } catch (error) {
-    console.error("Get me error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Internal server error.",
-    });
+    console.error("Me endpoint error:", error);
+    return res.status(500).json({ message: "Failed to fetch user" });
   }
 };
-
-const logout = async (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: "Logged out successfully.",
-  });
-};
-
 module.exports = {
   register,
   login,
-  me,
   logout,
+  me,
+  updatePassword,
+  deleteAccount,
 };

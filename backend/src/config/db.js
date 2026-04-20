@@ -60,3 +60,7 @@ module.exports = {
   getDatabase,
   closeDatabase,
 };
+
+const getClient = () => client;
+
+module.exports.getClient = getClient;
