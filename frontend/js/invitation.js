@@ -179,7 +179,7 @@ async function sendInvitationsToMongoDB() {
 function generateLocalInvitations() {
   const baseUrl = window.location.protocol + "//" + window.location.host;
   const rsvpPath = window.location.pathname.includes("/src/pages/")
-    ? "../../rsvp.html"
+    ? "../frontend/rsvp.html"
     : "rsvp.html";
   const rsvpUrl = `${baseUrl}/${rsvpPath}`;
 
