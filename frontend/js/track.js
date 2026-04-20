@@ -74,7 +74,6 @@ async function loadState() {
 
     const token = getAuthToken();
     if (!token) {
-        // Not logged in — start with empty arrays
         guests = [];
         gifts = [];
         return;
@@ -90,7 +89,6 @@ async function loadState() {
         const gifData = await gifRes.json();
 
         if (gData.success) {
-            // Map _id -> id so all existing code works unchanged
             guests = gData.data.map(g => ({ ...g, id: g._id.toString() }));
         } else {
             guests = [];
@@ -117,7 +115,6 @@ function openGuestModal(id = null) {
     const modal = $("guestModal");
     if (!modal) return;
 
-    // defaults
     $("guestName").value = "";
     $("guestGroupSelect").value = "";
     $("guestGroupCustom").value = "";
@@ -130,13 +127,7 @@ function openGuestModal(id = null) {
             $("guestName").value = g.name || "";
             $("guestRSVP").value = g.rsvp || "pending";
 
-            // match group to dropdown or custom
-            const standard = [
-                "Bride's Family",
-                "Classmates",
-                "Co-workers",
-                "VIP"
-            ];
+            const standard = ["Bride's Family", "Classmates", "Co-workers", "VIP"];
             if (standard.includes(g.group)) {
                 $("guestGroupSelect").value = g.group;
                 $("guestGroupCustom").value = "";
@@ -165,7 +156,6 @@ function openGiftModal(id = null) {
     const modal = $("giftModal");
     if (!modal) return;
 
-    // Fill guest dropdown
     const select = $("giftGuest");
     select.innerHTML = `<option value="">Select guest (optional)</option>`;
     guests.forEach(g => {
@@ -272,19 +262,43 @@ async function saveGuest() {
     refresh();
 }
 
+/* ─────────────────────────────────────────────
+   deleteGuest — also deletes linked gifts
+   from BOTH the database and local array
+───────────────────────────────────────────── */
 async function deleteGuest(id) {
-    if (!confirm("Delete this guest?")) return;
+    if (!confirm("Delete this guest? All gifts linked to this guest will also be deleted.")) return;
+
+    // Find all gifts linked to this guest
+    const linkedGifts = gifts.filter(g => g.guestId === id);
 
     try {
+        // Delete guest from DB
         await fetch(`${API_BASE}/api/guests/${id}`, {
             method: 'DELETE',
             headers: authHeaders()
         });
+
+        // Delete all linked gifts from DB
+        if (linkedGifts.length > 0) {
+            await Promise.all(
+                linkedGifts.map(g =>
+                    fetch(`${API_BASE}/api/gifts/${g.id}`, {
+                        method: 'DELETE',
+                        headers: authHeaders()
+                    })
+                )
+            );
+        }
     } catch (err) {
         console.error("deleteGuest error:", err);
     }
 
+    // Remove guest from local array
     guests = guests.filter(g => g.id !== id);
+
+    // Remove linked gifts from local array
+    gifts = gifts.filter(g => g.guestId !== id);
 
     // Remove from seating
     seatingTables.forEach(t => {
@@ -293,7 +307,10 @@ async function deleteGuest(id) {
     saveSeating();
 
     refresh();
-    showSuccess("Guest deleted");
+    showSuccess(linkedGifts.length > 0
+        ? `Guest deleted along with ${linkedGifts.length} linked gift(s)`
+        : "Guest deleted"
+    );
 }
 
 function formatRSVP(status) {
@@ -362,7 +379,6 @@ function renderGuestList() {
         return;
     }
 
-    // Group by first letter
     const groups = {};
     filtered.forEach(g => {
         const firstChar = (g.name || "?").charAt(0).toUpperCase();
@@ -410,7 +426,7 @@ async function importGuestsCSV(file) {
 
         lines.forEach((line, i) => {
             if (!line.trim()) return;
-            if (i === 0 && line.toLowerCase().includes("name")) return; // header row
+            if (i === 0 && line.toLowerCase().includes("name")) return;
 
             const parts = parseCSV(line);
             if (!parts.length) return;
@@ -486,16 +502,25 @@ function parseCSV(line) {
 /* ==============================
    SEATING CHART – ZONES A / C / B
 ============================== */
+
+/* ─────────────────────────────────────────────
+   deleteAllGuests — also deletes ALL gifts
+   linked to any guest from DB and local array
+───────────────────────────────────────────── */
 async function deleteAllGuests() {
     if (!guests.length) {
         return showError("No guests to delete");
     }
 
-    if (!confirm(`Are you sure you want to delete ALL ${guests.length} guests? This cannot be undone.`)) {
+    if (!confirm(`Are you sure you want to delete ALL ${guests.length} guests? All linked gifts will also be deleted. This cannot be undone.`)) {
         return;
     }
 
+    // Find all gifts linked to any guest
+    const linkedGifts = gifts.filter(g => g.guestId);
+
     try {
+        // Delete all guests from DB
         await Promise.all(
             guests.map(g =>
                 fetch(`${API_BASE}/api/guests/${g.id}`, {
@@ -504,17 +529,33 @@ async function deleteAllGuests() {
                 })
             )
         );
+
+        // Delete all linked gifts from DB
+        if (linkedGifts.length > 0) {
+            await Promise.all(
+                linkedGifts.map(g =>
+                    fetch(`${API_BASE}/api/gifts/${g.id}`, {
+                        method: 'DELETE',
+                        headers: authHeaders()
+                    })
+                )
+            );
+        }
     } catch (err) {
         console.error("deleteAllGuests error:", err);
     }
 
     guests = [];
     seatingTables = [];
-    gifts = gifts.filter(gift => !gift.guestId);
+    // Remove all linked gifts from local array, keep unlinked gifts
+    gifts = gifts.filter(g => !g.guestId);
     saveSeating();
 
     refresh();
-    showSuccess("All guests have been deleted");
+    showSuccess(linkedGifts.length > 0
+        ? `All guests and ${linkedGifts.length} linked gift(s) deleted`
+        : "All guests have been deleted"
+    );
 }
 
 function createTableForZone(zone, capacity, counters) {
@@ -563,14 +604,11 @@ function generateSeating() {
     seatingTables = [];
     const counters = { A: 0, B: 0, C: 0 };
 
-    // Split into VIP and others
     const vipGuests = confirmedGuests.filter(g => (g.group || "").toLowerCase() === "vip");
     const nonVip = confirmedGuests.filter(g => (g.group || "").toLowerCase() !== "vip");
 
-    // 1) Seat VIP in zone C (center)
     seatGuestsInZone("C", vipGuests, capacity, counters);
 
-    // 2) For others, group by group label and alternate zones A/B
     const groupMap = {};
     nonVip.forEach(g => {
         const key = g.group || "Other";
@@ -644,7 +682,6 @@ function renderSeating() {
         labelEl.textContent = table.label;
         tableEl.appendChild(labelEl);
 
-        // TABLE IMAGE INSTEAD OF CIRCLE
         const tableImg = document.createElement("img");
         tableImg.src = "../../assets/img/track/table.png";
         tableImg.className = "table-img";
@@ -730,7 +767,6 @@ async function importGiftsCSV(file) {
 
             if (!type || isNaN(value)) return;
 
-            // match guest by name (optional)
             let guestId = null;
             if (fromName) {
                 const g = guests.find(gg => gg.name.toLowerCase() === fromName.toLowerCase());
@@ -849,6 +885,7 @@ async function saveGift() {
     refresh();
 }
 
+// Deleting a gift does NOT affect guests
 async function deleteGift(id) {
     if (!confirm("Delete this gift?")) return;
 
@@ -947,7 +984,6 @@ function refresh() {
     renderGiftList();
     renderSeating();
     updateStats();
-    // Note: seating is saved explicitly when changed, not on every refresh
 }
 
 /* ==============================
@@ -957,7 +993,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     await loadState();
     refresh();
 
-    // Import CSV
     const csvInput = $("guestCsvInput");
     const importBtn = $("btnImportCsv");
 
@@ -970,7 +1005,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
-    // Seating buttons
     $("btnGenerateSeating")?.addEventListener("click", generateSeating);
     $("btnResetSeating")?.addEventListener("click", () => {
         if (confirm("Reset seating plan?")) {
@@ -984,15 +1018,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     });
 
-    // Filters & search for guests
     $("guestSearch")?.addEventListener("input", renderGuestList);
     $("guestGroupFilter")?.addEventListener("change", renderGuestList);
     $("guestRsvpFilter")?.addEventListener("change", renderGuestList);
 
-    // Gift type custom input
     $("giftType")?.addEventListener("change", toggleGiftCustomInput);
-
-    // Guest group custom input
     $("guestGroupSelect")?.addEventListener("change", toggleGuestCustomGroup);
 
     const giftCsvInput = $("giftCsvInput");
@@ -1007,7 +1037,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
-    // Delete All buttons
     $("btnDeleteAllGifts")?.addEventListener("click", deleteAllGifts);
     $("btnDeleteAllGuests")?.addEventListener("click", deleteAllGuests);
 });
