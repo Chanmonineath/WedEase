@@ -1,10 +1,29 @@
 // backend/src/controllers/guest.controller.js
 const Guest = require("../models/Guest");
 
+// Helper to get userId (for development without auth)
+function getUserId(req) {
+  // From auth middleware
+  if (req.user && req.user.userId) {
+    return req.user.userId.toString();
+  }
+  // From header
+  if (req.headers['x-user-id']) {
+    return req.headers['x-user-id'];
+  }
+  // Default test user
+  return 'test-user-123';
+}
+
 const listGuests = async (req, res, next) => {
   try {
-    const guests = await Guest.getGuestsByUserId(req.user.userId);
-    return res.status(200).json({ success: true, data: guests });
+    const userId = getUserId(req);
+    console.log("📋 Getting guests for user:", userId);
+    const guests = await Guest.getGuestsByUserId(userId);
+    return res.status(200).json({
+      success: true,
+      data: guests,
+    });
   } catch (error) {
     return next(error);
   }
@@ -13,6 +32,7 @@ const listGuests = async (req, res, next) => {
 const createGuest = async (req, res, next) => {
   try {
     const { name, email, phone, guestCount, dietaryRestrictions } = req.body;
+    const userId = getUserId(req);
 
     if (!name || !email) {
       return res.status(400).json({
@@ -27,10 +47,13 @@ const createGuest = async (req, res, next) => {
       phone: phone || "",
       guestCount: guestCount || 1,
       dietaryRestrictions: dietaryRestrictions || "",
-      userId: req.user.userId,
+      userId: userId,
     });
 
-    return res.status(201).json({ success: true, data: guest });
+    return res.status(201).json({
+      success: true,
+      data: guest,
+    });
   } catch (error) {
     return next(error);
   }
@@ -39,6 +62,9 @@ const createGuest = async (req, res, next) => {
 const bulkCreateGuests = async (req, res, next) => {
   try {
     const { guests } = req.body;
+    const userId = getUserId(req);
+    
+    console.log("📥 Bulk create request:", guests?.length, "guests for user:", userId);
     
     if (!guests || !guests.length) {
       return res.status(400).json({
@@ -47,7 +73,9 @@ const bulkCreateGuests = async (req, res, next) => {
       });
     }
 
-    const result = await Guest.bulkCreateGuests(guests, req.user.userId);
+    const result = await Guest.bulkCreateGuests(guests, userId);
+    
+    console.log("✅ Bulk create success:", result.insertedCount, "guests added");
     
     return res.status(201).json({
       success: true,
@@ -61,11 +89,12 @@ const bulkCreateGuests = async (req, res, next) => {
 const sendInvitations = async (req, res, next) => {
   try {
     const { guestIds, invitationDetails } = req.body;
+    const userId = getUserId(req);
     
     const baseUrl = process.env.BASE_URL || 'http://localhost:5500';
     const updatedGuests = await Guest.sendInvitations(
       guestIds, 
-      req.user.userId, 
+      userId, 
       invitationDetails, 
       baseUrl
     );
@@ -79,7 +108,8 @@ const sendInvitations = async (req, res, next) => {
 const deleteGuest = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const result = await Guest.deleteGuest(id, req.user.userId);
+    const userId = getUserId(req);
+    const result = await Guest.deleteGuest(id, userId);
     
     if (result.deletedCount === 0) {
       return res.status(404).json({
@@ -99,7 +129,8 @@ const deleteGuest = async (req, res, next) => {
 
 const deleteAllGuests = async (req, res, next) => {
   try {
-    const result = await Guest.deleteAllGuests(req.user.userId);
+    const userId = getUserId(req);
+    const result = await Guest.deleteAllGuests(userId);
     
     return res.status(200).json({
       success: true,
@@ -112,15 +143,19 @@ const deleteAllGuests = async (req, res, next) => {
 
 const getRSVPStats = async (req, res, next) => {
   try {
-    const stats = await Guest.getRSVPStats(req.user.userId);
+    const userId = getUserId(req);
+    const stats = await Guest.getRSVPStats(userId);
     
-    return res.status(200).json({ success: true, data: stats });
+    return res.status(200).json({
+      success: true,
+      data: stats,
+    });
   } catch (error) {
     return next(error);
   }
 };
 
-// Public routes (no authentication)
+// Public routes (no authentication needed)
 const getGuestByTokenPublic = async (req, res, next) => {
   try {
     const { token } = req.params;

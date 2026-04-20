@@ -19,11 +19,19 @@ class BudgetManager {
         this.editingCategoryIndex = null;
         
         // Currency settings with API integration
+<<<<<<< HEAD
         this.selectedCurrency = 'USD';
         this.apiKey = 'd78fa077cf41fe15f31b2333'; 
         this.baseCurrency = 'KHR';
         this.exchangeRates = {};
         this.availableCurrencies = ['KHR','USD'];
+=======
+        this.selectedCurrency = 'KHR';
+        this.apiKey = 'd78fa077cf41fe15f31b2333'; 
+        this.baseCurrency = 'KHR';
+        this.exchangeRates = {};
+        this.availableCurrencies = ['KHR', 'USD'];
+>>>>>>> 886e6bef5fdc80723793f4ad9af6e0b2f9cf4a79
         
         this.init();
     }
@@ -52,7 +60,11 @@ class BudgetManager {
             }
 
             // Fetch fresh rates from API
+<<<<<<< HEAD
             const response = await fetch(`https://v6.exchangerate-api.com/v6/d78fa077cf41fe15f31b2333/latest/USD`);
+=======
+            const response = await fetch(`https://v6.exchangerate-api.com/v6/${this.apiKey}/latest/USD`);
+>>>>>>> 886e6bef5fdc80723793f4ad9af6e0b2f9cf4a79
             
             if (!response.ok) {
                 throw new Error(`API error: ${response.status}`);
@@ -1227,6 +1239,7 @@ class BudgetManager {
 // INITIALIZE BUDGET MANAGER
 // ===============================================
 
+<<<<<<< HEAD
 let budgetManager;
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -1236,3 +1249,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // Make budgetManager available globally
 window.budgetManager = budgetManager;
+=======
+document.addEventListener("DOMContentLoaded", () => {
+    window.budgetManager = new BudgetManager();
+    console.log("Budget page fully loaded and initialized");
+});
+>>>>>>> 886e6bef5fdc80723793f4ad9af6e0b2f9cf4a79

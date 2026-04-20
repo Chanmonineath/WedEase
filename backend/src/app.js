@@ -19,7 +19,8 @@ const authRoutes = require("./routes/auth.routes");
 const guestRoutes = require("./routes/guest.routes");
 const invitationRoutes = require("./routes/invitation.routes");
 const giftRoutes = require("./routes/gift.routes");
-const { listThemes } = require("./controllers/theme.controller");
+const chatbotRoutes = require("./routes/chatbot.routes");
+const themeRoutes = require("./routes/theme.routes"); // ADD THIS LINE
 const notFound = require("./middleware/notFound");
 const errorHandler = require("./middleware/errorHandler");
 
@@ -27,29 +28,46 @@ const app = express();
 
 app.disable("x-powered-by");
 
-// ===============================================
-// CORS CONFIGURATION - FIXED (No path-to-regexp issues)
-// ===============================================
-// Allow all origins for development
+// ============================================
+// COMPLETE CORS CONFIGURATION - FIXED
+// ============================================
+app.use(helmet());
 app.use(cors({
-  origin: true,
+  origin: [
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'http://localhost:5500',
+    'http://127.0.0.1:5500',
+    'http://localhost:5503',
+    'http://127.0.0.1:5503',
+    'http://localhost:8080',
+    'http://127.0.0.1:8080',
+    'http://localhost:5000',
+    'http://127.0.0.1:5000',
+  ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
-}));
-
-// Security middleware
-app.use(helmet({
-  crossOriginResourcePolicy: { policy: "cross-origin" }
+  allowedHeaders: [
+    'Content-Type',
+    'Authorization',
+    'X-Requested-With',
+    'Accept',
+    'Origin',
+    'Access-Control-Allow-Origin'
+  ],
+  exposedHeaders: ['Content-Length', 'X-Requested-With'],
+  optionsSuccessStatus: 200
 }));
 
 app.use(compression());
 app.use(morgan("dev"));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
 
-// Health check endpoints
+// ============================================
+// ROUTES
+// ============================================
 app.get("/", (req, res) => {
   res.json({
     success: true,
@@ -64,18 +82,25 @@ app.get("/api/health", (req, res) => {
   });
 });
 
-// API Routes
-app.get("/api/themes", listThemes);
+// Theme routes - ADD THESE LINES
+app.use("/api/themes", themeRoutes);
+
+// Other routes
 app.use("/api/auth", authRoutes);
 app.use("/api/guests", guestRoutes);
 app.use("/api/invitations", invitationRoutes);
 app.use("/api/gifts", giftRoutes);
+app.use("/api/chatbot", chatbotRoutes);
 
-// Error handlers
+// ============================================
+// ERROR HANDLING
+// ============================================
 app.use(notFound);
 app.use(errorHandler);
 
-// Start server
+// ============================================
+// START SERVER
+// ============================================
 const startServer = () =>
   connectToDatabase()
     .then(() => {
@@ -84,9 +109,10 @@ const startServer = () =>
 ╔════════════════════════════════════════════════╗
 ║   Backend Server Running                       ║
 ╠════════════════════════════════════════════════╣
-║   Express started on http://localhost:${port}     ║
-║   CORS enabled for all origins                 ║
-║   Database: MongoDB                            ║
+║   Express started on http://localhost:${port}  ║
+║   Chatbot endpoint: /api/chatbot               ║
+║   Themes endpoint: /api/themes/fetch-all       ║
+║   CORS enabled for development                 ║
 ║   press Ctrl-C to terminate.                   ║
 ╚════════════════════════════════════════════════╝
   `),
