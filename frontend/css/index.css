@@ -1,0 +1,466 @@
+/* ===============================================
+   INDEX.CSS — Home page styles (index.html only)
+   =============================================== */
+
+/* ── Hero Section ── */
+.hero-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  min-height: calc(100vh - 5rem);
+}
+
+.hero-container {
+  width: 100%;
+  max-width: 80rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: center;
+}
+
+.hero-content-left { text-align: left; }
+
+.hero-subheading {
+  font-family: var(--font-script);
+  font-size: 6rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  line-height: 1;
+  color: var(--wed-primary);
+}
+
+.hero-description {
+  font-size: 1.125rem;
+  max-width: 36rem;
+  margin: 0 0 2.5rem 0;
+  font-weight: 500;
+  color: var(--wed-secondary);
+  font-family: var(--font-sans);
+}
+
+.hero-illustration-right {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.hero-illustration-right img {
+  width: 100%;
+  max-width: 50rem;
+  height: auto;
+  border-radius: 0.75rem;
+  box-shadow: none !important;
+  border: none !important;
+  opacity: 1 !important;
+}
+
+#hero-image {
+  transition: opacity 0.5s ease-in-out;
+}
+
+/* ── CTA Button ── */
+.cta-button {
+  display: inline-flex;
+  align-items: center;
+  column-gap: 0.5rem;
+  padding: 0.75rem 2rem;
+  border-radius: 9999px;
+  background: linear-gradient(45deg, var(--wed-primary), var(--wed-secondary));
+  color: white;
+  font-size: 1.125rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow: 0 10px 15px -3px rgba(162, 67, 124, 0.5), 0 4px 6px -2px rgba(162, 67, 124, 0.05);
+  transition: all 0.3s ease;
+}
+
+.cta-button:hover {
+  transform: scale(1.03);
+  background: linear-gradient(45deg, var(--wed-secondary), var(--wed-primary));
+  box-shadow: 0 20px 25px -5px rgba(162, 67, 124, 0.6), 0 8px 10px -6px rgba(162, 67, 124, 0.1);
+}
+
+.cta-button svg { width: 24px; height: 24px; }
+
+/* ── Countdown Section ── */
+.countdown-section {
+  padding: 4rem 2rem;
+  background: linear-gradient(135deg, #fcf4fb 0%, #f8f3ff 100%);
+  border-top: 1px solid rgba(162, 67, 124, 0.1);
+  border-bottom: 1px solid rgba(162, 67, 124, 0.1);
+}
+
+.countdown-container {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.countdown-title {
+  font-size: 2.5rem;
+  background: linear-gradient(45deg, var(--wed-primary), var(--wed-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 1rem;
+  font-weight: 700;
+  font-family: var(--font-script);
+}
+
+.countdown-subtitle {
+  font-size: 1.2rem;
+  color: var(--wed-text);
+  margin-bottom: 2rem;
+  font-weight: 400;
+}
+
+.countdown-input-section {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.wedding-date-input {
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--wed-border);
+  border-radius: 12px;
+  font-size: 1rem;
+  min-width: 200px;
+  transition: all 0.3s ease;
+  background: white;
+  color: var(--wed-secondary);
+  font-family: var(--font-sans);
+}
+
+.wedding-date-input:focus {
+  outline: none;
+  border-color: var(--wed-primary);
+  box-shadow: 0 0 0 3px rgba(162, 67, 124, 0.2);
+}
+
+.set-date-btn,
+.clear-date-btn {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(45deg, var(--wed-primary), var(--wed-secondary));
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: var(--font-sans);
+  box-shadow: 0 4px 12px rgba(162, 67, 124, 0.3);
+}
+
+.set-date-btn:hover,
+.clear-date-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(162, 67, 124, 0.4);
+  background: linear-gradient(45deg, var(--wed-secondary), var(--wed-primary));
+}
+
+.clear-date-btn {
+  background: linear-gradient(45deg, #9d4edd, var(--wed-primary));
+}
+
+.wedding-date-display {
+  margin: 2rem 0;
+  padding: 2rem;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(248, 243, 255, 0.9));
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(162, 67, 124, 0.15);
+  border: 1px solid rgba(162, 67, 124, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.wedding-date-display h3 {
+  color: var(--wed-primary);
+  margin-bottom: 0.5rem;
+  font-size: 1.5rem;
+  font-family: var(--font-script);
+}
+
+.wedding-date {
+  font-size: 1.8rem;
+  color: var(--wed-secondary);
+  font-weight: 600;
+  font-family: var(--font-cursive);
+}
+
+.countdown-display { margin-top: 2rem; }
+
+.countdown-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.countdown-item {
+  background: linear-gradient(135deg, white, #fcf4fb);
+  padding: 2rem 1.5rem;
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(162, 67, 124, 0.1);
+  border: 1px solid rgba(162, 67, 124, 0.1);
+  transition: all 0.3s ease;
+}
+
+.countdown-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 32px rgba(162, 67, 124, 0.15);
+}
+
+.countdown-number {
+  display: block;
+  font-size: 3rem;
+  font-weight: 700;
+  background: linear-gradient(45deg, var(--wed-primary), var(--wed-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.5rem;
+  font-family: var(--font-sans);
+}
+
+.countdown-label {
+  font-size: 0.9rem;
+  color: var(--wed-text);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+
+.countdown-message {
+  font-size: 1.4rem;
+  color: var(--wed-secondary);
+  margin: 2rem 0;
+  font-weight: 500;
+  font-family: var(--font-cursive);
+}
+
+.explore-more-btn {
+  padding: 1rem 2rem;
+  background: linear-gradient(45deg, var(--wed-primary), var(--wed-secondary));
+  color: white;
+  border: none;
+  border-radius: 50px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(162, 67, 124, 0.3);
+  margin: 2rem auto 0;
+  display: block;
+  text-decoration: none;
+  text-align: center;
+  max-width: 200px;
+}
+
+.explore-more-btn:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(45deg, var(--wed-secondary), var(--wed-primary));
+  box-shadow: 0 6px 20px rgba(162, 67, 124, 0.4);
+}
+
+.countdown-error {
+  color: #ff4757;
+  background: rgba(255, 71, 87, 0.1);
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-top: 1rem;
+  text-align: center;
+  border: 1px solid rgba(255, 71, 87, 0.2);
+  width: 100%;
+}
+
+.countdown-completed {
+  text-align: center;
+  padding: 2rem;
+}
+
+.countdown-completed .countdown-message {
+  font-size: 1.5rem;
+  color: var(--wed-primary);
+  margin-bottom: 2rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+/* ── Welcome Screen ── */
+.window-open-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  overflow: hidden;
+}
+
+.window-panel {
+  position: absolute;
+  background: linear-gradient(135deg, var(--wed-primary), var(--wed-secondary));
+  transition: all 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.window-panel.top    { top: 0; left: 0; width: 100%; height: 50%; transform: translateY(-100%); }
+.window-panel.bottom { bottom: 0; left: 0; width: 100%; height: 50%; transform: translateY(100%); }
+.window-panel.left   { top: 0; left: 0; width: 50%; height: 100%; transform: translateX(-100%); }
+.window-panel.right  { top: 0; right: 0; width: 50%; height: 100%; transform: translateX(100%); }
+
+.window-open-container.open .window-panel.top    { transform: translateY(0); }
+.window-open-container.open .window-panel.bottom { transform: translateY(0); }
+.window-open-container.open .window-panel.left   { transform: translateX(0); }
+.window-open-container.open .window-panel.right  { transform: translateX(0); }
+
+.portal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffffff 0%, var(--cta-pink) 50%, var(--wed-primary) 100%);
+  filter: blur(20px);
+  opacity: 0;
+  transition: all 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  z-index: 10001;
+}
+
+.window-open-container.open .portal {
+  transform: translate(-50%, -50%) scale(8);
+  opacity: 0.8;
+}
+
+.hologram-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  font-family: 'Caveat', cursive;
+  font-size: 4rem;
+  color: transparent;
+  background: linear-gradient(45deg, var(--cta-pink), rgba(255, 255, 255, 1), var(--wed-primary), var(--cta-pink));
+  background-size: 400% 400%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  text-align: center;
+  opacity: 0;
+  z-index: 10002;
+  animation: hologramShift 3s ease-in-out infinite;
+  transition: all 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.window-open-container.open .hologram-text {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+
+@keyframes hologramShift {
+  0%, 100% {
+    background-position: 0% 50%;
+    filter: drop-shadow(0 0 20px rgba(162, 67, 124, 0.7));
+  }
+  50% {
+    background-position: 100% 50%;
+    filter: drop-shadow(0 0 30px rgba(111, 48, 84, 0.7));
+  }
+}
+
+.start-experience-btn {
+  position: absolute;
+  top: 70%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  background: linear-gradient(45deg, #ff6b9d, #667eea);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  box-shadow: 0 10px 30px rgba(255, 107, 157, 0.4);
+  transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  opacity: 0;
+  z-index: 10004;
+}
+
+.quantum-particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 10003;
+}
+
+@keyframes quantumFloat {
+  0%   { transform: translate(0, 0) scale(0); opacity: 0; }
+  20%  { transform: translate(var(--tx), var(--ty)) scale(1); opacity: 1; }
+  80%  { transform: translate(calc(var(--tx) * 1.5), calc(var(--ty) * 1.5)) scale(0.5); opacity: 0.7; }
+  100% { transform: translate(calc(var(--tx) * 2), calc(var(--ty) * 2)) scale(0); opacity: 0; }
+}
+
+.light-beam {
+  position: absolute;
+  width: 2px;
+  height: 0;
+  background: linear-gradient(to top, transparent, #ffffff, transparent);
+  transform-origin: bottom center;
+  opacity: 0;
+}
+
+@keyframes beamRise {
+  0%   { height: 0; opacity: 0; }
+  50%  { height: 200px; opacity: 0.8; }
+  100% { height: 0; opacity: 0; }
+}
+
+.floating-element {
+  position: absolute;
+  font-size: 2rem;
+  opacity: 0;
+  animation: floatElement 4s ease-in-out forwards;
+}
+
+@keyframes floatElement {
+  0%   { transform: translateY(100px) rotate(0deg) scale(0); opacity: 0; }
+  20%  { transform: translateY(0) rotate(180deg) scale(1); opacity: 1; }
+  80%  { transform: translateY(-80px) rotate(360deg) scale(1); opacity: 0.8; }
+  100% { transform: translateY(-120px) rotate(540deg) scale(0); opacity: 0; }
+}
+
+/* ── Theme Actions ── */
+.hidden {
+  display: none !important;
+}
+
+/* ── Responsive ── */
+@media (min-width: 768px) {
+  .hero-container { grid-template-columns: 1fr 1fr; gap: 5rem; }
+  .hero-subheading { font-size: 5rem; }
+}
+
+@media (max-width: 767px) {
+  .hero-container { grid-template-columns: 1fr; gap: 2rem; }
+  .hero-content-left { text-align: center; }
+  .hero-subheading { font-size: 3rem; }
+  .hero-description { font-size: 1rem; }
+  .hero-illustration-right { justify-content: center; }
+  .hero-section { padding: 1rem; min-height: auto; }
+  .countdown-grid { grid-template-columns: repeat(2, 1fr); }
+  .countdown-input-section { flex-direction: column; }
+  .wedding-date-input { min-width: 250px; }
+  .countdown-number { font-size: 2.5rem; }
+}
+

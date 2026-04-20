@@ -1,0 +1,234 @@
+/* ===============================================
+   SAVED.CSS — Saved themes page specific styles
+   =============================================== */
+
+/* ── Saved Page Header ── */
+.saved-header {
+  background: linear-gradient(135deg, #f8f4f9 0%, #fff 100%);
+  padding: 3rem 0 2rem;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid rgba(162, 67, 124, 0.1);
+}
+
+.saved-header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  text-align: center;
+}
+
+.page-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  animation: heartBeat 1.5s ease-in-out infinite;
+}
+
+@keyframes heartBeat {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.page-title {
+  font-size: 3rem;
+  color: var(--wed-primary, #a2437c);
+  margin-bottom: 0.5rem;
+  font-family: var(--font-script, 'Caveat', cursive);
+}
+
+.saved-subtitle {
+  color: #666;
+  font-size: 1.1rem;
+  margin-bottom: 0;
+}
+
+/* ── Theme Grid for Empty State ── */
+#savedThemesContainer:has(.empty-state) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 600px;
+}
+
+/* ── Empty State ── */
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: white;
+  border-radius: 2rem;
+  box-shadow: 0 4px 20px rgba(162, 67, 124, 0.08);
+  max-width: 600px;
+  width: 100%;
+}
+
+.empty-state-icon {
+  font-size: 5rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.empty-state h3 {
+  color: var(--wed-primary, #a2437c);
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  font-family: var(--font-script, 'Caveat', cursive);
+}
+
+.empty-state p {
+  color: #666;
+  margin-bottom: 2rem;
+  font-size: 1rem;
+}
+
+.browse-themes-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 2rem;
+  background: linear-gradient(45deg, var(--wed-primary, #a2437c), var(--wed-secondary, #c06c9e));
+  color: white;
+  text-decoration: none;
+  border-radius: 50px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(162, 67, 124, 0.3);
+}
+
+.browse-themes-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(162, 67, 124, 0.4);
+}
+
+/* ── Saved Badge on Cards ── */
+.saved-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: var(--wed-primary, #a2437c);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* ── Remove Button ── */
+.remove-saved-btn {
+  background: white;
+  color: #e53e3e;
+  border: 2px solid #e53e3e;
+}
+
+.remove-saved-btn:hover {
+  background: #e53e3e;
+  color: white;
+  border-color: #e53e3e;
+}
+
+/* ── Theme Card Modifications for Saved Page ── */
+.theme-card {
+  position: relative;
+}
+
+/* ── Close Button on Saved Cards ── */
+.close-btn {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  width: 28px;
+  height: 28px;
+  background: rgba(229, 62, 62, 0.9);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  line-height: 1;
+  padding: 0;
+}
+
+.close-btn:hover {
+  background: rgba(229, 62, 62, 1);
+  transform: scale(1.15);
+  box-shadow: 0 4px 12px rgba(229, 62, 62, 0.4);
+}
+
+/* ── Back to Top Button ── */
+.back-to-top {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: var(--wed-primary, #a2437c);
+  color: white;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  border: none;
+  z-index: 100;
+}
+
+.back-to-top.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.back-to-top:hover {
+  transform: translateY(-3px);
+  background: var(--wed-secondary, #c06c9e);
+}
+
+/* ── Responsive Design ── */
+@media (max-width: 768px) {
+  .page-title {
+    font-size: 2rem;
+  }
+  
+  .saved-header {
+    padding: 2rem 0 1.5rem;
+  }
+  
+  .page-icon {
+    font-size: 3rem;
+  }
+  
+  .back-to-top {
+    bottom: 1rem;
+    right: 1rem;
+    width: 40px;
+    height: 40px;
+  }
+  
+  .empty-state {
+    margin: 1rem;
+    padding: 2rem 1rem;
+  }
+  
+  .empty-state h3 {
+    font-size: 1.5rem;
+  }
+  
+  .saved-badge {
+    top: 0.5rem;
+    right: 0.5rem;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.7rem;
+  }
+}
