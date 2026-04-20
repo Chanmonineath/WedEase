@@ -13,7 +13,6 @@ dotenv.config({
 });
 
 const port = Number(process.env.PORT) || 5000;
-const corsOrigin = process.env.CORS_ORIGIN || "http://localhost:5500";
 
 const { connectToDatabase, closeDatabase } = require("./config/db");
 const authRoutes = require("./routes/auth.routes");
@@ -28,14 +27,29 @@ const app = express();
 
 app.disable("x-powered-by");
 
-app.use(helmet());
-app.use(cors({ origin: corsOrigin }));
+// ===============================================
+// CORS CONFIGURATION - FIXED (No path-to-regexp issues)
+// ===============================================
+// Allow all origins for development
+app.use(cors({
+  origin: true,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+}));
+
+// Security middleware
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" }
+}));
+
 app.use(compression());
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+// Health check endpoints
 app.get("/", (req, res) => {
   res.json({
     success: true,
@@ -50,15 +64,18 @@ app.get("/api/health", (req, res) => {
   });
 });
 
+// API Routes
 app.get("/api/themes", listThemes);
 app.use("/api/auth", authRoutes);
 app.use("/api/guests", guestRoutes);
 app.use("/api/invitations", invitationRoutes);
 app.use("/api/gifts", giftRoutes);
 
+// Error handlers
 app.use(notFound);
 app.use(errorHandler);
 
+// Start server
 const startServer = () =>
   connectToDatabase()
     .then(() => {
@@ -68,6 +85,8 @@ const startServer = () =>
 ║   Backend Server Running                       ║
 ╠════════════════════════════════════════════════╣
 ║   Express started on http://localhost:${port}     ║
+║   CORS enabled for all origins                 ║
+║   Database: MongoDB                            ║
 ║   press Ctrl-C to terminate.                   ║
 ╚════════════════════════════════════════════════╝
   `),
