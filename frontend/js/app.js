@@ -702,6 +702,16 @@ class AuthManager {
   bindAuthEvents() {
     const get = (id) => document.getElementById(id);
 
+    document.querySelectorAll(".auth-eye-toggle").forEach((button) => {
+      button.addEventListener("click", () => {
+        const input = document.getElementById(button.dataset.target);
+        if (!input) return;
+        const isPassword = input.type === "password";
+        input.type = isPassword ? "text" : "password";
+        button.textContent = isPassword ? "Hide" : "Show";
+      });
+    });
+
     get("show-signup")?.addEventListener("click", () => {
       get("signin-card").classList.add("hidden");
       get("signup-card").classList.remove("hidden");

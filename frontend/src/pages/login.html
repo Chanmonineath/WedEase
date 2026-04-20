@@ -93,9 +93,7 @@
           class="mobile-close-btn"
           id="mobileCloseBtn"
           aria-label="Close menu"
-        >
-          ✕
-        </button>
+        ></button>
         <a href="../../index.html" class="nav-link">Home</a>
         <a href="about.html" class="nav-link">About</a>
         <a href="theme.html" class="nav-link">Theme</a>
@@ -120,11 +118,21 @@
                 placeholder="you@gmail.com"
               />
               <label for="signin-password">Password</label>
-              <input
-                id="signin-password"
-                type="password"
-                placeholder="••••••••"
-              />
+              <div class="auth-password-field">
+                <input
+                  id="signin-password"
+                  type="password"
+                  placeholder="••••••••"
+                />
+                <button
+                  type="button"
+                  class="auth-eye-toggle"
+                  data-target="signin-password"
+                  aria-label="Toggle password visibility"
+                >
+                  Show
+                </button>
+              </div>
               <div
                 style="
                   display: flex;
@@ -163,17 +171,37 @@
                 placeholder="you@gmail.com"
               />
               <label for="signup-password">Password</label>
-              <input
-                id="signup-password"
-                type="password"
-                placeholder="At least 8 characters"
-              />
+              <div class="auth-password-field">
+                <input
+                  id="signup-password"
+                  type="password"
+                  placeholder="At least 8 characters"
+                />
+                <button
+                  type="button"
+                  class="auth-eye-toggle"
+                  data-target="signup-password"
+                  aria-label="Toggle password visibility"
+                >
+                  Show
+                </button>
+              </div>
               <label for="signup-password2">Confirm password</label>
-              <input
-                id="signup-password2"
-                type="password"
-                placeholder="Confirm password"
-              />
+              <div class="auth-password-field">
+                <input
+                  id="signup-password2"
+                  type="password"
+                  placeholder="Confirm password"
+                />
+                <button
+                  type="button"
+                  class="auth-eye-toggle"
+                  data-target="signup-password2"
+                  aria-label="Toggle password visibility"
+                >
+                  Show
+                </button>
+              </div>
               <div
                 style="
                   display: flex;
