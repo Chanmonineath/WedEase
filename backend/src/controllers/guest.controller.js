@@ -1,25 +1,9 @@
-// backend/src/controllers/guest.controller.js
 const Guest = require("../models/Guest");
-
-// Helper to get userId (for development without auth)
-function getUserId(req) {
-  // From auth middleware
-  if (req.user && req.user.userId) {
-    return req.user.userId.toString();
-  }
-  // From header
-  if (req.headers['x-user-id']) {
-    return req.headers['x-user-id'];
-  }
-  // Default test user
-  return 'test-user-123';
-}
 
 const listGuests = async (req, res, next) => {
   try {
-    const userId = getUserId(req);
-    console.log("📋 Getting guests for user:", userId);
-    const guests = await Guest.getGuestsByUserId(userId);
+    const guests = await Guest.listGuests();
+
     return res.status(200).json({
       success: true,
       data: guests,
@@ -31,8 +15,7 @@ const listGuests = async (req, res, next) => {
 
 const createGuest = async (req, res, next) => {
   try {
-    const { name, email, phone, guestCount, dietaryRestrictions } = req.body;
-    const userId = getUserId(req);
+    const { name, email, phone, status } = req.body;
 
     if (!name || !email) {
       return res.status(400).json({
@@ -44,10 +27,8 @@ const createGuest = async (req, res, next) => {
     const guest = await Guest.createGuest({
       name,
       email,
-      phone: phone || "",
-      guestCount: guestCount || 1,
-      dietaryRestrictions: dietaryRestrictions || "",
-      userId: userId,
+      phone,
+      status,
     });
 
     return res.status(201).json({
