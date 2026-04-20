@@ -422,6 +422,9 @@ class AuthManager {
     const existing = document.getElementById("user-label");
     if (existing) existing.remove();
 
+    const existingMobileUser = document.getElementById("mobile-user-label");
+    if (existingMobileUser) existingMobileUser.remove();
+
     const loginBtn = headerRight.querySelector(".login-btn");
     if (!email) {
       if (loginBtn) loginBtn.style.display = "flex";
@@ -443,10 +446,42 @@ class AuthManager {
     btn.addEventListener("click", () => {
       if (confirm("Sign out?")) {
         this.clearCurrentUser();
-        window.location.href = "../../src/pages/login.html";
+        const isSubpage = window.location.pathname.includes('/src/pages/');
+        const loginPath = isSubpage ? "login.html" : "src/pages/login.html";
+        window.location.href = loginPath;
       }
     });
     headerRight.appendChild(btn);
+
+    // Add user button to mobile nav
+    const mobileNav = document.getElementById("mobileNav");
+    if (mobileNav) {
+      const mobileBtn = document.createElement("button");
+      mobileBtn.id = "mobile-user-label";
+      mobileBtn.className = "mobile-user-btn";
+      mobileBtn.innerHTML = `
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+          <circle cx="12" cy="7" r="4" />
+        </svg>
+        ${email.split("@")[0]}
+      `;
+      mobileBtn.addEventListener("click", () => {
+        if (confirm("Sign out?")) {
+          this.clearCurrentUser();
+          const isSubpage = window.location.pathname.includes('/src/pages/');
+          const loginPath = isSubpage ? "login.html" : "src/pages/login.html";
+          window.location.href = loginPath;
+        }
+      });
+      // Insert at the top after the close button
+      const closeBtn = mobileNav.querySelector(".mobile-close-btn");
+      if (closeBtn) {
+        closeBtn.insertAdjacentElement("afterend", mobileBtn);
+      } else {
+        mobileNav.insertBefore(mobileBtn, mobileNav.firstChild);
+      }
+    }
   }
 
   showStatus(msg, isError = false) {
