@@ -1,5 +1,5 @@
-// frontend/js/invitation.js - Fixed version
-const API_URL = "http://localhost:5000/api";
+// frontend/js/invitation.js - Complete Working Version
+const API_URL = "http://127.0.0.1:5000/api";
 let guests = [];
 let currentUserId = null;
 
@@ -7,21 +7,17 @@ let currentUserId = null;
 // API Helper Functions
 // ============================================
 function getAuthToken() {
-  // Check localStorage first (from login)
   const token = localStorage.getItem("wedease_auth_token");
   if (token) return token;
 
-  // Check sessionStorage
   const sessionToken = sessionStorage.getItem("wedease_auth_token");
   if (sessionToken) return sessionToken;
 
-  // Fallback for demo mode
   const demoUser = localStorage.getItem("wedease_current_user");
   if (demoUser) {
     try {
       const user = JSON.parse(demoUser);
       if (user && user.email) {
-        // Create a simple demo token
         return btoa(JSON.stringify({ userId: user.email, email: user.email }));
       }
     } catch (e) {}
@@ -91,10 +87,9 @@ async function loadGuestsFromMongoDB() {
       loadGuestsFromStorage();
     }
 
-    saveGuestsToStorage(); // Cache to localStorage
+    saveGuestsToStorage();
     renderGuestList();
 
-    // Load stats
     try {
       const stats = await apiRequest("/invitation-guests/stats");
       if (stats.data && stats.data.total > 0) {
@@ -112,7 +107,7 @@ async function loadGuestsFromMongoDB() {
 }
 
 // ============================================
-// Add guest to MongoDB (Single function - removed duplicate)
+// Add guest to MongoDB
 // ============================================
 async function addGuestToMongoDB(guestData) {
   try {
@@ -121,7 +116,6 @@ async function addGuestToMongoDB(guestData) {
 
     if (!token) {
       console.log("No auth token, using localStorage fallback");
-      // Fallback to localStorage
       const newGuest = {
         id: Date.now().toString(),
         ...guestData,
@@ -139,7 +133,6 @@ async function addGuestToMongoDB(guestData) {
     }
 
     console.log("Sending guest to MongoDB:", guestData);
-    // FIXED: Use /invitation-guests instead of /guests
     const result = await apiRequest("/invitation-guests", {
       method: "POST",
       body: JSON.stringify(guestData),
@@ -165,7 +158,6 @@ async function sendInvitationsToMongoDB() {
     return;
   }
 
-  // Get guests that haven't been sent invitations yet
   const unsentGuests = guests.filter(
     (g) => g.status !== "sent" && !g.invitationLink,
   );
@@ -183,7 +175,6 @@ async function sendInvitationsToMongoDB() {
     theme: document.getElementById("themeSelect")?.value || "classic",
   };
 
-  // Save for RSVP page
   localStorage.setItem("wedease_couple_names", invitationDetails.coupleNames);
   localStorage.setItem("wedease_invitation_message", invitationDetails.message);
   localStorage.setItem("wedease_wedding_date", invitationDetails.weddingDate);
@@ -199,18 +190,21 @@ async function sendInvitationsToMongoDB() {
 
     const guestIds = unsentGuests.map((g) => g._id || g.id);
     console.log("Sending invitations to guest IDs:", guestIds);
+    console.log("Invitation details:", invitationDetails);
 
-    // Send to backend
     const result = await apiRequest("/invitation-guests/send-invitations", {
       method: "POST",
       body: JSON.stringify({ guestIds, invitationDetails }),
     });
 
-    // Update local guests with new data
+    console.log("Send invitations result:", result);
+
+    // FIX: use String() on both sides so ObjectId vs string comparison works
     if (result.data && result.data.length) {
       result.data.forEach((updatedGuest) => {
+        if (!updatedGuest) return; // FIX: skip null entries
         const index = guests.findIndex(
-          (g) => (g._id || g.id) === (updatedGuest._id || updatedGuest.id),
+          (g) => String(g._id || g.id) === String(updatedGuest._id || updatedGuest.id),
         );
         if (index !== -1) {
           guests[index] = updatedGuest;
@@ -224,17 +218,13 @@ async function sendInvitationsToMongoDB() {
     const statsSection = document.getElementById("statsSection");
     if (statsSection) statsSection.style.display = "block";
 
-    // Build message with correct RSVP URL
-    const baseUrl = window.location.protocol + "//" + window.location.host;
-    const rsvpUrl = `${baseUrl}/frontend/rsvp.html`;
-
     let message = `✅ Invitations sent to ${unsentGuests.length} guests!\n\n`;
     unsentGuests.slice(0, 5).forEach((g) => {
       const updatedGuest = guests.find(
-        (u) => (u._id || u.id) === (g._id || g.id),
+        (u) => String(u._id || u.id) === String(g._id || g.id),
       );
-      const link = updatedGuest?.invitationLink || `${rsvpUrl}?token=demo`;
-      message += `📧 ${g.name}: ${link.substring(0, 70)}...\n`;
+      const link = updatedGuest?.invitationLink || "Link not available";
+      message += `📧 ${g.name}: ${link}\n`;
     });
     if (unsentGuests.length > 5) {
       message += `\n... and ${unsentGuests.length - 5} more.`;
@@ -245,7 +235,6 @@ async function sendInvitationsToMongoDB() {
       "success",
     );
 
-    // Refresh stats
     try {
       const stats = await apiRequest("/invitation-guests/stats");
       if (stats.data) updateStatsFromAPI(stats.data);
@@ -263,9 +252,8 @@ async function sendInvitationsToMongoDB() {
 // Local fallback for invitations
 // ============================================
 function generateLocalInvitations() {
-  // For your setup: http://127.0.0.1:5503/frontend/rsvp.html
   const baseUrl = window.location.protocol + "//" + window.location.host;
-  const rsvpUrl = `${baseUrl}/frontend/rsvp.html`;
+  const rsvpUrl = `${baseUrl}/rsvp.html`;
 
   console.log("RSVP URL:", rsvpUrl);
   console.log("Current path:", window.location.pathname);
@@ -274,7 +262,6 @@ function generateLocalInvitations() {
 
   guests.forEach((guest) => {
     if (!guest.invitationLink) {
-      // Create a simple URL-safe token
       const timestamp = Date.now();
       const random = Math.random().toString(36).substring(2, 15);
       const emailPrefix = guest.email.split("@")[0].substring(0, 8);
@@ -343,7 +330,6 @@ function clearGuestForm() {
 function removeGuest(id) {
   if (!confirm("Remove this guest?")) return;
 
-  // FIXED: Delete from API first if logged in
   const token = getAuthToken();
   if (token) {
     apiRequest(`/invitation-guests/${id}`, { method: "DELETE" })
@@ -395,6 +381,15 @@ function renderGuestList() {
     .map((guest) => {
       const trackingLink = guest.invitationLink;
       const guestId = guest._id || guest.id;
+      const status = guest.status || "pending";
+      const rsvpStatus = guest.rsvpStatus;
+
+      let displayStatus = status;
+      if (rsvpStatus === "confirmed") displayStatus = "responded";
+      else if (rsvpStatus === "declined") displayStatus = "declined";
+      else if (status === "sent") displayStatus = "sent";
+      else displayStatus = "pending";
+
       return `
       <tr>
         <td title="${escapeHtml(guest.name)}">${escapeHtml(guest.name)}</td>
@@ -410,8 +405,8 @@ function renderGuestList() {
           }
         </td>
         <td>
-          <span class="status-badge status-${guest.status || "pending"}">
-            ${guest.status || "pending"}
+          <span class="status-badge status-${displayStatus}">
+            ${displayStatus}
           </span>
         </td>
       </tr>
@@ -491,7 +486,6 @@ async function bulkAddGuestsToMongoDB(guestsArray) {
   try {
     const token = getAuthToken();
     if (!token) {
-      // Fallback to localStorage
       const newGuests = guestsArray.map((g) => ({
         id: Date.now() + Math.random(),
         ...g,
@@ -508,7 +502,6 @@ async function bulkAddGuestsToMongoDB(guestsArray) {
       return;
     }
 
-    // FIXED: Use /invitation-guests/bulk
     const result = await apiRequest("/invitation-guests/bulk", {
       method: "POST",
       body: JSON.stringify({ guests: guestsArray }),
@@ -554,14 +547,7 @@ function exportGuestList() {
     return;
   }
 
-  const headers = [
-    "Name",
-    "Email",
-    "Phone",
-    "Status",
-    "RSVP Status",
-    "Invitation Link",
-  ];
+  const headers = ["Name", "Email", "Phone", "Status", "RSVP Status", "Invitation Link"];
   const csvRows = [headers.join(",")];
 
   guests.forEach((guest) => {
@@ -587,7 +573,7 @@ function exportGuestList() {
 }
 
 // ============================================
-// Clear All Guests - FIXED
+// Clear All Guests
 // ============================================
 async function clearAllGuests() {
   if (guests.length === 0) {
@@ -602,24 +588,16 @@ async function clearAllGuests() {
     const token = getAuthToken();
 
     if (token) {
-      // Delete from database
       await apiRequest("/invitation-guests", { method: "DELETE" });
       console.log("All guests deleted from database");
 
-      // Clear local array
       guests = [];
-
-      // Clear localStorage
       localStorage.removeItem("wedease_invitation_guests");
-
-      // Re-render the empty guest list
       renderGuestList();
 
-      // Hide stats section
       const statsSection = document.getElementById("statsSection");
       if (statsSection) statsSection.style.display = "none";
 
-      // Reset all stats displays to 0
       const statTotal = document.getElementById("statTotal");
       const statConfirmed = document.getElementById("statConfirmed");
       const statPending = document.getElementById("statPending");
@@ -638,12 +616,10 @@ async function clearAllGuests() {
 
       showNotification("All guests cleared from database!", "success");
 
-      // Force a reload from database to ensure consistency
       setTimeout(async () => {
         await loadGuestsFromMongoDB();
       }, 500);
     } else {
-      // Local storage fallback
       guests = [];
       localStorage.removeItem("wedease_invitation_guests");
       renderGuestList();
@@ -676,7 +652,6 @@ function updatePreview() {
 
   const previewCard = document.getElementById("previewCard");
   if (previewCard) {
-    // Remove existing theme classes
     previewCard.className = "invitation-card";
     previewCard.classList.add(theme);
   }
@@ -746,12 +721,12 @@ function updateStatsFromAPI(stats) {
 
   if (statTotal) statTotal.textContent = stats.total || 0;
   if (statConfirmed)
-    statConfirmed.textContent = stats.responded || stats.confirmed || 0;
+    statConfirmed.textContent = stats.confirmed || stats.responded || 0;
   if (statPending) statPending.textContent = stats.pending || 0;
   if (statDeclined) statDeclined.textContent = stats.declined || 0;
 
   const total = stats.total || 0;
-  const responded = stats.responded || stats.confirmed || 0;
+  const responded = stats.confirmed || stats.responded || 0;
   const percentage = total > 0 ? (responded / total) * 100 : 0;
   if (rsvpProgress) rsvpProgress.style.width = `${percentage}%`;
   if (progressText)

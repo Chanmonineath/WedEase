@@ -400,7 +400,7 @@
 
       try {
         const response = await fetch(
-          `${API_URL}/invitation-guests/public/${encodeURIComponent(invitationToken)}/rsvp`,
+          `${API_URL}/invitation-guests/public/rsvp/${encodeURIComponent(invitationToken)}`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
