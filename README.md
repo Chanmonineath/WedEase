@@ -44,12 +44,6 @@ The platform features a modern, responsive design with a romantic aesthetic, rea
 - CSV import/export for guests and gifts
 - Real-time statistics (guest count, confirmed RSVPs, gift totals)
 
-### 🪑 Seating Chart (Ballroom Layout)
-- Interactive ballroom seating with three zones (A, B, C)
-- Round table visualization with chairs
-- Automatic seating based on guest groups (VIP prioritized)
-- Drag-and-drop chair assignments (coming soon)
-
 ### 🤖 AI Chatbot Assistant
 - Powered by Groq's Llama 3.3 70B model
 - Wedding-specific context and suggestions
@@ -86,7 +80,6 @@ The platform features a modern, responsive design with a romantic aesthetic, rea
 | Multer | CSV file upload handling |
 | Groq API | AI chatbot responses |
 | Unsplash API | Theme image sourcing |
-| ExchangeRate-API | Real-time currency conversion |
 
 ### Testing Data
 The project includes CSV files for testing:
@@ -218,21 +211,21 @@ PORT=5000
 NODE_ENV=development
 
 # MongoDB Atlas
-ATLAS_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/WedEase
+ATLAS_URI=mongodb+srv://neathhchan_db_user:LpFd6lXGgTPhAWGH@cluster0.jt7czw5.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
 DB_NAME=WedEase
 
-# JWT Secret (generate a strong random string)
-JWT_SECRET=your_super_secret_jwt_key_here
+# JWT Secret
+JWT_SECRET=9a240f6b19e67c9a4f1ccec068da816010e8cd56a1c8a9e9ae28a57b9a12fcbeaa90df4bfc7d7090bf4e52f9ef77c006ff9697349fb005fe80c3948c9884db31
 
 # API Keys
-GROQ_API_KEY=your_groq_api_key
-UNSPLASH_ACCESS_KEY=your_unsplash_access_key
+GROQ_API_KEY=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
+UNSPLASH_ACCESS_KEY=i65VqX1kxQVuEwSEABbxMRtA_rufIZ7_DuQWG1W_EBQ
 
 # Frontend Base URL (for invitation links)
-BASE_URL=http://127.0.0.1:5503/frontend
+BASE_URL=http://127.0.0.1:5504/frontend
 
-# Optional: CORS origins (comma-separated)
-CORS_ORIGINS=http://localhost:5500,http://127.0.0.1:5503
+# CORS origins (comma-separated)
+CORS_ORIGINS=http://localhost:5500,http://127.0.0.1:5503,http://127.0.0.1:5504
 ```
 
 ### Step 3: Frontend Setup
@@ -244,11 +237,11 @@ To serve the frontend, you can use any static server:
 ```bash
 # Using Python (recommended)
 cd frontend
-python -m http.server 5503
+python -m http.server 5504
 
 # OR using VS Code Live Server extension (port 5500)
 # OR using npx serve
-npx serve frontend -p 5503
+npx serve frontend -p 5504
 ```
 
 ### Step 4: Start the Backend Server
@@ -279,10 +272,8 @@ Open your browser and navigate to:
 | **MongoDB Atlas** | Database | [Sign up](https://www.mongodb.com/cloud/atlas) → Create cluster → Get connection string |
 | **Groq API** | AI Chatbot | [Sign up](https://console.groq.com) → Generate API key |
 | **Unsplash API** | Theme images | [Register app](https://unsplash.com/developers) → Get access key |
-| **ExchangeRate-API** | Currency conversion | Free tier available at [exchangerate-api.com](https://www.exchangerate-api.com) |
 
 ### API Key Notes
-- ExchangeRate-API is already configured with a demo key in the code - replace with your own for production.
 - The Unsplash API key is required for theme images; without it, placeholder images will be used.
 
 ---
@@ -467,7 +458,6 @@ This project is licensed under the **ISC License**.
 
 - **Groq** for providing the Llama 3.3 API
 - **Unsplash** for beautiful wedding photography
-- **ExchangeRate-API** for currency conversion
 - **Google Fonts** for typography
 - **Material Icons** for iconography
 
@@ -477,7 +467,6 @@ This project is licensed under the **ISC License**.
 
 For questions, issues, or contributions:
 - **GitHub Issues:** [Open an issue](https://github.com/Chanmonineath/WedEase/issues)
-- **Email:** (contact information not provided)
 
 ---
 
