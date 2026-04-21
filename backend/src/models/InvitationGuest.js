@@ -93,9 +93,8 @@ const sendInvitationLinks = async (
 
   for (const guestId of guestIds) {
     const token = generateTrackingToken();
-    // Ensure no double slashes
-    const cleanBaseUrl = baseUrl.replace(/\/$/, "");
-    const invitationLink = `${cleanBaseUrl}/rsvp.html?token=${token}`;
+    // FIXED: Construct URL correctly - rsvp.html is at the root
+    const invitationLink = `${baseUrl}/rsvp.html?token=${token}`;
 
     console.log(`📨 Generated link for guest ${guestId}: ${invitationLink}`);
 

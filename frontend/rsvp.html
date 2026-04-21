@@ -16,50 +16,53 @@
       align-items: center;
       justify-content: center;
       padding: 20px;
-      /* default bg — overridden by theme */
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       transition: background 0.4s ease;
     }
 
     /* ── THEMES ────────────────────────────────────────────── */
-    body.theme-classic  { background: linear-gradient(135deg, #6f3054 0%, #a2437c 100%); }
-    body.theme-romantic { background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%); }
-    body.theme-garden   { background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%); }
-    body.theme-beach    { background: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%); }
-    body.theme-boho     { background: linear-gradient(135deg, #c79081 0%, #dfa579 100%); }
-    body.theme-luxury   { background: linear-gradient(135deg, #373b44 0%, #4286f4 100%); }
-    body.theme-modern   { background: linear-gradient(135deg, #373b44 0%, #6a6a6a 100%); }
-    body.theme-vintage  { background: linear-gradient(135deg, #8B4513 0%, #cd853f 100%); }
-    body.theme-pastel   { background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%); }
-    body.theme-fairytale { background: linear-gradient(135deg, #c471ed 0%, #f64f59 100%); }
-    body.theme-elegant  { background: linear-gradient(135deg, #3a3a3a 0%, #757575 100%); }
-    body.theme-forest   { background: linear-gradient(135deg, #134e5e 0%, #71b280 100%); }
-    body.theme-sunset   { background: linear-gradient(135deg, #f83600 0%, #f9d423 100%); }
-    body.theme-barn     { background: linear-gradient(135deg, #5c3317 0%, #a0522d 100%); }
+    body.theme-classic    { background: linear-gradient(135deg, #6f3054 0%, #a2437c 100%); }
+    body.theme-romantic   { background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%); }
+    body.theme-garden     { background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%); }
+    body.theme-beach      { background: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%); }
+    body.theme-boho       { background: linear-gradient(135deg, #c79081 0%, #dfa579 100%); }
+    body.theme-luxury     { background: linear-gradient(135deg, #373b44 0%, #4286f4 100%); }
+    body.theme-modern     { background: linear-gradient(135deg, #373b44 0%, #6a6a6a 100%); }
+    body.theme-vintage    { background: linear-gradient(135deg, #8B4513 0%, #cd853f 100%); }
+    body.theme-pastel     { background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%); }
+    body.theme-fairytale  { background: linear-gradient(135deg, #c471ed 0%, #f64f59 100%); }
+    body.theme-elegant    { background: linear-gradient(135deg, #3a3a3a 0%, #757575 100%); }
+    body.theme-forest     { background: linear-gradient(135deg, #134e5e 0%, #71b280 100%); }
+    body.theme-sunset     { background: linear-gradient(135deg, #f83600 0%, #f9d423 100%); }
+    body.theme-barn       { background: linear-gradient(135deg, #5c3317 0%, #a0522d 100%); }
     body.theme-industrial { background: linear-gradient(135deg, #3d3d3d 0%, #7f7f7f 100%); }
-    body.theme-chinese  { background: linear-gradient(135deg, #cc0000 0%, #ff6600 100%); }
-    body.theme-indian   { background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%); }
-    body.theme-french   { background: linear-gradient(135deg, #8e9eab 0%, #eef2f3 100%); }
+    body.theme-chinese    { background: linear-gradient(135deg, #cc0000 0%, #ff6600 100%); }
+    body.theme-indian     { background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%); }
+    body.theme-french     { background: linear-gradient(135deg, #8e9eab 0%, #eef2f3 100%); }
+    /* FIX: added rustic theme that matches invitation.html dropdown */
+    body.theme-rustic     { background: linear-gradient(135deg, #6b4226 0%, #a0785a 100%); }
 
-    /* header accent per theme */
-    .invitation-header                  { background: linear-gradient(135deg, #a2437c, #6f3054); }
-    body.theme-romantic  .invitation-header { background: linear-gradient(135deg, #e91e8c, #c2185b); }
-    body.theme-garden    .invitation-header { background: linear-gradient(135deg, #2e7d32, #388e3c); }
-    body.theme-beach     .invitation-header { background: linear-gradient(135deg, #0277bd, #0288d1); }
-    body.theme-boho      .invitation-header { background: linear-gradient(135deg, #8d6e63, #a1887f); }
-    body.theme-luxury    .invitation-header { background: linear-gradient(135deg, #212121, #424242); }
-    body.theme-modern    .invitation-header { background: linear-gradient(135deg, #263238, #455a64); }
-    body.theme-vintage   .invitation-header { background: linear-gradient(135deg, #5d4037, #795548); }
-    body.theme-pastel    .invitation-header { background: linear-gradient(135deg, #ab47bc, #7b1fa2); }
-    body.theme-fairytale .invitation-header { background: linear-gradient(135deg, #7b1fa2, #6a1b9a); }
-    body.theme-elegant   .invitation-header { background: linear-gradient(135deg, #212121, #424242); }
-    body.theme-forest    .invitation-header { background: linear-gradient(135deg, #1b5e20, #2e7d32); }
-    body.theme-sunset    .invitation-header { background: linear-gradient(135deg, #bf360c, #e64a19); }
-    body.theme-barn      .invitation-header { background: linear-gradient(135deg, #4e342e, #6d4c41); }
+    /* ── Header accents per theme ───────────────────────────── */
+    .invitation-header                     { background: linear-gradient(135deg, #a2437c, #6f3054); }
+    body.theme-romantic   .invitation-header { background: linear-gradient(135deg, #e91e8c, #c2185b); }
+    body.theme-garden     .invitation-header { background: linear-gradient(135deg, #2e7d32, #388e3c); }
+    body.theme-beach      .invitation-header { background: linear-gradient(135deg, #0277bd, #0288d1); }
+    body.theme-boho       .invitation-header { background: linear-gradient(135deg, #8d6e63, #a1887f); }
+    body.theme-luxury     .invitation-header { background: linear-gradient(135deg, #212121, #424242); }
+    body.theme-modern     .invitation-header { background: linear-gradient(135deg, #263238, #455a64); }
+    body.theme-vintage    .invitation-header { background: linear-gradient(135deg, #5d4037, #795548); }
+    body.theme-pastel     .invitation-header { background: linear-gradient(135deg, #ab47bc, #7b1fa2); }
+    body.theme-fairytale  .invitation-header { background: linear-gradient(135deg, #7b1fa2, #6a1b9a); }
+    body.theme-elegant    .invitation-header { background: linear-gradient(135deg, #212121, #424242); }
+    body.theme-forest     .invitation-header { background: linear-gradient(135deg, #1b5e20, #2e7d32); }
+    body.theme-sunset     .invitation-header { background: linear-gradient(135deg, #bf360c, #e64a19); }
+    body.theme-barn       .invitation-header { background: linear-gradient(135deg, #4e342e, #6d4c41); }
     body.theme-industrial .invitation-header { background: linear-gradient(135deg, #212121, #616161); }
-    body.theme-chinese   .invitation-header { background: linear-gradient(135deg, #b71c1c, #c62828); }
-    body.theme-indian    .invitation-header { background: linear-gradient(135deg, #e65100, #ef6c00); }
-    body.theme-french    .invitation-header { background: linear-gradient(135deg, #78909c, #90a4ae); }
+    body.theme-chinese    .invitation-header { background: linear-gradient(135deg, #b71c1c, #c62828); }
+    body.theme-indian     .invitation-header { background: linear-gradient(135deg, #e65100, #ef6c00); }
+    body.theme-french     .invitation-header { background: linear-gradient(135deg, #78909c, #90a4ae); }
+    /* FIX: added rustic header accent */
+    body.theme-rustic     .invitation-header { background: linear-gradient(135deg, #4e2c12 0%, #7a5230 100%); }
 
     /* ── Card ─────────────────────────────────────────────── */
     .rsvp-container {
@@ -185,9 +188,7 @@
     .submit-btn:disabled { opacity:0.6; cursor:not-allowed; }
 
     /* ── States ─────────────────────────────────────────────── */
-    .loading {
-      text-align:center; padding:60px; color:#a2437c;
-    }
+    .loading { text-align:center; padding:60px; color:#a2437c; }
     .spinner {
       border:3px solid #f3e6f0; border-top:3px solid #a2437c;
       border-radius:50%; width:40px; height:40px;
@@ -206,7 +207,6 @@
     }
     .hidden { display:none; }
 
-    /* guest name greeting */
     .guest-greeting {
       text-align:center;
       padding:12px 20px;
@@ -305,15 +305,14 @@
       return new URLSearchParams(window.location.search).get('token');
     }
 
-    // Apply theme class to body
+    // FIX: added 'rustic' to validThemes to match invitation.html dropdown
     function applyTheme(theme) {
       const validThemes = [
-        'classic','romantic','garden','beach','boho','luxury','modern',
-        'vintage','pastel','fairytale','elegant','forest','sunset','barn',
-        'industrial','chinese','indian','french'
+        'classic', 'rustic', 'romantic', 'garden', 'beach', 'boho', 'luxury',
+        'modern', 'vintage', 'pastel', 'fairytale', 'elegant', 'forest',
+        'sunset', 'barn', 'industrial', 'chinese', 'indian', 'french'
       ];
       const t = (theme || 'classic').toLowerCase().replace(/\s+/g, '');
-      // match partial names (e.g. "garden wedding" → "garden")
       const matched = validThemes.find(v => t.includes(v)) || 'classic';
       document.body.className = `theme-${matched}`;
     }
@@ -349,8 +348,11 @@
     }
 
     function displayInvitation(data) {
-      // Apply theme styling
-      applyTheme(data.theme);
+      // FIX: check all possible locations for theme value
+      const theme = data.theme ||
+                    data.invitationDetails?.theme ||
+                    'classic';
+      applyTheme(theme);
 
       // Guest greeting
       const greeting = document.getElementById('guestGreeting');
@@ -363,7 +365,7 @@
       if (data.eventDate) {
         const d = new Date(data.eventDate);
         document.getElementById('eventDate').textContent = d.toLocaleDateString('en-US', {
-          weekday:'long', year:'numeric', month:'long', day:'numeric'
+          weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
         });
       } else {
         document.getElementById('eventDate').textContent = "Date to be announced";
@@ -399,16 +401,17 @@
       submitBtn.textContent = "Submitting...";
 
       try {
+        // FIX: correct URL order matches backend route: /public/rsvp/:token
         const response = await fetch(
-          `${API_URL}/invitation-guests/public/${encodeURIComponent(invitationToken)}/rsvp`,
+          `${API_URL}/invitation-guests/public/rsvp/${encodeURIComponent(invitationToken)}`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              rsvpStatus:           selected.value,
-              guestCount:           parseInt(document.getElementById('guestCount').value) || 1,
-              dietaryRestrictions:  document.getElementById('dietaryRestrictions').value,
-              notes:                document.getElementById('notes').value,
+              rsvpStatus:          selected.value,
+              guestCount:          parseInt(document.getElementById('guestCount').value) || 1,
+              dietaryRestrictions: document.getElementById('dietaryRestrictions').value,
+              notes:               document.getElementById('notes').value,
             })
           }
         );
