@@ -17,9 +17,9 @@ const listInvitationGuests = async (req, res, next) => {
         message: "Authentication required",
       });
     }
-    
+
     const guests = await InvitationGuest.getInvitationGuestsByUserId(userId);
-    
+
     return res.status(200).json({
       success: true,
       data: guests,
@@ -68,16 +68,16 @@ const bulkCreateInvitationGuests = async (req, res, next) => {
   try {
     const { guests } = req.body;
     const userId = getUserId(req);
-    
+
     console.log("📥 Bulk create invitation guests:", guests?.length, "for user:", userId);
-    
+
     if (!userId) {
       return res.status(401).json({
         success: false,
         message: "Authentication required",
       });
     }
-    
+
     if (!guests || !guests.length) {
       return res.status(400).json({
         success: false,
@@ -86,9 +86,9 @@ const bulkCreateInvitationGuests = async (req, res, next) => {
     }
 
     const result = await InvitationGuest.bulkCreateInvitationGuests(guests, userId);
-    
+
     console.log("✅ Bulk create success:", result.insertedCount, "invitation guests added");
-    
+
     return res.status(201).json({
       success: true,
       data: { insertedCount: result.insertedCount },
@@ -103,33 +103,39 @@ const sendInvitations = async (req, res, next) => {
   try {
     const { guestIds, invitationDetails } = req.body;
     const userId = getUserId(req);
-    
+
     if (!userId) {
       return res.status(401).json({
         success: false,
         message: "Authentication required",
       });
     }
-    
+
     if (!guestIds || !guestIds.length) {
       return res.status(400).json({
         success: false,
         message: "No guests selected",
       });
     }
-    
-    // Use BASE_URL from env, with fallback
-    const baseUrl = process.env.BASE_URL || 'http://127.0.0.1:5503/frontend';
+
+    // FIX: read BASE_URL from env, default to 5504/frontend to match Live Server
+    const baseUrl = (process.env.BASE_URL || "http://127.0.0.1:5504/frontend")
+      .replace(/\/$/, ""); // strip trailing slash
+
     console.log("📧 Sending invitations with base URL:", baseUrl);
-    
+    console.log("📧 Full RSVP URL will be:", `${baseUrl}/rsvp.html?token=...`);
+
     const updatedGuests = await InvitationGuest.sendInvitationLinks(
-      guestIds, 
-      userId, 
-      invitationDetails, 
+      guestIds,
+      userId,
+      invitationDetails,
       baseUrl
     );
-    
-    return res.status(200).json({ success: true, data: updatedGuests });
+
+    // FIX: filter out any null results from findOneAndUpdate mismatches
+    const validGuests = updatedGuests.filter(Boolean);
+
+    return res.status(200).json({ success: true, data: validGuests });
   } catch (error) {
     console.error("Send invitations error:", error);
     return next(error);
@@ -140,23 +146,23 @@ const deleteInvitationGuest = async (req, res, next) => {
   try {
     const { id } = req.params;
     const userId = getUserId(req);
-    
+
     if (!userId) {
       return res.status(401).json({
         success: false,
         message: "Authentication required",
       });
     }
-    
+
     const result = await InvitationGuest.deleteInvitationGuest(id, userId);
-    
+
     if (result.deletedCount === 0) {
       return res.status(404).json({
         success: false,
         message: "Guest not found",
       });
     }
-    
+
     return res.status(200).json({
       success: true,
       message: "Guest deleted successfully",
@@ -169,16 +175,16 @@ const deleteInvitationGuest = async (req, res, next) => {
 const deleteAllInvitationGuests = async (req, res, next) => {
   try {
     const userId = getUserId(req);
-    
+
     if (!userId) {
       return res.status(401).json({
         success: false,
         message: "Authentication required",
       });
     }
-    
+
     const result = await InvitationGuest.deleteAllInvitationGuests(userId);
-    
+
     return res.status(200).json({
       success: true,
       message: `${result.deletedCount} guests deleted successfully`,
@@ -191,16 +197,16 @@ const deleteAllInvitationGuests = async (req, res, next) => {
 const getRSVPStats = async (req, res, next) => {
   try {
     const userId = getUserId(req);
-    
+
     if (!userId) {
       return res.status(401).json({
         success: false,
         message: "Authentication required",
       });
     }
-    
+
     const stats = await InvitationGuest.getInvitationRSVPStats(userId);
-    
+
     return res.status(200).json({
       success: true,
       data: stats,
@@ -215,14 +221,14 @@ const getGuestByTokenPublic = async (req, res, next) => {
   try {
     const { token } = req.params;
     const guest = await InvitationGuest.getInvitationGuestByToken(token);
-    
+
     if (!guest) {
       return res.status(404).json({
         success: false,
         message: "Invalid invitation token",
       });
     }
-    
+
     return res.status(200).json({
       success: true,
       data: {
@@ -232,6 +238,12 @@ const getGuestByTokenPublic = async (req, res, next) => {
         status: guest.status,
         rsvpStatus: guest.rsvpStatus,
         invitationDetails: guest.invitationDetails,
+        // FIX: expose theme at top level so rsvp.html can read data.theme directly
+        theme: guest.invitationDetails?.theme || "classic",
+        coupleNames: guest.invitationDetails?.coupleNames || "John & Jane",
+        eventDate: guest.invitationDetails?.weddingDate,
+        venue: guest.invitationDetails?.venue,
+        message: guest.invitationDetails?.message,
       },
     });
   } catch (error) {
@@ -243,28 +255,28 @@ const submitRSVP = async (req, res, next) => {
   try {
     const { token } = req.params;
     const { rsvpStatus, guestCount, dietaryRestrictions, notes } = req.body;
-    
+
     if (!rsvpStatus) {
       return res.status(400).json({
         success: false,
         message: "RSVP status is required",
       });
     }
-    
+
     const result = await InvitationGuest.updateInvitationGuestRSVP(token, {
       rsvpStatus,
       guestCount,
       dietaryRestrictions,
       notes,
     });
-    
+
     if (!result) {
       return res.status(404).json({
         success: false,
         message: "Invalid invitation token",
       });
     }
-    
+
     return res.status(200).json({
       success: true,
       message: "RSVP submitted successfully",
