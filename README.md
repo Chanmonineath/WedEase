@@ -450,8 +450,10 @@ This project is licensed under the **ISC License**.
 
 ## 👥 Contributors
 
-- **Chanmonineath** - Lead Developer
-
+- **Van Meysorng**
+- **Sok Chanmonineath**
+- **Chhea Muoyheang** 
+- **Lim Darichhy** 
 ---
 
 ## 🙏 Acknowledgments
