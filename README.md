@@ -1,270 +1,506 @@
-# **WedEASE — Wedding Planning Made Easy**
+# WedEASE - Wedding Planning Made Easy
 
-A modern, elegant, single-page wedding planning platform designed to simplify the entire planning experience.
-Built with **HTML, CSS, and JavaScript** (no frameworks), WedEASE focuses on smooth navigation, beautiful UI, and practical tools for brides, grooms, and coordinators.
+## 📋 Overview
 
----
+WedEASE is a comprehensive, all-in-one wedding planning platform designed to simplify the entire wedding planning experience. Built with **HTML, CSS, and vanilla JavaScript** on the frontend and **Node.js/Express** with **MongoDB** on the backend, WedEASE provides couples with powerful tools to manage every aspect of their big day—from theme selection and guest management to invitations and seating arrangements.
 
-## 🌸 **Features Overview**
+The platform features a modern, responsive design with a romantic aesthetic, real-time currency conversion, AI-powered chatbot assistance, and full CRUD operations for all wedding planning data.
 
-### 🔗 **Navigation Workflow**
-
-WedEASE contains five main pages:
-
-- **Home**
-- **About**
-- **Budget**
-- **Theme**
-- **Track**
-
-Clicking **Start Now** on the Home page takes users directly to the **About** page, which introduces the platform and leads them to detailed tools.
+> **Note:** The Budget Tracker feature was part of the previous Web II project and is not counted toward the current project's core functionality.
 
 ---
 
-## 🕊️ **About Page Workflow**
+## ✨ Key Features
 
-The About page contains:
+### 🏠 Home & Countdown
+- Interactive wedding date countdown timer
+- Dynamic hero section with rotating images and CTA buttons
+- Smooth scrolling and responsive design
 
-- **About WedEASE**
-- **Our Mission**
-- **Why Choose WedEASE?**
+### 👤 Authentication System
+- User registration and login with JWT tokens
+- Session persistence (localStorage/sessionStorage)
+- Password update and account deletion
+- Secure password hashing with bcrypt
 
-Under _Why Choose WedEASE_, users can navigate via CTAs:
+### 🎨 Wedding Themes
+- Curated wedding themes with Unsplash image integration
+- Search and filter functionality
+- Save favorite themes (persisted to both localStorage and MongoDB)
+- Theme inspiration gallery with image grids
 
-- **Manage Budget** → Budget Page
-- **Explore Theme** → Theme Page
-- **Track Guests** → Track Page
+### 📧 E-Invitation System
+- CSV import for bulk guest uploads
+- Manual guest addition
+- Generate unique invitation links for each guest
+- Track invitation status (Pending, Sent, Responded)
+- RSVP statistics dashboard
+- Guest list export to CSV
 
----
+### 📊 Guest & Gift Management
+- Guest list management with group filtering
+- RSVP tracking (Confirmed, Pending, Declined)
+- Gift registry with value tracking
+- CSV import/export for guests and gifts
+- Real-time statistics (guest count, confirmed RSVPs, gift totals)
 
-# 💰 **Budget Page**
+### 🪑 Seating Chart (Ballroom Layout)
+- Interactive ballroom seating with three zones (A, B, C)
+- Round table visualization with chairs
+- Automatic seating based on guest groups (VIP prioritized)
+- Drag-and-drop chair assignments (coming soon)
 
-A complete budget management system that includes:
+### 🤖 AI Chatbot Assistant
+- Powered by Groq's Llama 3.3 70B model
+- Wedding-specific context and suggestions
+- Chat history persistence per user
+- Quick suggestion chips for common questions
 
-### **1. Budget Tracker (CRUD System)**
-
-Users can:
-
-- Add budget items
-- Edit items
-- Delete items
-- Store details such as:
-  - Category name
-  - Estimated cost
-  - Status
-  - Notes
-
-### **2. Budget Progress Estimator**
-
-Users can input their **total budget**, and the system automatically:
-
-- Calculates recommended spending per category
-- Animates each category value using count-up effects
-- Updates calculations dynamically when the user changes inputs
-- Allows users to add additional custom categories
-
-### **3. Multi-Currency Support**
-
-- Convert budget between **USD ↔ KHR (Khmer RIEL)**
-- Uses live **Currency API**
-- Automatically updates all category estimates
-
-### **4. Export to PDF**
-
-Users can download their budget overview as a clean PDF.
-
----
-
-# 🎨 **Theme Page**
-
-Users can explore unlimited themes using a **public image API** (e.g., Pexels / Unsplash).
-
-Features:
-
-- Load wedding themes dynamically
-- Display theme images, titles, and descriptions
-- Allow browsing for inspiration
-- Smooth loading & responsive grid layout
+### 👤 User Settings
+- Change password with current password verification
+- Account deletion (soft delete with recovery option)
+- Profile preview with Gravatar integration
 
 ---
 
-# 🪑 **Track Page — Guest Seating Generator**
+## 🛠️ Tech Stack
 
-A simple but powerful guest management system:
+### Frontend
+| Technology | Purpose |
+|------------|---------|
+| HTML5 | Structure |
+| CSS3 | Styling (custom CSS, no frameworks) |
+| JavaScript (ES6+) | Interactivity and API integration |
+| Google Fonts | Typography (Inter, Caveat, Great Vibes, etc.) |
+| Material Icons | Iconography |
+| jsPDF | PDF generation for budget reports |
 
-- Add guest names
-- Create guest groups (Family, Friends, Office, etc.)
-- System generates a **seating layout** automatically based on group size
-- Visual seat mapping using a grid
-- Users can reorganize guests anytime
+### Backend
+| Technology | Purpose |
+|------------|---------|
+| Node.js | Runtime environment |
+| Express.js | Web framework |
+| MongoDB Atlas | Database (with Mongoose/MongoDB driver) |
+| JWT | Authentication tokens |
+| bcrypt | Password hashing |
+| Multer | CSV file upload handling |
+| Groq API | AI chatbot responses |
+| Unsplash API | Theme image sourcing |
+| ExchangeRate-API | Real-time currency conversion |
 
----
-
-# 🔐 **User Authentication (LocalStorage Based)**
-
-WedEASE includes a lightweight login system:
-
-- **Sign Up**
-  - Email + password
-  - Password securely hashed with SHA-256
-
-- **Sign In**
-  - LocalStorage-based credential validation
-
-- **Logged-in header state**
-  - Displays username
-  - Click to sign out
-
-- No backend required — 100% client-side
-
----
-
-# 🧩 **Tech Stack**
-
-| Layer              | Technology                       |
-| ------------------ | -------------------------------- |
-| UI / Pages         | HTML5, CSS3                      |
-| Styling            | Custom CSS (no frameworks)       |
-| Logic              | Vanilla JavaScript               |
-| Charts / Animation | Custom count-up number animation |
-| Currency API       | Third-party REST API             |
-| Authentication     | LocalStorage + SHA-256 hashing   |
-| Export             | jsPDF (PDF generation)           |
+### Testing Data
+The project includes CSV files for testing:
+- `invitation.csv` - Sample guest list for invitations (15 guests)
+- `test_guests.csv` - Sample guest data with groups and RSVP status (10 guests)
+- `test_gifts.csv` - Sample gift registry data (8 gifts)
 
 ---
 
-# 📁 **Project Structure**
+## 📁 Project Structure
 
 ```
 WedEASE/
-├── backend/
-│   ├── package.json
-│   ├── package-lock.json
-│   ├── .env
-│   ├── .env.example
-│   └── src/
-│       ├── config/
-│       ├── controllers/
-│       ├── middleware/
-│       ├── models/
-│       ├── routes/
-│       └── utils/
+├── frontend/                    # Frontend static files
+│   ├── index.html              # Home page
+│   ├── rsvp.html               # Public RSVP page
+│   ├── css/                    # Stylesheets
+│   │   ├── base.css           # Global styles
+│   │   ├── index.css          # Home page styles
+│   │   ├── about.css          # About page styles
+│   │   ├── theme.css          # Themes page styles
+│   │   ├── track.css          # Track page styles
+│   │   ├── budget.css         # Budget page styles (legacy)
+│   │   ├── login.css          # Login page styles
+│   │   ├── chatbot.css        # Chatbot widget styles
+│   │   └── user-settings.css  # Settings page styles
+│   ├── js/                     # JavaScript files
+│   │   ├── app.js             # Core utilities, auth, countdown
+│   │   ├── nav.js             # Mobile navigation
+│   │   ├── chatbot.js         # Chatbot widget
+│   │   ├── budget.js          # Budget tracker (legacy)
+│   │   ├── track.js           # Guest/gift management
+│   │   ├── theme.js           # Theme manager
+│   │   └── invitation.js      # E-invitation system
+│   ├── assets/                 # Images and icons
+│   │   └── img/
+│   │       ├── track/         # Track page icons
+│   │       ├── pink-purpleish logo.png
+│   │       ├── bride and groom.png
+│   │       ├── wedding car.png
+│   │       └── ring hand.png
+│   └── src/pages/              # Other HTML pages
+│       ├── about.html
+│       ├── theme.html
+│       ├── track.html
+│       ├── budget.html        # Legacy page
+│       ├── invitation.html
+│       ├── login.html
+│       ├── favourites.html
+│       └── user-settings.html
 │
-├── frontend/
+├── backend/                    # Backend Node.js server
+│   ├── src/
+│   │   ├── app.js             # Main Express app
+│   │   ├── config/
+│   │   │   └── db.js          # MongoDB connection
+│   │   ├── controllers/       # Route controllers
+│   │   │   ├── auth.controller.js
+│   │   │   ├── guest.controller.js
+│   │   │   ├── gift.controller.js
+│   │   │   ├── invitationGuest.controller.js
+│   │   │   ├── chatbot.controller.js
+│   │   │   ├── theme.controller.js
+│   │   │   └── savedTheme.controller.js
+│   │   ├── middleware/        # Custom middleware
+│   │   │   ├── auth.middleware.js
+│   │   │   ├── errorHandler.js
+│   │   │   ├── notFound.js
+│   │   │   └── validation.midleware.js
+│   │   ├── models/            # Database models
+│   │   │   ├── auth/
+│   │   │   │   ├── userModel.js
+│   │   │   │   └── revokedTokenModel.js
+│   │   │   ├── Guest.js
+│   │   │   ├── Gift.js
+│   │   │   ├── Chat.js
+│   │   │   ├── InvitationGuest.js
+│   │   │   └── SavedTheme.js
+│   │   ├── routes/            # API routes
+│   │   │   ├── auth.routes.js
+│   │   │   ├── guest.routes.js
+│   │   │   ├── gift.routes.js
+│   │   │   ├── chatbot.routes.js
+│   │   │   ├── theme.routes.js
+│   │   │   ├── savedTheme.routes.js
+│   │   │   └── invitationGuest.routes.js
+│   │   ├── services/          # Business logic
+│   │   │   └── authService.js
+│   │   └── utils/             # Utilities
+│   │       ├── csvParser.js
+│   │       ├── email.js
+│   │       └── generateToken.js
 │   ├── package.json
-│   ├── package-lock.json
-│   ├── index.html
-│   ├── app.js
-│   ├── budget.js
-│   ├── theme.js
-│   ├── track.js
-│   ├── css/
-│   ├── js/
-│   ├── assets/
-│   └── src/
+│   └── .env                   # Environment variables (create this)
 │
-├── README.md
-└── .gitignore
+├── invitation.csv             # Sample guest list for testing
+├── test_guests.csv           # Sample guest data with RSVP
+├── test_gifts.csv            # Sample gift registry data
+└── README.md                 # This file
 ```
-
-## **Package Structure**
-
-- **Backend `package.json`** — Backend dependencies and scripts
-- **Backend `package-lock.json`** — Backend lockfile
-- **Frontend `package.json`** — Frontend metadata and scripts
-- **Frontend `package-lock.json`** — Frontend lockfile
-
-## **API Endpoints**
-
-Current endpoints:
-
-- `GET /api/health` — Health check endpoint
 
 ---
 
-# 🛠️ **Installation & Setup**
+## 🚀 Installation & Setup
 
-## **Clone the Repository**
+### Prerequisites
+- **Node.js** (v18 or higher)
+- **MongoDB Atlas** account (or local MongoDB instance)
+- **API Keys** (see below)
 
+### Step 1: Clone the Repository
 ```bash
-git clone https://github.com/<your-username>/WedEASE.git
-cd WedEASE
+git clone https://github.com/Chanmonineath/WedEase.git
+cd WedEase
 ```
 
-## **Quick Start (Backend + Frontend)**
-
-Install and run each app from its own folder:
+### Step 2: Backend Setup
 
 ```bash
-# Backend
 cd backend
 npm install
-npm run dev
-
-# Frontend (in a separate terminal)
-cd frontend
-python -m http.server 5500
 ```
 
-## **Backend Setup** (Detailed)
+Create a `.env` file in the `backend/` directory:
 
-Navigate to the backend folder:
+```env
+# Server Configuration
+PORT=5000
+NODE_ENV=development
+
+# MongoDB Atlas
+ATLAS_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/WedEase
+DB_NAME=WedEase
+
+# JWT Secret (generate a strong random string)
+JWT_SECRET=your_super_secret_jwt_key_here
+
+# API Keys
+GROQ_API_KEY=your_groq_api_key
+UNSPLASH_ACCESS_KEY=your_unsplash_access_key
+
+# Frontend Base URL (for invitation links)
+BASE_URL=http://127.0.0.1:5503/frontend
+
+# Optional: CORS origins (comma-separated)
+CORS_ORIGINS=http://localhost:5500,http://127.0.0.1:5503
+```
+
+### Step 3: Frontend Setup
+
+No build step required! The frontend is pure HTML/CSS/JS.
+
+To serve the frontend, you can use any static server:
+
+```bash
+# Using Python (recommended)
+cd frontend
+python -m http.server 5503
+
+# OR using VS Code Live Server extension (port 5500)
+# OR using npx serve
+npx serve frontend -p 5503
+```
+
+### Step 4: Start the Backend Server
 
 ```bash
 cd backend
-
-# Install dependencies
-npm install
-
-# Create environment file from template
-# macOS/Linux
-cp .env.example .env
-
-# Windows (PowerShell)
-copy .env.example .env
+npm run dev    # Development with auto-reload (nodemon)
+# OR
+npm start      # Production mode
 ```
 
-Ensure MongoDB is running locally, or update `MONGODB_URI` in `backend/.env` with your Atlas connection.
+The backend will run on `http://localhost:5000`
 
-Start the backend server:
+### Step 5: Access the Application
 
-```bash
-# Development (with hot reload)
-npm run dev
-
-# Production
-npm start
-```
-
-Backend API runs on **http://localhost:5000**
-
-## **Frontend Setup** (Detailed)
-
-The frontend is a static site with no build step required.
-
-Open the frontend directly or serve locally:
-
-```bash
-# Option 1: Direct file open
-open frontend/index.html
-
-# Option 2: Serve locally with Python
-cd frontend
-python -m http.server 5500
-
-# Then visit http://localhost:5500/index.html
-```
-
-Alternatively, use VS Code Live Server or any static HTTP server of your choice.
+Open your browser and navigate to:
+- **Frontend:** `http://127.0.0.1:5503/frontend/index.html`
+- **Backend API:** `http://localhost:5000`
 
 ---
 
-# 🚀 **Future Improvements**
+## 🔑 API Keys & Services
 
-- Add API for live wedding service pricing
-- Add drag-and-drop seating arrangement
-- Sync user data with cloud backend (Firebase or Supabase)
-- Add dark mode
-- Allow sharing budget PDF to email
+### Required API Keys
+
+| Service | Purpose | How to Get |
+|---------|---------|------------|
+| **MongoDB Atlas** | Database | [Sign up](https://www.mongodb.com/cloud/atlas) → Create cluster → Get connection string |
+| **Groq API** | AI Chatbot | [Sign up](https://console.groq.com) → Generate API key |
+| **Unsplash API** | Theme images | [Register app](https://unsplash.com/developers) → Get access key |
+| **ExchangeRate-API** | Currency conversion | Free tier available at [exchangerate-api.com](https://www.exchangerate-api.com) |
+
+### API Key Notes
+- ExchangeRate-API is already configured with a demo key in the code - replace with your own for production.
+- The Unsplash API key is required for theme images; without it, placeholder images will be used.
 
 ---
+
+## 🧪 Testing Data
+
+The project includes CSV files for testing all features:
+
+### 1. `invitation.csv` - Guest List for Invitations
+```csv
+Name,Email,Phone
+Sokha Chea,sokha.chea@example.com,012345678
+Rithy Sorn,rithy.sorn@example.com,098765432
+...
+```
+**Use on:** Invitation page → "Upload Guest List (CSV)"
+
+### 2. `test_guests.csv` - Guest Data with RSVP
+```csv
+Name,Group,RSVP
+Anna Lim,Bride's Family,Yes
+James Tan,Bride's Family,Yes
+...
+```
+**Use on:** Track page → Guest List → "Import CSV"
+
+### 3. `test_gifts.csv` - Gift Registry Data
+```csv
+GiftType,FromGuest,Value
+Money,Anna Lim,200
+Jewelry,Jessica Park,350
+...
+```
+**Use on:** Track page → Gift Registry → "Import CSV"
+
+---
+
+## 📡 API Endpoints
+
+### Authentication (`/api/auth`)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/register` | Create new account |
+| POST | `/login` | Login user |
+| POST | `/logout` | Logout (revokes token) |
+| GET | `/me` | Get current user info |
+| PATCH | `/password` | Update password |
+| DELETE | `/account` | Delete account |
+
+### Guests (`/api/guests`)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/` | List all guests |
+| POST | `/` | Add a guest |
+| PUT | `/:id` | Update guest |
+| DELETE | `/:id` | Delete guest |
+
+### Gifts (`/api/gifts`)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/` | List all gifts |
+| POST | `/` | Add a gift |
+| PUT | `/:id` | Update gift |
+| DELETE | `/:id` | Delete gift |
+
+### Invitation Guests (`/api/invitation-guests`)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/` | List invitation guests |
+| POST | `/` | Add single guest |
+| POST | `/bulk` | Bulk add guests |
+| POST | `/send-invitations` | Generate invitation links |
+| GET | `/stats` | Get RSVP statistics |
+| DELETE | `/:id` | Delete guest |
+| DELETE | `/` | Delete all guests |
+
+**Public Routes (no auth):**
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/public/:token` | Get guest by invitation token |
+| POST | `/public/rsvp/:token` | Submit RSVP response |
+
+### Themes (`/api/themes`)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/` | List all themes |
+| GET | `/fetch-all` | Fetch themes with Unsplash images |
+
+### Saved Themes (`/api/saved-themes`)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/` | Get user's saved themes |
+| POST | `/` | Save a theme |
+| DELETE | `/:themeKey` | Remove saved theme |
+
+### Chatbot (`/api/chatbot`)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/` | Send message (requires auth) |
+| GET | `/history` | Get chat history |
+| GET | `/:chatId` | Get specific chat |
+| DELETE | `/:chatId` | Delete chat |
+
+---
+
+## 🎨 Theme Customization
+
+The color scheme can be customized by modifying CSS variables in `frontend/css/base.css`:
+
+```css
+:root {
+  --wed-bg: #fcf4fb;
+  --wed-primary: #a2437c;
+  --wed-secondary: #6f3054;
+  --wed-headline: #333333;
+  --wed-text: #666;
+  --wed-border: #e0d5e3;
+  --cta-pink: #ffb6d9;
+  --cta-dark-pink: #c2185b;
+}
+```
+
+---
+
+## 📱 Responsive Design
+
+WedEASE is fully responsive and works on:
+- **Desktop** (1200px+)
+- **Tablet** (768px - 1199px)
+- **Mobile** (< 768px)
+
+Mobile features include:
+- Hamburger menu navigation
+- Stacked layouts
+- Touch-friendly buttons
+- Optimized font sizes
+
+---
+
+## 🐛 Troubleshooting
+
+### Common Issues & Solutions
+
+| Issue | Solution |
+|-------|----------|
+| **Backend won't start** | Check MongoDB connection string in `.env` |
+| **API returns 401** | User not logged in; check token in localStorage |
+| **Chatbot not responding** | Verify GROQ_API_KEY is valid and backend is running |
+| **Theme images not loading** | Unsplash API key missing or rate limited; placeholders will appear |
+| **CSV import fails** | Ensure CSV format matches expected headers (Name, Email, Phone) |
+| **CORS errors** | Add your frontend URL to `CORS_ORIGINS` in `.env` |
+| **Currency rates not updating** | Check internet connection; free API has rate limits |
+
+### Development Tips
+
+```bash
+# Check backend logs
+cd backend && npm run dev
+
+# Check if MongoDB is accessible
+mongosh <your_connection_string>
+
+# Test API endpoint
+curl http://localhost:5000/api/health
+```
+
+---
+
+## 📄 License
+
+This project is licensed under the **ISC License**.
+
+---
+
+## 👥 Contributors
+
+- **Chanmonineath** - Lead Developer
+
+---
+
+## 🙏 Acknowledgments
+
+- **Groq** for providing the Llama 3.3 API
+- **Unsplash** for beautiful wedding photography
+- **ExchangeRate-API** for currency conversion
+- **Google Fonts** for typography
+- **Material Icons** for iconography
+
+---
+
+## 📞 Support
+
+For questions, issues, or contributions:
+- **GitHub Issues:** [Open an issue](https://github.com/Chanmonineath/WedEase/issues)
+- **Email:** (contact information not provided)
+
+---
+
+## 🗺️ Roadmap
+
+Future enhancements planned:
+- [ ] Mobile app (React Native)
+- [ ] Vendor marketplace integration
+- [ ] Real-time collaboration for couples
+- [ ] Wedding website builder
+- [ ] Photo sharing gallery
+- [ ] Weather integration for outdoor weddings
+- [ ] Multi-language support (Khmer, English)
+- [ ] Offline mode with PWA
+
+---
+
+## 📝 Version History
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 1.0.0 | 2025 | Initial release with core features |
+
+---
+
+**Made with ❤️ for couples everywhere**
