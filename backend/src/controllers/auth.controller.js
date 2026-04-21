@@ -1,5 +1,4 @@
 const userModel = require("../models/auth/userModel");
-const profileModel = require("../models/profile/profileModel");
 const revokedTokenModel = require("../models/auth/revokedTokenModel");
 const authService = require("../services/authService");
 const { normalizeEmail } = require("../utils/email");
@@ -33,11 +32,7 @@ const register = async (req, res) => {
         { session },
       );
 
-      await profileModel.createProfile(
-        createdUserId.toString(),
-        { displayName: username },
-        { session },
-      );
+      // profile creation removed (frontend doesn't use profiles in demo)
 
       return createdUserId;
     });
@@ -205,9 +200,7 @@ const deleteAccount = async (req, res) => {
 
     await session.withTransaction(async () => {
       await userModel.softDeleteUserById(req.user.userId, { session });
-      await profileModel.softDeleteProfileByUserId(req.user.userId, {
-        session,
-      });
+      // profile soft-delete removed (no profile documents created in demo)
     });
 
     const token = req.authToken;
