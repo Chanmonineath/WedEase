@@ -2,7 +2,7 @@
 
 ## 📋 Overview
 
-WedEASE is a comprehensive, all-in-one wedding planning platform designed to simplify the entire wedding planning experience. Built with **HTML, CSS, and vanilla JavaScript** on the frontend and **Node.js/Express** with **MongoDB** on the backend, WedEASE provides couples with powerful tools to manage every aspect of their big day—from theme selection and guest management to invitations and seating arrangements.
+WedEASE is a comprehensive, all-in-one wedding planning platform designed to simplify the entire wedding planning experience. Built with **HTML, CSS, and vanilla JavaScript** on the frontend and **Node.js/Express** with **MongoDB** on the backend, WedEASE provides couples with powerful tools to manage every aspect of their big day—from theme selection and guest management to invitations and chatbot for recommendations.
 
 The platform features a modern, responsive design with a romantic aesthetic, real-time currency conversion, AI-powered chatbot assistance, and full CRUD operations for all wedding planning data.
 
